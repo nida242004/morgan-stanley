@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Container, Table, Nav, Button, Form, Modal } from "react-bootstrap";
-import { FaUserCheck, FaUsers, FaEye, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { Container, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
+import Sidebar from "./Sidebar"
+import ProfileModal from "../../components/ProfileModal/ProfileModal";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("students");
   const [students, setStudents] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [newEntry, setNewEntry] = useState({
-    firstName: "",
-    lastName: "",
-    gender: "Male",
-    email: "",
-    status: "Active",
-    designation: "",
-  });
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState(null);
 
   useEffect(() => {
     fetch("/students.json")
@@ -28,42 +22,27 @@ const AdminPage = () => {
       .catch((error) => console.error("Error fetching employees data:", error));
   }, []);
 
-  const handleAddEntry = () => {
-    if (activeTab === "students") {
-      setStudents([...students, { ...newEntry, studentID: `STU${Date.now()}` }]);
-    } else {
-      setEmployees([...employees, { ...newEntry, educatorID: `EDU${Date.now()}` }]);
-    }
-    setShowModal(false);
-    setNewEntry({
-      firstName: "",
-      lastName: "",
-      gender: "Male",
-      email: "",
-      status: "Active",
-      designation: "",
-    });
+  const handleShowProfile = (profile) => {
+    setSelectedProfile(profile);
+    setShowProfileModal(true);
   };
 
   return (
     <div className="d-flex" style={{ height: "100vh" }}>
-      <Nav className="flex-column bg-dark text-white p-3" style={{ width: "250px", height: "100vh", position: "fixed" }}>
-        <h4 className="text-light">Admin Dashboard</h4>
-        <Nav.Link className="text-light" onClick={() => setActiveTab("students")}>
-          <FaUsers className="me-2" /> Students
-        </Nav.Link>
-        <Nav.Link className="text-light" onClick={() => setActiveTab("employees")}>
-          <FaUserCheck className="me-2 text-warning" /> Educators
-        </Nav.Link>
-        <Button variant="success" className="mt-3" onClick={() => setShowModal(true)}>
-          <FaPlus className="me-2" /> Add {activeTab === "students" ? "Student" : "Employee"}
-        </Button>
-      </Nav>
+      {/* Sidebar */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div style={{ marginLeft: "250px", width: "calc(100% - 250px)", overflow: "auto" }}>
+      {/* Content */}
+      <div
+        style={{
+          marginLeft: "250px",
+          width: "calc(100% - 250px)",
+          overflow: "auto",
+        }}
+      >
         <Container fluid className="p-4">
           <h2>{activeTab === "students" ? "Students" : "Educators"}</h2>
-          <Table hover responsive>
+          <Table hover responsive className="text-center">
             <thead>
               <tr>
                 <th>ID</th>
@@ -72,70 +51,97 @@ const AdminPage = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>{activeTab === "students" ? "Status" : "Designation"}</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {(activeTab === "students" ? students : employees).map((item, index) => (
-                <tr key={index}>
-                  <td>{activeTab === "students" ? item.studentID : item.educatorID}</td>
-                  <td>
-                    <img
-                      src={item.photo}
-                      alt={item.firstName}
-                      style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-                    />
-                    {" "}{item.firstName} {item.lastName}
-                  </td>
-                  <td>{item.gender}</td>
-                  <td>{item.email}</td>
-                  <td>{item.contact}</td>
-                  <td>{activeTab === "students" ? item.status : item.designation}</td>
-                  <td>
-                    <Button variant="info" size="sm" className="me-2"><FaEye /></Button>
-                    <Button variant="warning" size="sm" className="me-2"><FaEdit /></Button>
-                    <Button variant="danger" size="sm"><FaTrash /></Button>
-                  </td>
-                </tr>
-              ))}
+              {(activeTab === "students" ? students : employees).map(
+                (item, index) => (
+                  <OverlayTrigger
+                    key={index}
+                    placement="top"
+                    overlay={<Tooltip>Click to view details</Tooltip>}
+                  >
+                    <tr
+                      key={index}
+                      onClick={() => handleShowProfile(item)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td className="align-middle">
+                        {activeTab === "students"
+                          ? item.studentID
+                          : item.educatorID}
+                      </td>
+                      <td className="align-middle">
+                        <div className="d-flex align-items-center justify-content-center">
+                          <img
+                            src={item.photo}
+                            alt={item.firstName}
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              marginRight: "10px",
+                            }}
+                          />
+                          {item.firstName} {item.lastName}
+                        </div>
+                      </td>
+                      <td className="align-middle">{item.gender}</td>
+                      <td className="align-middle">{item.email}</td>
+                      <td className="align-middle">
+                        {item.phoneNumber || item.contact || "N/A"}
+                      </td>
+                      <td className="align-middle">
+                        {activeTab === "students" ? (
+                          <span
+                            className="d-inline-flex align-items-center justify-content-center px-3 py-1 rounded-pill fw-semibold"
+                            style={{
+                              fontSize: "0.9rem",
+                              minWidth: "80px",
+                              textAlign: "center",
+                              backgroundColor:
+                                item.status === "Active"
+                                  ? "#e6f4ea"
+                                  : item.status === "In Process"
+                                  ? "#fff8e1"
+                                  : "#fdecea",
+                              color:
+                                item.status === "Active"
+                                  ? "#388e3c"
+                                  : item.status === "In Process"
+                                  ? "#f57c00"
+                                  : "#d32f2f",
+                              border: "1px solid",
+                              borderColor:
+                                item.status === "Active"
+                                  ? "#c8e6c9"
+                                  : item.status === "In Process"
+                                  ? "#ffecb3"
+                                  : "#ffcdd2",
+                            }}
+                          >
+                            {item.status}
+                          </span>
+                        ) : (
+                          item.designation
+                        )}
+                      </td>
+                    </tr>
+                  </OverlayTrigger>
+                )
+              )}
             </tbody>
-
           </Table>
         </Container>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add {activeTab === "students" ? "Student" : "Employee"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control type="text" value={newEntry.firstName} onChange={(e) => setNewEntry({ ...newEntry, firstName: e.target.value })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control type="text" value={newEntry.lastName} onChange={(e) => setNewEntry({ ...newEntry, lastName: e.target.value })} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Gender</Form.Label>
-              <Form.Select value={newEntry.gender} onChange={(e) => setNewEntry({ ...newEntry, gender: e.target.value })}>
-                <option>Male</option>
-                <option>Female</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" value={newEntry.email} onChange={(e) => setNewEntry({ ...newEntry, email: e.target.value })} />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleAddEntry}>Add</Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Profile Modal */}
+      <ProfileModal
+        show={showProfileModal}
+        handleClose={() => setShowProfileModal(false)}
+        profile={selectedProfile}
+        isStudent={activeTab === "students"}
+      />
     </div>
   );
 };
