@@ -331,9 +331,7 @@ const EmployeeForm = ({ formData, handleChange, showPassword }) => {
 
           <Row className="mb-3">
             <Col md={12}>
-              <Button variant="primary" type="submit" disabled={!passwordMatch}>
-                Submit
-              </Button>
+            
             </Col>
           </Row>
         </div>
