@@ -1,5 +1,6 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import AdminPage from './pages/AdminPage/AdminPage';
 
 function Home() {
   return <h1>Home Page</h1>;
@@ -20,20 +21,11 @@ function Admin() {
 function App() {
   return (
     <Router>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/parent">Parent</Link></li>
-          <li><Link to="/educator">Educator</Link></li>
-          <li><Link to="/admin">Admin</Link></li>
-        </ul>
-      </nav>
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/parent" element={<Parent />} />
         <Route path="/educator" element={<Educator />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
   );
