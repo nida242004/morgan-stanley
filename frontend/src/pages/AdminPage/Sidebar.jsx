@@ -1,6 +1,12 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
-import { FaUsers, FaUserCheck, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { 
+  FaUsers, 
+  FaUserCheck, 
+  FaSignInAlt, 
+  FaSignOutAlt, 
+  FaCalendarAlt 
+} from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -24,6 +30,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           style={{ cursor: "pointer" }}
         >
           <FaUserCheck className="me-2 text-warning" /> Educators
+        </Nav.Link>
+        <Nav.Link
+          className={`text-white ${activeTab === "appointments" ? "fw-bold" : ""}`}
+          onClick={() => setActiveTab("appointments")}
+          style={{ cursor: "pointer" }}
+        >
+          <FaCalendarAlt className="me-2 text-info" /> Appointments
         </Nav.Link>
         <hr className="bg-light" />
         <Nav.Link
