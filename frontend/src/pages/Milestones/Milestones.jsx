@@ -1,10 +1,13 @@
-import React from 'react'
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
+import Timeline from "../../components/Timeline/Timeline.jsx";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
+
 const Milestones = () => {
   return (
     <div>
-        <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
+      {/* Navbar */}
+      <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
         <Container>
           <Navbar.Brand href="/" className="fw-bold fs-4 fade-in">
             <span style={{ color: "#00A66E" }}>Ishaanya</span>
@@ -41,9 +44,13 @@ const Milestones = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      Milestones section
-    </div>
-  )
-}
 
-export default Milestones
+      {/* Timeline Section */}
+      <div className="mt-5 pt-5">
+        <Timeline />
+      </div>
+    </div>
+  );
+};
+
+export default Milestones;
