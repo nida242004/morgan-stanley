@@ -362,7 +362,7 @@ const AppointmentPage = () => {
                           </td>
                           <td className="pe-4 align-middle">
                             {appointment.employee ? 
-                              `${appointment.employee.email || ''} ${appointment.employee.lastName || ''}` : 
+                              `${appointment.employee.email || ''}` : 
                               <span className="text-muted">Not assigned</span>}
                           </td>
                         </tr>
