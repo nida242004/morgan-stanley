@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from "../../components/Navbar/Navbar.jsx";
+import NavbarComponent from "../../components/Navbar/Navbar.jsx";
 
 const BookSession = () => {
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ const BookSession = () => {
 
   return (
     <>
-    <Navbar />
+    <NavbarComponent />
     <div style={{ backgroundColor: colors.pampas, minHeight: '100vh' }} className="py-5">
       <div className="container">
         <div className="row justify-content-center">

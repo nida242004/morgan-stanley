@@ -1,50 +1,46 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import React from "react";
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
 
-const Navbar = () => {
+const NavbarComponent = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="/">YourLogo</a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <a className="nav-link" href="/">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/schedule">Schedule an Appointment</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/milestone">Milestone</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/faq">FAQ</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/aboutus">About Us</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/contact">Contact</a>
-            </li>
-          </ul>
-          <div className="d-flex">
-            <button className="btn btn-primary">Sign In</button>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
+      <Container>
+        <Navbar.Brand href="/" className="fw-bold fs-4 fade-in">
+          <span style={{ color: "#00A66E" }}>Ishaanya</span>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ms-auto">
+            <Nav.Link href="/appointment" className="mx-2 fw-medium fade-in">
+              Schedule Appointment
+            </Nav.Link>
+            <Nav.Link href="/apply" className="mx-2 fw-medium fade-in">
+              Apply as Educator
+            </Nav.Link>
+            <Nav.Link href="/milestones" className="mx-2 fw-medium fade-in">
+              Milestone
+            </Nav.Link>
+            <Nav.Link href="/faq" className="mx-2 fw-medium fade-in">
+              FAQ
+            </Nav.Link>
+            <Nav.Link href="/aboutUs" className="mx-2 fw-medium fade-in">
+              AboutUs
+            </Nav.Link>
+            <Nav.Link href="/contactus" className="mx-2 fw-medium fade-in">
+              ContactUs
+            </Nav.Link>
+          </Nav>
+          <Button
+            variant="outline-dark"
+            className="ms-3 fw-medium fade-in"
+            href="/signin"
+          >
+            Log In
+          </Button>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 
-export default Navbar;
+export default NavbarComponent;

@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from "../../components/Navbar/Navbar.jsx";
-// Make sure you have Bootstrap CSS and icons imported in your project:
-// <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
+import NavbarComponent from "../../components/Navbar/Navbar.jsx";
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -39,7 +35,7 @@ const SignIn = () => {
 
   return (
     <>
-    <Navbar/>
+    <NavbarComponent/>
     <div style={{ backgroundColor: colors.pampas, minHeight: '100vh' }} className="d-flex align-items-center py-5">
       <div className="container">
         <div className="row justify-content-center">
