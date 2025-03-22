@@ -15,6 +15,16 @@ const Sidebar = () => {
   const [active, setActive] = useState(""); // Tracks active main section
   const [activeSub, setActiveSub] = useState(""); // Tracks active sub-section
 
+  const handleMainClick = (section) => {
+    setActive(section);
+    setActiveSub(""); // Clear sub-selection when main is selected
+  };
+
+  const handleSubClick = (subsection) => {
+    setActive(""); // Clear main selection when sub is selected
+    setActiveSub(subsection);
+  };
+
   return (
     <div 
       className="d-flex flex-column bg-dark text-white vh-100 p-3"
@@ -27,7 +37,7 @@ const Sidebar = () => {
         <li className="nav-item">
           <div 
             className={`nav-link text-white d-flex justify-content-between align-items-center sidebar-item ${active === "reports" ? "active" : ""}`} 
-            onClick={() => { setShowReports(!showReports); setActive("reports"); }} 
+            onClick={() => { setShowReports(!showReports); handleMainClick("reports"); }} 
             style={{ cursor: "pointer" }}
           >
             <span><FaFileAlt className="me-2" /> Student Reports</span>
@@ -39,7 +49,7 @@ const Sidebar = () => {
                 <a 
                   href="#" 
                   className={`nav-link text-white sidebar-subitem ${activeSub === "quarterly" ? "active-sub" : ""}`} 
-                  onClick={() => setActiveSub("quarterly")}
+                  onClick={() => handleSubClick("quarterly")}
                 >
                   Quarterly Reports
                 </a>
@@ -48,7 +58,7 @@ const Sidebar = () => {
                 <a 
                   href="#" 
                   className={`nav-link text-white sidebar-subitem ${activeSub === "annual" ? "active-sub" : ""}`} 
-                  onClick={() => setActiveSub("annual")}
+                  onClick={() => handleSubClick("annual")}
                 >
                   Annual Reports
                 </a>
@@ -61,7 +71,7 @@ const Sidebar = () => {
         <li className="nav-item">
           <div 
             className={`nav-link text-white d-flex justify-content-between align-items-center sidebar-item ${active === "courses" ? "active" : ""}`} 
-            onClick={() => { setShowCourses(!showCourses); setActive("courses"); }} 
+            onClick={() => { setShowCourses(!showCourses); handleMainClick("courses"); }} 
             style={{ cursor: "pointer" }}
           >
             <span><FaBook className="me-2" /> Courses</span>
@@ -73,7 +83,7 @@ const Sidebar = () => {
                 <a 
                   href="#" 
                   className={`nav-link text-white sidebar-subitem ${activeSub === "primary" ? "active-sub" : ""}`} 
-                  onClick={() => setActiveSub("primary")}
+                  onClick={() => handleSubClick("primary")}
                 >
                   Primary Course
                 </a>
@@ -82,7 +92,7 @@ const Sidebar = () => {
                 <a 
                   href="#" 
                   className={`nav-link text-white sidebar-subitem ${activeSub === "secondary" ? "active-sub" : ""}`} 
-                  onClick={() => setActiveSub("secondary")}
+                  onClick={() => handleSubClick("secondary")}
                 >
                   Secondary Course
                 </a>
@@ -96,7 +106,7 @@ const Sidebar = () => {
           <a 
             href="#" 
             className={`nav-link text-white sidebar-item ${active === "educators" ? "active" : ""}`} 
-            onClick={() => { setActive("educators"); setActiveSub(""); }}
+            onClick={() => handleMainClick("educators")}
           >
             <FaChalkboardTeacher className="me-2" /> Educators of the Student
           </a>
@@ -107,7 +117,7 @@ const Sidebar = () => {
           <a 
             href="#" 
             className={`nav-link text-white sidebar-item ${active === "moment" ? "active" : ""}`} 
-            onClick={() => { setActive("moment"); setActiveSub(""); }}
+            onClick={() => handleMainClick("moment")}
           >
             <FaGlobe className="me-2" /> Moment of the Day
           </a>
@@ -118,7 +128,7 @@ const Sidebar = () => {
           <a 
             href="#" 
             className={`nav-link text-white sidebar-item ${active === "other" ? "active" : ""}`} 
-            onClick={() => { setActive("other"); setActiveSub(""); }}
+            onClick={() => handleMainClick("other")}
           >
             Other
           </a>
