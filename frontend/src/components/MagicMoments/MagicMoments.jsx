@@ -26,16 +26,36 @@ const stories = [
 
 const MagicMoments = () => {
   return (
-    <div
-      className="p-3 rounded"
-      style={{ backgroundColor: "#eee", width: "100%" }}
-    >
-      <h5 className="fw-bold">Moments of the day</h5>
-      <div className="d-flex gap-3">
+    <div className="magic-moments-container">
+      <h5 className="title">Moments of the Day</h5>
+      <div className="moments-list">
         {stories.map((story) => (
           <MagicMomentCard key={story.id} story={story} />
         ))}
       </div>
+
+      {/* Styles */}
+      <style jsx>{`
+        .magic-moments-container {
+          background: #f9fafb;
+          padding: 20px;
+          border-radius: 12px;
+          width: 100%;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .title {
+          font-weight: bold;
+          color: #374151;
+          margin-bottom: 10px;
+        }
+
+        .moments-list {
+          display: flex;
+          gap: 16px;
+          overflow-x: auto;
+        }
+      `}</style>
     </div>
   );
 };

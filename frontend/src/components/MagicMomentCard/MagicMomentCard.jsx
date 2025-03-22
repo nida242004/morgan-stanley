@@ -9,35 +9,16 @@ const MagicMomentCard = ({ story }) => {
   return (
     <>
       <div
-        className="d-flex flex-column align-items-center bg-light shadow-sm rounded"
-        style={{
-          width: "160px",
-          height: "240px",
-          cursor: "pointer",
-          overflow: "hidden",
-        }}
+        className="magic-moment-card"
         onClick={() => setShow(true)}
       >
-        {/* Video Placeholder */}
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{
-            width: "100%",
-            height: "180px",
-            backgroundColor: "#ddd",
-            position: "relative",
-          }}
-        >
-          <FaPlay size={24} className="text-dark" />
+        {/* Thumbnail */}
+        <div className="thumbnail">
+          <FaPlay className="play-icon" />
         </div>
 
-        {/* Date Footer */}
-        <div
-          className="w-100 text-white text-center py-2"
-          style={{ backgroundColor: "#666" }}
-        >
-          {story.date}
-        </div>
+        {/* Footer with Date */}
+        <div className="footer">{story.date}</div>
       </div>
 
       {/* Video Modal */}
@@ -49,6 +30,55 @@ const MagicMomentCard = ({ story }) => {
           </video>
         </Modal.Body>
       </Modal>
+
+      {/* Styles */}
+      <style jsx>{`
+        .magic-moment-card {
+          width: 180px;
+          height: 250px;
+          border-radius: 12px;
+          overflow: hidden;
+          background: linear-gradient(to bottom, #f3f4f6, #d1d5db);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          transition: transform 0.2s ease-in-out;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .magic-moment-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .thumbnail {
+          width: 100%;
+          height: 190px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(to top, #e0e7ff, #93c5fd);
+          position: relative;
+        }
+
+        .play-icon {
+          font-size: 28px;
+          color: white;
+          background: rgba(0, 0, 0, 0.4);
+          padding: 10px;
+          border-radius: 50%;
+        }
+
+        .footer {
+          width: 100%;
+          text-align: center;
+          padding: 10px 0;
+          background: #374151;
+          color: white;
+          font-weight: bold;
+        }
+      `}</style>
     </>
   );
 };
