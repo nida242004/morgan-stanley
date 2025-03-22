@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+import Sidebar from "./Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
 import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx"; // Import WeeklyProgress
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
