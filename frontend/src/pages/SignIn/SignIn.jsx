@@ -46,7 +46,7 @@ const handleSubmit = async (e) => {
       console.error("No token found in response.");
     }
 
-    navigate(formData.userType === "admin" ? "/admin" : "/dashboard");
+    navigate(formData.userType === "admin" ? "/admin" : `/employee-dashboard/0157575`);
   } catch (error) {
     console.error("Login failed:", error.response?.data?.message || error.message);
     alert("Login failed. Please check your credentials.");

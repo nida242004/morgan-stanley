@@ -18,7 +18,6 @@ const AppointmentPage = () => {
 
   useEffect(() => {
     fetchAppointments();
-    fetchEducators();
   }, []);
 
   const fetchAppointments = async () => {
@@ -50,30 +49,7 @@ const AppointmentPage = () => {
     }
   };
 
-const fetchEducators = async () => {
-  try {
-    setEducatorsLoading(true);
-    const token = localStorage.getItem('authToken');
-    
-    if (!token) {
-      console.error("No token found in localStorage");
-      return;
-    }
 
-    const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/allEmployees", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    console.log("Fetched Educators:", response.data);
-    setEducators(response.data.data.Employees);
-  } catch (err) {
-    console.error("Error fetching educators:", err.response?.data || err.message);
-  } finally {
-    setEducatorsLoading(false);
-  }
-};
 
   useEffect(() => {
     if (statusFilter === "all") {

@@ -1,0 +1,33 @@
+/* Bootstrap-enhanced styling */
+.search-bar {
+    width: 300px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .table-hover-effect:hover {
+    background-color: #f8f9fa !important;
+    transition: 0.3s ease-in-out;
+  }
+  
+  .educators-table {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .educators-table thead {
+    background-color: #343a40;
+    color: white;
+  }
+  
+  .educator-card {
+    border-radius: 12px;
+    background: #f8f9fa;
+  }
+  
+  .badge {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+  
