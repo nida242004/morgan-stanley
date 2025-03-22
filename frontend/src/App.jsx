@@ -5,6 +5,7 @@ import SignUp from './pages/SignUp/SignUp';
 import ChildDashboard from './pages/ChildDashboard/ChildDashboard';
 import EmployeeDashboard from './pages/EmployeeDashboard/EmployeeDashboard';
 import Home from './pages/Home/Home';
+import BookSession from './pages/BookSession/BookSession';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/child-dashboard/:childName" element={<ChildDashboard />} />
         <Route path="/employee-dashboard/:educatorID" element={<EmployeeDashboard />} />
+        <Route path='/appointment' element={<BookSession/>}/>
       </Routes>
     </Router></>
   );

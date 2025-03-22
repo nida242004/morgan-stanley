@@ -1,11 +1,11 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
+import BookSession from "../BookSession/BookSession";
 
 function Home() {
   return (
     <>
-      {/* Navigation Bar */}
       <Navbar bg="white" expand="lg" className="shadow-sm p-3">
         <Container>
           <Navbar.Brand href="#" className="fw-bold">
@@ -14,7 +14,8 @@ function Home() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="#">Schedule Appointment</Nav.Link>
+            <Nav.Link  href="/appointment">Schedule Appointment</Nav.Link>
+
               <Nav.Link href="#">Milestone</Nav.Link>
               <Nav.Link href="#">FAQ</Nav.Link>
               <Nav.Link href="#">AboutUs</Nav.Link>
