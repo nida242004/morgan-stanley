@@ -5,8 +5,10 @@ import React, { useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 const SignIn = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -27,14 +29,27 @@ const SignIn = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
-    const response =await axios.post(`http://10.24.115.12:8000/api/v1/${formData.userType}/login`,formData)
-    console.log(response.data.message);
-    // Handle authentication logic here
-  };
+    try {
+      const response = await axios.post(
+        `http://10.24.115.12:8000/api/v1/${formData.userType}/login`,
+        formData
+      );
 
+      console.log(response.data.message);
+
+      // ✅ Navigate to admin panel if userType is admin
+      if (formData.userType === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard"); // Change this if needed for other roles
+      }
+    } catch (error) {
+      console.error("Login failed:", error.response?.data?.message || error.message);
+      alert("Login failed. Please check your credentials.");
+    }
+  };
   const userTypes = [
     { id: 'parent', label: 'Parent', icon: 'bi-people' },
     { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },

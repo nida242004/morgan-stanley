@@ -20,7 +20,8 @@ const AppointmentPage = () => {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8000/api/v1/admin/appointments");
+      const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/appointments");
+      console.log(response.data)
       setAppointments(response.data.data.appointments);
       setFilteredAppointments(response.data.data.appointments);
       setLoading(false);
