@@ -42,7 +42,7 @@ function Home() {
             <Button
               variant="outline-dark"
               className="ms-3 fw-medium fade-in"
-              href="/signup"
+              href="/signin"
             >
               Log In
             </Button>
