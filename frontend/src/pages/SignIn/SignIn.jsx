@@ -37,8 +37,6 @@ const handleSubmit = async (e) => {
       formData
     );
 
-    console.log("Login response structure:", JSON.stringify(response.data, null, 2));
-
     let token = response.data.data?.accessToken; // Correctly extract token
 
     if (token) {
