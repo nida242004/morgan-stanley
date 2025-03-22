@@ -2,36 +2,49 @@ import React from "react";
 import MagicMomentCard from "../MagicMomentCard/MagicMomentCard";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const stories = [
-  {
-    id: 1,
-    title: "Fun at School",
-    date: "24/03/25",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-  },
-  {
-    id: 2,
-    title: "Learning is Fun!",
-    date: "24/03/25",
-    videoUrl:
-      "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-  },
-  {
-    id: 3,
-    title: "Playground Time",
-    date: "24/03/25",
-    videoUrl:
-      "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4",
-  },
-];
-
 const MagicMoments = () => {
+  // Color palette
+  const colors = {
+    pampas: "#F3EEEA",    // Light beige background
+    killarney: "#2D2D2D", // Dark grey/almost black
+    goldengrass: "#DAB42C", // Golden yellow
+    mulberry: "#C86B85"   // Pinkish/purple accent
+  };
+
+  // Demo content
+  const stories = [
+    {
+      id: 1,
+      title: "Fun at School",
+      date: "24/03/25",
+      videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
+    {
+      id: 2,
+      title: "Learning is Fun!",
+      date: "24/03/25",
+      videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    },
+    {
+      id: 3,
+      title: "Playground Time",
+      date: "24/03/25",
+      videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4",
+    },
+    {
+      id: 4,
+      title: "Art Class",
+      date: "23/03/25",
+      videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+    }
+  ];
+
   return (
-    <div
-      className="magic-moments-container container mt-3 p-4 shadow rounded"
-    >
-      <h5 className="title">Moments of the Day</h5>
-      <div className="stories-container">
+    <div className="magic-moments-wrapper">
+      <div className="d-flex justify-content-between align-items-center mb-3"> <button className="view-all-btn">View All</button>
+      </div>
+      
+      <div className="moments-scroll-container">
         {stories.map((story) => (
           <MagicMomentCard key={story.id} story={story} />
         ))}
@@ -39,48 +52,80 @@ const MagicMoments = () => {
 
       {/* Styles */}
       <style jsx>{`
-        .magic-moments-container {
-          background: #F3EEEA;
-          border: 0.5px solid #D6CCC2;
-          margin-left: 1rem;
-          margin-right: 3rem;
-          padding: 1.5rem;
+        .magic-moments-wrapper {
+          width: 100%;
         }
-
-        .title {
-          color: #2D2D2D;
-          font-weight: bold;
-          margin-bottom: 1rem;
+        
+        .section-title {
+          color: ${colors.killarney};
+          font-weight: 600;
+          font-size: 1.2rem;
+          margin-bottom: 0;
         }
-
-        .stories-container {
+        
+        .view-all-btn {
+          background: transparent;
+          color: ${colors.goldengrass};
+          border: 1px solid ${colors.goldengrass};
+          border-radius: 20px;
+          padding: 0.3rem 1rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+        
+        .view-all-btn:hover {
+          background: ${colors.goldengrass};
+          color: white;
+        }
+        
+        .moments-scroll-container {
           display: flex;
-          gap: 1rem;
+          gap: 1.5rem;
           overflow-x: auto;
-          flex-wrap: wrap;
-          padding-bottom: 1rem;
+          padding: 0.5rem 0.25rem 1.5rem;
+          margin: 0 -0.25rem;
+          scrollbar-width: thin;
+          scrollbar-color: ${colors.goldengrass} ${colors.pampas};
         }
-
-        /* Responsive Design */
+        
+        .moments-scroll-container::-webkit-scrollbar {
+          height: 6px;
+        }
+        
+        .moments-scroll-container::-webkit-scrollbar-track {
+          background: ${colors.pampas};
+          border-radius: 10px;
+        }
+        
+        .moments-scroll-container::-webkit-scrollbar-thumb {
+          background-color: ${colors.goldengrass}80;
+          border-radius: 10px;
+        }
+        
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-          .magic-moments-container {
-            margin-left: 0.5rem;
-            margin-right: 1rem;
-            padding: 1rem;
+          .moments-scroll-container {
+            gap: 1rem;
           }
-          .stories-container {
-            gap: 0.5rem;
+          
+          .section-title {
+            font-size: 1.1rem;
           }
         }
-
+        
         @media (max-width: 480px) {
-          .magic-moments-container {
-            margin-left: 0;
-            margin-right: 0;
-            padding: 0.8rem;
+          .moments-scroll-container {
+            gap: 0.75rem;
           }
-          .title {
-            font-size: 16px;
+          
+          .section-title {
+            font-size: 1rem;
+          }
+          
+          .view-all-btn {
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
           }
         }
       `}</style>
@@ -88,4 +133,4 @@ const MagicMoments = () => {
   );
 };
 
-export default MagicMoments;
+export default MagicMoments; 
