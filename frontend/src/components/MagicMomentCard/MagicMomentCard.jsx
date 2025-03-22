@@ -8,12 +8,10 @@ const MagicMomentCard = ({ story }) => {
 
   return (
     <>
-      <div
-        className="magic-moment-card"
-        onClick={() => setShow(true)}
-      >
-        {/* Thumbnail */}
+      <div className="magic-moment-card" onClick={() => setShow(true)}>
+        {/* Video Thumbnail */}
         <div className="thumbnail">
+          <img src={story.thumbnail} alt="Thumbnail" className="video-thumbnail" />
           <FaPlay className="play-icon" />
         </div>
 
@@ -38,7 +36,7 @@ const MagicMomentCard = ({ story }) => {
           height: 250px;
           border-radius: 12px;
           overflow: hidden;
-          background: linear-gradient(to bottom, #f3f4f6, #d1d5db);
+          background: #ffffff;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -55,19 +53,26 @@ const MagicMomentCard = ({ story }) => {
         .thumbnail {
           width: 100%;
           height: 190px;
+          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(to top, #e0e7ff, #93c5fd);
-          position: relative;
+        }
+
+        .video-thumbnail {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 12px 12px 0 0;
         }
 
         .play-icon {
           font-size: 28px;
           color: white;
-          background: rgba(0, 0, 0, 0.4);
+          background: rgba(0, 0, 0, 0.5);
           padding: 10px;
           border-radius: 50%;
+          position: absolute;
         }
 
         .footer {

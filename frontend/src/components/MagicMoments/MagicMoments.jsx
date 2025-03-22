@@ -7,20 +7,21 @@ const stories = [
     title: "Fun at School",
     date: "24/03/25",
     videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+    thumbnail: "https://via.placeholder.com/180x120.png?text=Thumbnail+1", // Replace with actual thumbnails
   },
   {
     id: 2,
     title: "Learning is Fun!",
     date: "24/03/25",
-    videoUrl:
-      "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    thumbnail: "https://via.placeholder.com/180x120.png?text=Thumbnail+2",
   },
   {
     id: 3,
     title: "Playground Time",
     date: "24/03/25",
-    videoUrl:
-      "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4",
+    videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4",
+    thumbnail: "https://via.placeholder.com/180x120.png?text=Thumbnail+3",
   },
 ];
 
@@ -37,11 +38,11 @@ const MagicMoments = () => {
       {/* Styles */}
       <style jsx>{`
         .magic-moments-container {
-          background: #f9fafb;
+          background: #ffffff;
           padding: 20px;
           border-radius: 12px;
-          width: 100%;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+          margin-bottom: 20px;
         }
 
         .title {
@@ -54,6 +55,7 @@ const MagicMoments = () => {
           display: flex;
           gap: 16px;
           overflow-x: auto;
+          padding-bottom: 10px;
         }
       `}</style>
     </div>
