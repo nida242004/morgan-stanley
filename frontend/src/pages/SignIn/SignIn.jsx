@@ -33,7 +33,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const response = await axios.post(
-      `http://10.24.115.12:8000/api/v1/${formData.userType}/login`,
+      `http://localhost:8000/api/v1/${formData.userType}/login`,
       formData
     );
 

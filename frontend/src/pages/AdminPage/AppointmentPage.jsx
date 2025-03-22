@@ -190,7 +190,7 @@ const fetchEducators = async () => {
 
       // This is a placeholder - you'll need to create this endpoint on your backend
       const response = await axios.patch(
-        `http://10.24.115.12:8000/api/v1/admin/appointments/${selectedAppointment._id}`,
+        `http://localhost:8000/api/v1/admin/appointments/${selectedAppointment._id}`,
         updateData,
         {
           headers: {
