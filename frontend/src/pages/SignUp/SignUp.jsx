@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { Form, Button, ToggleButtonGroup, ToggleButton, Container, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import EmployeeForm from "../../components/EmployeeForm/EmployeeForm.jsx"; // Importing EmployeeForm
+import Navbar from "../../components/Navbar/Navbar.jsx"
 
 const SignUp = () => {
   const [selectedRole, setSelectedRole] = useState("admin");
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(true); // State for password matching validation
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "", // Added Confirm Password
     phone: "",
     childName: "",
     disability: "",
     timing: "",
     rememberMe: false,
+    empId: "", // Added Employee ID
   });
 
   const navigate = useNavigate();
@@ -23,24 +28,32 @@ const SignUp = () => {
       ...prevData,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Check password match for confirm password field
+    if (name === "confirmPassword") {
+      setPasswordMatch(formData.password === value);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!passwordMatch) return; // Prevent form submission if passwords don't match
+
     console.log(`Form Submitted (${selectedRole}):`, formData);
-  
+
     if (selectedRole === "admin") {
       navigate("/admin");
     } else if (selectedRole === "employee") {
       navigate("/employee");
     } else if (selectedRole === "parent") {
-      const childNameSlug = formData.childName.replace(/\s+/g, "-").toLowerCase(); // Convert to URL-friendly format
+      const childNameSlug = formData.childName.replace(/\s+/g, "-").toLowerCase();
       navigate(`/child-dashboard/${childNameSlug}`);
     }
   };
-  
 
   return (
+    <>
+    <Navbar></Navbar>
     <Container className="d-flex justify-content-center align-items-center vh-100">
       <Card className="p-4 shadow-lg" style={{ maxWidth: "500px", width: "100%" }}>
         <h2 className="text-center mb-4">Sign In</h2>
@@ -66,33 +79,17 @@ const SignUp = () => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Create Password</Form.Label>
-                <div className="input-group">
-                  <Form.Control type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required />
-                  
-                </div>
+                <Form.Control type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control type={showPassword ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+                {!passwordMatch && <Form.Text className="text-danger">Passwords do not match</Form.Text>}
               </Form.Group>
             </>
           )}
 
-          {selectedRole === "employee" && (
-            <>
-              <Form.Group className="mb-3">
-                <Form.Label>Employee ID</Form.Label>
-                <Form.Control type="text" name="empId" value={formData.empId} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Employee Email</Form.Label>
-                <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Create Password</Form.Label>
-                <div className="input-group">
-                  <Form.Control type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required />
-                  
-                </div>
-              </Form.Group>
-            </>
-          )}
+          {selectedRole === "employee" && <EmployeeForm formData={formData} handleChange={handleChange} showPassword={showPassword} />}
 
           {selectedRole === "parent" && (
             <>
@@ -103,16 +100,7 @@ const SignUp = () => {
 
               <Form.Group className="mb-3">
                 <Form.Label>Phone Number</Form.Label>
-                <Form.Control
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  pattern="[0-9]{10}"
-                  maxLength="10"
-                  placeholder="Enter 10-digit phone number"
-                  required
-                />
+                <Form.Control type="tel" name="phone" value={formData.phone} onChange={handleChange} pattern="[0-9]{10}" maxLength="10" placeholder="Enter 10-digit phone number" required />
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -140,10 +128,13 @@ const SignUp = () => {
 
               <Form.Group className="mb-3">
                 <Form.Label>Create Password</Form.Label>
-                <div className="input-group">
-                  <Form.Control type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required />
-                  
-                </div>
+                <Form.Control type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} required />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control type={showPassword ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+                {!passwordMatch && <Form.Text className="text-danger">Passwords do not match</Form.Text>}
               </Form.Group>
             </>
           )}
@@ -152,12 +143,12 @@ const SignUp = () => {
             <Form.Check type="checkbox" label="Remember Me" name="rememberMe" checked={formData.rememberMe} onChange={handleChange} />
           </Form.Group>
 
-          <Button variant="primary" type="submit" className="w-100">
-            {selectedRole === "parent"? "Request Consultation" : "Sign In"}
+          <Button variant="primary" type="submit" className="w-100" disabled={!passwordMatch}>
+            {selectedRole === "parent" ? "Request Consultation" : "Sign In"}
           </Button>
         </Form>
       </Card>
-    </Container>
+    </Container></>
   );
 };
 

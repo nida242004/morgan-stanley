@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import Navbar from "../../components/Navbar/Navbar.jsx"
 const ChildDashboard = () => {
   const { childName } = useParams(); // Get child's name from URL
   const [isApproved, setIsApproved] = useState(false); // Tracks approval status
