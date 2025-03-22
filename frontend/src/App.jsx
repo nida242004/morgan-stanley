@@ -18,6 +18,7 @@ function App() {
         <Route path="/child-dashboard/:childName" element={<ChildDashboard />} />
         <Route path="/employee-dashboard/:educatorID" element={<EmployeeDashboard />} />
         <Route path='/appointment' element={<BookSession/>}/>
+        <Route path='/apply' element={<ApplyEducator/>}/>
       </Routes>
     </Router></>
   );

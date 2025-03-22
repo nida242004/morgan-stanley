@@ -15,7 +15,7 @@ function Home() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
             <Nav.Link  href="/appointment">Schedule Appointment</Nav.Link>
-
+            <Nav.Link  href="/apply">Apply as Educator</Nav.Link>
               <Nav.Link href="#">Milestone</Nav.Link>
               <Nav.Link href="#">FAQ</Nav.Link>
               <Nav.Link href="#">AboutUs</Nav.Link>
