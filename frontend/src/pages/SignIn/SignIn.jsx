@@ -29,27 +29,32 @@ const SignIn = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        `http://10.24.115.12:8000/api/v1/${formData.userType}/login`,
-        formData
-      );
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post(
+      `http://10.24.115.12:8000/api/v1/${formData.userType}/login`,
+      formData
+    );
 
-      console.log(response.data.message);
+    console.log("Login response structure:", JSON.stringify(response.data, null, 2));
 
-      // ✅ Navigate to admin panel if userType is admin
-      if (formData.userType === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard"); // Change this if needed for other roles
-      }
-    } catch (error) {
-      console.error("Login failed:", error.response?.data?.message || error.message);
-      alert("Login failed. Please check your credentials.");
+    let token = response.data.data?.accessToken; // Correctly extract token
+
+    if (token) {
+      console.log("Token found and stored:", token.substring(0, 10) + "...");
+      localStorage.setItem('authToken', token); // Store the correct token
+    } else {
+      console.error("No token found in response.");
     }
-  };
+
+    navigate(formData.userType === "admin" ? "/admin" : "/dashboard");
+  } catch (error) {
+    console.error("Login failed:", error.response?.data?.message || error.message);
+    alert("Login failed. Please check your credentials.");
+  }
+};
+
   const userTypes = [
     { id: 'parent', label: 'Parent', icon: 'bi-people' },
     { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },

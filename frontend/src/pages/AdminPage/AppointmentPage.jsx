@@ -17,20 +17,37 @@ const AppointmentPage = () => {
     fetchAppointments();
   }, []);
 
-  const fetchAppointments = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/appointments");
-      console.log(response.data)
-      setAppointments(response.data.data.appointments);
-      setFilteredAppointments(response.data.data.appointments);
+const fetchAppointments = async () => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error("No token found in localStorage");
+      setError("Unauthorized: No token found");
       setLoading(false);
-    } catch (err) {
-      setError("Failed to fetch appointments");
-      setLoading(false);
-      console.error("Error fetching appointments:", err);
+      return;
     }
-  };
+
+    console.log("Token being sent:", token);
+
+    const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/appointments", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log("Fetched Appointments:", response.data);
+    setAppointments(response.data.data.appointments);
+    setFilteredAppointments(response.data.data.appointments);
+  } catch (err) {
+    setError("Failed to fetch appointments");
+    console.error("Error fetching appointments:", err.response?.data || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (statusFilter === "all") {
