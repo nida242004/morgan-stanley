@@ -1,0 +1,98 @@
+.timeline-container {
+  background-color: #F3EEEA; /* Soft background */
+  padding: 50px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.timeline-heading {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #40724C; /* Green theme */
+  margin-bottom: 40px;
+}
+
+.timeline {
+  position: relative;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* Timeline Bar */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 100%;
+  background-color: #DAB42C; /* Golden color */
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* Timeline Items */
+.timeline-item {
+  position: relative;
+  padding: 20px;
+  width: 50%;
+}
+
+.timeline-item.right {
+  left: 50%;
+}
+
+.timeline-item.left {
+  left: 0;
+}
+
+/* Timeline Dots */
+.timeline-dot {
+  width: 15px;
+  height: 15px;
+  background-color: #DAB42C; /* Golden */
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/* Adjust dot positions */
+.timeline-item.left .timeline-dot {
+  left: 100%;
+  transform: translate(-50%, -50%);
+}
+
+.timeline-item.right .timeline-dot {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* Keep the dot fixed */
+.timeline-content {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(198, 85, 125, 0.2); /* Shadow effect */
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Hover Animation (Only for the content, not the dot) */
+.timeline-item:hover .timeline-content {
+  transform: scale(1.05); /* Only scales the box, keeping the dot in place */
+  box-shadow: 0px 8px 15px rgba(198, 85, 125, 0.4);
+}
+
+.timeline-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #C6557D; /* Dark pink */
+}
+
+.timeline-date {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
