@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
 import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx"; // Import WeeklyProgress
+import ProgramCard from "../../components/ProgramCard/ProgramCard.jsx"// Import ProgramCard
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from "../../components/Navbar/Navbar.jsx";
 
 const ChildDashboard = () => {
   const { childName } = useParams(); // Get child's name from URL
@@ -20,6 +20,17 @@ const ChildDashboard = () => {
       setIsProcessing(false);
     }, 3000); // Simulate a delay of 3 seconds
   };
+
+  // Sample program data
+  const program1Data = [
+    { name: "Motor Skills", date: "24/03/2025", description: "Lorem ipsum.....", studentIds: ["0157575", "0167628"] },
+    { name: "Cognitive Skills", date: "25/03/2025", description: "Lorem ipsum.....", studentIds: ["0157576", "0167629"] },
+  ];
+
+  const program2Data = [
+    { name: "Social Skills", date: "26/03/2025", description: "Lorem ipsum.....", studentIds: ["0157577", "0167630"] },
+    { name: "Problem Solving", date: "27/03/2025", description: "Lorem ipsum.....", studentIds: ["0157578", "0167631"] },
+  ];
 
   return (
     <>
@@ -59,7 +70,10 @@ const ChildDashboard = () => {
               {/* Weekly Progress Graph Below Magic Moments */}
               <WeeklyProgress />
 
-              
+              {/* SATTVA Section with Program Cards */}
+              <h2 className="mt-4">SATTVA</h2>
+              <ProgramCard title="Program 1" activities={program1Data} />
+              <ProgramCard title="Program 2" activities={program2Data} />
             </Col>
           </Row>
         </Container>
