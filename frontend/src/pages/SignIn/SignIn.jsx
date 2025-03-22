@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
+import axios from 'axios';
 const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -26,15 +27,17 @@ const SignIn = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    console.log('Sign in submitted:', formData);
+    console.log(formData)
+    const response =await axios.post(`http://10.24.115.12:8000/api/v1/${formData.userType}/login`,formData)
+    console.log(response.data.message);
     // Handle authentication logic here
   };
 
   const userTypes = [
     { id: 'parent', label: 'Parent', icon: 'bi-people' },
-    { id: 'educator', label: 'Educator', icon: 'bi-person-workspace' },
+    { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },
     { id: 'admin', label: 'Administrator', icon: 'bi-shield-lock' }
   ];
 
@@ -200,7 +203,8 @@ const SignIn = () => {
                     <button 
                       type="submit" 
                       className="btn py-2 rounded-pill fw-medium"
-                      style={{ backgroundColor: colors.goldenGrass, color: 'white' }}
+                      style={{ backgroundColor: colors.goldenGrass, color: 'white' }
+                    }
                     >
                       <i className="bi bi-box-arrow-in-right me-2"></i>
                       Sign In

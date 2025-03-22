@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
-
+import axios from 'axios';
 const BookSession = () => {
   const [formData, setFormData] = useState({
     studentName: '',
@@ -34,9 +34,11 @@ const BookSession = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
+    const data=await axios.post('http://10.24.115.12:8000/api/v1/student/requestAppointment', formData);
+    console.log(data)
     setSubmitted(true);
   };
 
