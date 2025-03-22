@@ -21,7 +21,7 @@ function Home() {
               <Nav.Link href="#">AboutUs</Nav.Link>
               <Nav.Link href="#">ContactUs</Nav.Link>
             </Nav>
-            <Button variant="outline-dark" className="ms-3" href="/signup">Log In</Button>
+            <Button variant="outline-dark" className="ms-3" href="/signin">Log In</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
