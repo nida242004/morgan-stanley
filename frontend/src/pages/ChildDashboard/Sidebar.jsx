@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import {
+  FaUser,
+  FaTachometerAlt,
   FaFileAlt,
   FaBook,
   FaChalkboardTeacher,
@@ -9,36 +11,56 @@ import {
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const Sidebar = () => {
+const Sidebar = ({ setSelectedSection }) => {
   const [showReports, setShowReports] = useState(false);
   const [showCourses, setShowCourses] = useState(false);
-  const [active, setActive] = useState(""); // Tracks active main section
-  const [activeSub, setActiveSub] = useState(""); // Tracks active sub-section
+  const [active, setActive] = useState("");
+  const [activeSub, setActiveSub] = useState("");
 
   const handleMainClick = (section) => {
     setActive(section);
-    setActiveSub(""); // Clear sub-selection when main is selected
+    setActiveSub("");
+    setSelectedSection(section);
   };
 
   const handleSubClick = (subsection) => {
-    setActive(""); // Clear main selection when sub is selected
+    setActive("");
     setActiveSub(subsection);
+    setSelectedSection(subsection);
   };
 
   return (
-    <div 
-      className="d-flex flex-column bg-dark text-white vh-100 p-3"
-      style={{ width: "250px", position: "fixed", top: "0", left: "0", zIndex: 10 }}
-    >
-      <h5 className="mb-4 fw-bold">Child Dashboard</h5>
+    <div className="sidebar">
+      <h5 className="sidebar-title">Child Dashboard</h5>
       <ul className="nav flex-column">
-        
+
+        {/* Profile */}
+        <li className="nav-item">
+          <a
+            href="#"
+            className={`nav-link sidebar-item ${active === "profile" ? "active" : ""}`}
+            onClick={() => handleMainClick("profile")}
+          >
+            <FaUser className="me-2" /> Profile
+          </a>
+        </li>
+
+        {/* Dashboard */}
+        <li className="nav-item">
+          <a
+            href="#"
+            className={`nav-link sidebar-item ${active === "dashboard" ? "active" : ""}`}
+            onClick={() => handleMainClick("dashboard")}
+          >
+            <FaTachometerAlt className="me-2" /> Dashboard
+          </a>
+        </li>
+
         {/* Student Reports Dropdown */}
         <li className="nav-item">
-          <div 
-            className={`nav-link text-white d-flex justify-content-between align-items-center sidebar-item ${active === "reports" ? "active" : ""}`} 
-            onClick={() => { setShowReports(!showReports); handleMainClick("reports"); }} 
-            style={{ cursor: "pointer" }}
+          <div
+            className={`nav-link sidebar-item ${active === "reports" ? "active" : ""}`}
+            onClick={() => { setShowReports(!showReports); handleMainClick("reports"); }}
           >
             <span><FaFileAlt className="me-2" /> Student Reports</span>
             <FaChevronDown className={`ms-2 ${showReports ? "rotate" : ""}`} />
@@ -46,18 +68,18 @@ const Sidebar = () => {
           {showReports && (
             <ul className="list-unstyled ms-3">
               <li>
-                <a 
-                  href="#" 
-                  className={`nav-link text-white sidebar-subitem ${activeSub === "quarterly" ? "active-sub" : ""}`} 
+                <a
+                  href="#"
+                  className={`nav-link sidebar-subitem ${activeSub === "quarterly" ? "active-sub" : ""}`}
                   onClick={() => handleSubClick("quarterly")}
                 >
                   Quarterly Reports
                 </a>
               </li>
               <li>
-                <a 
-                  href="#" 
-                  className={`nav-link text-white sidebar-subitem ${activeSub === "annual" ? "active-sub" : ""}`} 
+                <a
+                  href="#"
+                  className={`nav-link sidebar-subitem ${activeSub === "annual" ? "active-sub" : ""}`}
                   onClick={() => handleSubClick("annual")}
                 >
                   Annual Reports
@@ -69,10 +91,9 @@ const Sidebar = () => {
 
         {/* Courses Dropdown */}
         <li className="nav-item">
-          <div 
-            className={`nav-link text-white d-flex justify-content-between align-items-center sidebar-item ${active === "courses" ? "active" : ""}`} 
-            onClick={() => { setShowCourses(!showCourses); handleMainClick("courses"); }} 
-            style={{ cursor: "pointer" }}
+          <div
+            className={`nav-link sidebar-item ${active === "courses" ? "active" : ""}`}
+            onClick={() => { setShowCourses(!showCourses); handleMainClick("courses"); }}
           >
             <span><FaBook className="me-2" /> Courses</span>
             <FaChevronDown className={`ms-2 ${showCourses ? "rotate" : ""}`} />
@@ -80,18 +101,18 @@ const Sidebar = () => {
           {showCourses && (
             <ul className="list-unstyled ms-3">
               <li>
-                <a 
-                  href="#" 
-                  className={`nav-link text-white sidebar-subitem ${activeSub === "primary" ? "active-sub" : ""}`} 
+                <a
+                  href="#"
+                  className={`nav-link sidebar-subitem ${activeSub === "primary" ? "active-sub" : ""}`}
                   onClick={() => handleSubClick("primary")}
                 >
                   Primary Course
                 </a>
               </li>
               <li>
-                <a 
-                  href="#" 
-                  className={`nav-link text-white sidebar-subitem ${activeSub === "secondary" ? "active-sub" : ""}`} 
+                <a
+                  href="#"
+                  className={`nav-link sidebar-subitem ${activeSub === "secondary" ? "active-sub" : ""}`}
                   onClick={() => handleSubClick("secondary")}
                 >
                   Secondary Course
@@ -101,84 +122,126 @@ const Sidebar = () => {
           )}
         </li>
 
-        {/* Educators of the Student */}
+        {/* Moments of the Day */}
         <li className="nav-item">
-          <a 
-            href="#" 
-            className={`nav-link text-white sidebar-item ${active === "educators" ? "active" : ""}`} 
-            onClick={() => handleMainClick("educators")}
-          >
-            <FaChalkboardTeacher className="me-2" /> Educators of the Student
-          </a>
-        </li>
-
-        {/* Moment of the Day */}
-        <li className="nav-item">
-          <a 
-            href="#" 
-            className={`nav-link text-white sidebar-item ${active === "moment" ? "active" : ""}`} 
+          <a
+            href="#"
+            className={`nav-link sidebar-item ${active === "moment" ? "active" : ""}`}
             onClick={() => handleMainClick("moment")}
           >
-            <FaGlobe className="me-2" /> Moment of the Day
-          </a>
-        </li>
-
-        {/* Other Section */}
-        <li className="nav-item">
-          <a 
-            href="#" 
-            className={`nav-link text-white sidebar-item ${active === "other" ? "active" : ""}`} 
-            onClick={() => handleMainClick("other")}
-          >
-            Other
+            <FaGlobe className="me-2" /> Moments of the Day
           </a>
         </li>
       </ul>
 
       {/* Sign Out Button */}
       <div className="mt-auto">
-        <button className="btn btn-outline-light w-100">
+        <button className="signout-btn">
           <FaSignOutAlt className="me-2" /> Sign Out
         </button>
       </div>
 
-      {/* Styles */}
+      {/* Sidebar Styles */}
       <style jsx>{`
-        .rotate {
-          transform: rotate(180deg);
-          transition: transform 0.3s ease;
+        .sidebar {
+          width: 250px;
+          height: calc(100vh - 60px); /* Adjusted height to prevent overlap */
+          background: #F3EEEA;
+          color: #2D2D2D;
+          padding: 20px;
+          position: fixed;
+          top: 60px; /* Adjusted to align below the navbar */
+          left: 0;
+          z-index: 10;
+          border-right: 0.5px solid #D6CCC2;
+          display: flex;
+          flex-direction: column;
+        }
+
+
+        .sidebar-title {
+        margin-top: 2rem;
+          font-weight: bold;
+          margin-bottom: 1rem;
+        }
+
+        .nav-item {
+          margin-bottom: 8px;
         }
 
         .sidebar-item {
+
           padding: 10px;
-          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          color: #2D2D2D;
+          border-radius: 8px;
           transition: background 0.3s ease-in-out;
         }
 
         .sidebar-item:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: #D6CCC2;
+        }
+
+        .active {
+          background: #DAB42C !important;
+          color: white !important;
         }
 
         .sidebar-subitem {
-          font-size: 14px;
-          opacity: 0.8;
-          padding: 6px 10px;
-          border-radius: 5px;
+          padding: 8px 10px;
+          display: block;
+          text-decoration: none;
+          color: #2D2D2D;
+          border-radius: 6px;
           transition: background 0.3s ease-in-out;
         }
 
         .sidebar-subitem:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .active {
-          background: rgba(255, 255, 255, 0.2);
-          border-left: 4px solid #00bcd4;
+          background: #D6CCC2;
         }
 
         .active-sub {
-          background: rgba(255, 255, 255, 0.15);
-          border-left: 4px solid #ff9800;
+          background: #DAB42C !important;
+          color: white !important;
+        }
+
+        .rotate {
+          transform: rotate(180deg);
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .signout-btn {
+          background: #DAB42C;
+          color: white;
+          border: none;
+          padding: 10px;
+          width: 100%;
+          border-radius: 6px;
+          font-weight: bold;
+          transition: background 0.3s ease-in-out;
+        }
+
+        .signout-btn:hover {
+          background: #C7A12B;
+        }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            width: 200px;
+            padding: 15px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .sidebar {
+            width: 180px;
+            padding: 10px;
+          }
+          .sidebar-title {
+            font-size: 14px;
+          }
         }
       `}</style>
     </div>

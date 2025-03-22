@@ -2,83 +2,103 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
-import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx"; // Import WeeklyProgress
-import ProgramCard from "../../components/ProgramCard/ProgramCard.jsx"// Import ProgramCard
-import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
+import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx";
+import ProgramCard from "../../components/ProgramCard/ProgramCard.jsx";
+import NavbarBrand from "../../components/Navbar/Navbar.jsx";
+import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ChildDashboard = () => {
-  const { childName } = useParams(); // Get child's name from URL
-  const [isApproved, setIsApproved] = useState(false); // Tracks approval status
-  const [isProcessing, setIsProcessing] = useState(false); // Simulates processing
+  const { childName } = useParams();
+  const [selectedSection, setSelectedSection] = useState("dashboard"); 
 
-  // Simulated Manual Approval Function
-  const handleApprove = () => {
-    setIsProcessing(true); // Show loading
-    setTimeout(() => {
-      setIsApproved(true); // Grant approval
-      setIsProcessing(false);
-    }, 3000); // Simulate a delay of 3 seconds
-  };
-
-  // Sample program data
   const program1Data = [
-    { name: "Motor Skills", date: "24/03/2025", description: "Lorem ipsum.....", studentIds: ["0157575", "0167628"] },
-    { name: "Cognitive Skills", date: "25/03/2025", description: "Lorem ipsum.....", studentIds: ["0157576", "0167629"] },
+    { name: "Motor Skills", date: "24/03/2025", description: "Lorem ipsum...", studentIds: ["0157575", "0167628"] },
   ];
 
   const program2Data = [
-    { name: "Social Skills", date: "26/03/2025", description: "Lorem ipsum.....", studentIds: ["0157577", "0167630"] },
-    { name: "Problem Solving", date: "27/03/2025", description: "Lorem ipsum.....", studentIds: ["0157578", "0167631"] },
+    { name: "Social Skills", date: "26/03/2025", description: "Lorem ipsum...", studentIds: ["0157577", "0167630"] },
   ];
 
   return (
-    <>
-      {/* Show only the approval section initially */}
-      {!isApproved ? (
-        <Container fluid className="vh-100 d-flex align-items-center justify-content-center">
-          <Card className="text-center p-4 shadow">
-            <h3 className="text-warning">Request in Queue</h3>
-            <p className="text-muted">Waiting for admin approval...</p>
+    <Container fluid className="vh-100 p-0">
+      {/* Navbar */}
+      <NavbarBrand />
 
-            {isProcessing ? (
-              <Button variant="secondary" disabled>
-                <Spinner animation="border" size="sm" className="me-2" />
-                Approving...
-              </Button>
-            ) : (
-              <Button variant="success" onClick={handleApprove}>
-                Simulate Admin Approval
-              </Button>
-            )}
-          </Card>
-        </Container>
-      ) : (
-        // Show Dashboard & Sidebar after approval
-        <Container fluid className="vh-100">
-          <Row className="h-100">
-            {/* Sidebar */}
-            <Col xs={3} md={2} className="bg-dark text-white p-3">
-              <Sidebar />
-            </Col>
+      <Row className="h-100 m-0">
+        {/* Sidebar */}
+        <Col xs={3} md={2} className="bg-dark text-white p-3 sidebar-container">
+          <Sidebar setSelectedSection={setSelectedSection} />
+        </Col>
 
-            {/* Main Content */}
-            <Col xs={9} md={10} className="p-4">
-              {/* Magic Moments (Stories) at the Top */}
-              <MagicMoments />
+        {/* Main Content */}
+        <Col xs={9} md={10} className="p-4 main-content">
+          <h2 className="dashboard-title">Student Dashboard</h2>
 
-              {/* Weekly Progress Graph Below Magic Moments */}
-              <WeeklyProgress />
+          {selectedSection === "dashboard" && (
+            <>
+              <div className="section">
+                <h4 className="section-title">Moments of the Day</h4>
+                <MagicMoments />
+              </div>
 
-              {/* SATTVA Section with Program Cards */}
-              <h2 className="mt-4">SATTVA</h2>
-              <ProgramCard title="Program 1" activities={program1Data} />
-              <ProgramCard title="Program 2" activities={program2Data} />
-            </Col>
-          </Row>
-        </Container>
-      )}
-    </>
+              <div className="section">
+                <h4 className="section-title">Weekly Progress</h4>
+                <WeeklyProgress />
+              </div>
+
+              <div className="section">
+                <ProgramCard title="Program 1" activities={program1Data} />
+                <ProgramCard title="Program 2" activities={program2Data} />
+              </div>
+            </>
+          )}
+
+          {selectedSection === "profile" && <h2>Profile Section</h2>}
+          {selectedSection === "quarterly" && <WeeklyProgress />}
+          {selectedSection === "annual" && <WeeklyProgress />}
+          {selectedSection === "primary" && <ProgramCard title="Program 1" activities={program1Data} />}
+          {selectedSection === "secondary" && <ProgramCard title="Program 2" activities={program2Data} />}
+          {selectedSection === "moment" && <MagicMoments />}
+        </Col>
+      </Row>
+
+      {/* Styles */}
+      <style jsx>{`
+        .sidebar-container {
+          height: 100vh;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 240px;
+          background: #2d2d2d;
+        }
+
+        .main-content {
+          margin-left: 240px;
+          overflow-y: auto;
+        }
+
+        .dashboard-title {
+          font-size: 24px;
+          font-weight: bold;
+          margin-bottom: 20px;
+        }
+
+        .section {
+          margin-bottom: 30px;
+          background: #f3eeea;
+          padding: 20px;
+          border-radius: 12px;
+        }
+
+        .section-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+      `}</style>
+    </Container>
   );
 };
 
