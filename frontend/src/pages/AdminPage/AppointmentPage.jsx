@@ -45,7 +45,7 @@ const AppointmentPage = () => {
         return;
       }
 
-      const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/appointments", {
+      const response = await axios.get("http://localhost:8000/api/v1/admin/appointments", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -73,7 +73,7 @@ const AppointmentPage = () => {
         return;
       }
 
-      const response = await axios.get("http://10.24.115.12:8000/api/v1/admin/allEmployees", {
+      const response = await axios.get("http://localhost:8000/api/v1/admin/allEmployees", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -181,7 +181,7 @@ const AppointmentPage = () => {
       console.log("Scheduling appointment with data:", scheduleData);
 
       const response = await axios.post(
-        "http://10.24.115.12:8000/api/v1/admin/schedule_appointment", 
+        "http://localhost:8000/api/v1/admin/schedule_appointment", 
         scheduleData,
         {
           headers: {
@@ -231,7 +231,7 @@ const AppointmentPage = () => {
 
       // This is a placeholder - you'll need to create this endpoint on your backend
       const response = await axios.patch(
-        `http://10.24.115.12:8000/api/v1/admin/appointments/${selectedAppointment._id}`,
+        `http://localhost:8000/api/v1/admin/appointments/${selectedAppointment._id}`,
         updateData,
         {
           headers: {
