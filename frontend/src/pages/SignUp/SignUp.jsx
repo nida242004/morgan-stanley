@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, ToggleButtonGroup, ToggleButton, Container, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import EmployeeForm from "../../components/EmployeeForm/EmployeeForm.jsx"; // Importing EmployeeForm
+import Navbar from "../../components/Navbar/Navbar.jsx"
 
 const SignUp = () => {
   const [selectedRole, setSelectedRole] = useState("admin");
@@ -51,6 +52,8 @@ const SignUp = () => {
   };
 
   return (
+    <>
+    <Navbar></Navbar>
     <Container className="d-flex justify-content-center align-items-center vh-100">
       <Card className="p-4 shadow-lg" style={{ maxWidth: "500px", width: "100%" }}>
         <h2 className="text-center mb-4">Sign In</h2>
@@ -145,7 +148,7 @@ const SignUp = () => {
           </Button>
         </Form>
       </Card>
-    </Container>
+    </Container></>
   );
 };
 

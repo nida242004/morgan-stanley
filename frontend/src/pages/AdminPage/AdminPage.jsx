@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Sidebar from "./Sidebar"
 import ProfileModal from "../../components/ProfileModal/ProfileModal";
-
+import Navbar from "../../components/Navbar/Navbar.jsx"
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("students");
   const [students, setStudents] = useState([]);
@@ -28,6 +28,7 @@ const AdminPage = () => {
   };
 
   return (
+    <>
     <div className="d-flex" style={{ height: "100vh" }}>
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -142,7 +143,7 @@ const AdminPage = () => {
         profile={selectedProfile}
         isStudent={activeTab === "students"}
       />
-    </div>
+    </div></>
   );
 };
 
