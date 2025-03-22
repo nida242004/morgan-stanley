@@ -20,6 +20,7 @@ const EducatorsPage = () => {
   const [departments, setDepartments] = useState({});
   const [selectedEducator, setSelectedEducator] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [programs, setPrograms] = useState({});
 
   useEffect(() => {
     fetchEducators();
@@ -37,14 +38,21 @@ const EducatorsPage = () => {
         return;
       }
 
-      const [educatorsRes, designationsRes, departmentsRes] = await Promise.all([
-        axios.get("http://10.24.115.12:8000/api/v1/admin/allEmployees", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://10.24.115.12:8000/api/v1/admin/designations", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://10.24.115.12:8000/api/v1/admin/departments", { headers: { Authorization: `Bearer ${token}` } }),
+      const [educatorsRes, designationsRes, departmentsRes, programsRes] = await Promise.all([
+        axios.get("http://localhost:8000/api/v1/admin/allEmployees", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://localhost:8000/api/v1/admin/designations", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://localhost:8000/api/v1/admin/departments", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("http://localhost:8000/api/v1/admin/programs", { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       setDesignations(Object.fromEntries(designationsRes.data.data.designations.map(d => [d._id, d.title])));
       setDepartments(Object.fromEntries(departmentsRes.data.data.departments.map(d => [d._id, d.name])));
+      
+      // Add programs mapping if the API returns programs
+      if (programsRes.data.data && programsRes.data.data.programs) {
+        setPrograms(Object.fromEntries(programsRes.data.data.programs.map(p => [p._id, p.name])));
+      }
+      
       setEducators(educatorsRes.data.data.Employees);
     } catch (err) {
       setError("Failed to fetch educators");
@@ -66,11 +74,15 @@ const EducatorsPage = () => {
   const getEmploymentBadge = (type) => {
     switch (type) {
       case "Full-time":
+      case "Full-Time":
         return <Badge style={{ backgroundColor: colors.killarney }}>Full-time</Badge>;
       case "Part-time":
+      case "Part-Time":
         return <Badge style={{ backgroundColor: colors.goldengrass }}>Part-time</Badge>;
       case "Contract":
         return <Badge style={{ backgroundColor: colors.mulberry }}>Contract</Badge>;
+      case "Intern":
+        return <Badge style={{ backgroundColor: "#6c757d" }}>Intern</Badge>;
       default:
         return <Badge bg="secondary">{type}</Badge>;
     }
@@ -80,9 +92,21 @@ const EducatorsPage = () => {
     switch (status) {
       case "Active":
         return <Badge style={{ backgroundColor: "#28a745" }}>Active</Badge>;
+      case "Inactive":
+        return <Badge bg="danger">Inactive</Badge>;
       default:
         return <Badge bg="secondary">{status}</Badge>;
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not Available";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   const handleSelectEducator = (educator) => {
@@ -129,9 +153,10 @@ const EducatorsPage = () => {
                     style={{ borderColor: colors.killarney, borderRadius: "6px" }}
                   >
                     <option value="All Types">All Types</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
+                    <option value="Full-Time">Full-time</option>
+                    <option value="Part-Time">Part-time</option>
                     <option value="Contract">Contract</option>
+                    <option value="Intern">Intern</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -229,7 +254,17 @@ const EducatorsPage = () => {
                   borderTopLeftRadius: "8px",
                   borderTopRightRadius: "8px"
                 }}>
-                  <h5 className="mb-0">Educator Details</h5>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">Educator Details</h5>
+                    <Button 
+                      variant="link" 
+                      className="p-0 text-white" 
+                      onClick={() => setSelectedEducator(null)}
+                      style={{ fontSize: "1.2rem" }}
+                    >
+                      <i className="bi bi-x"></i>
+                    </Button>
+                  </div>
                 </Card.Header>
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-start mb-3">
@@ -237,21 +272,36 @@ const EducatorsPage = () => {
                     {getEmploymentBadge(selectedEducator.employmentType)}
                   </div>
                   
-                  <p style={{ color: colors.mulberry, marginBottom: "1.5rem" }}>
-                    <i className="bi bi-envelope me-2"></i>
-                    {selectedEducator.email}
-                  </p>
+                  <div className="mb-4">
+                    <div className="mb-2" style={{ color: colors.mulberry }}>
+                      <i className="bi bi-envelope me-2"></i>
+                      {selectedEducator.email}
+                    </div>
+                    {selectedEducator.contact && (
+                      <div style={{ color: colors.mulberry }}>
+                        <i className="bi bi-telephone me-2"></i>
+                        {selectedEducator.contact}
+                      </div>
+                    )}
+                  </div>
 
-                  <div className="p-3 mb-4" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+                  <div className="p-3 mb-3" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+                    <h6 className="mb-3 fw-bold" style={{ color: colors.killarney }}>Personal Information</h6>
+                    
                     <div className="mb-3">
                       <span className="fw-bold" style={{ color: colors.killarney }}>Employee ID:</span>
                       <span className="ms-2">{selectedEducator.employeeID || "Not Assigned"}</span>
                     </div>
+
+                    <div className="mb-3">
+                      <span className="fw-bold" style={{ color: colors.killarney }}>Gender:</span>
+                      <span className="ms-2">{selectedEducator.gender || "Not Specified"}</span>
+                    </div>
                     
                     <div className="mb-3">
-                      <span className="fw-bold" style={{ color: colors.killarney }}>Contact:</span>
+                      <span className="fw-bold" style={{ color: colors.killarney }}>Address:</span>
                       <div className="ms-2">
-                        {selectedEducator.contact || "No contact information"}
+                        {selectedEducator.address || "No address provided"}
                       </div>
                     </div>
                     
@@ -261,6 +311,10 @@ const EducatorsPage = () => {
                         {getStatusBadge(selectedEducator.status)}
                       </div>
                     </div>
+                  </div>
+
+                  <div className="p-3 mb-3" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+                    <h6 className="mb-3 fw-bold" style={{ color: colors.killarney }}>Employment Information</h6>
                     
                     <div className="mb-3">
                       <span className="fw-bold" style={{ color: colors.killarney }}>Designation:</span>
@@ -269,15 +323,68 @@ const EducatorsPage = () => {
                       </div>
                     </div>
                     
-                    <div>
+                    <div className="mb-3">
                       <span className="fw-bold" style={{ color: colors.killarney }}>Department:</span>
                       <div className="ms-2">
                         {departments[selectedEducator.department] || "Not Assigned"}
                       </div>
                     </div>
+
+                    <div className="mb-3">
+                      <span className="fw-bold" style={{ color: colors.killarney }}>Work Location:</span>
+                      <div className="ms-2">
+                        {selectedEducator.workLocation || "Not Specified"}
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <span className="fw-bold" style={{ color: colors.killarney }}>Date of Joining:</span>
+                      <div className="ms-2">
+                        {formatDate(selectedEducator.dateOfJoining)}
+                      </div>
+                    </div>
+
+                    {selectedEducator.dateOfLeaving && (
+                      <div className="mb-3">
+                        <span className="fw-bold" style={{ color: colors.killarney }}>Date of Leaving:</span>
+                        <div className="ms-2">
+                          {formatDate(selectedEducator.dateOfLeaving)}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedEducator.programs && selectedEducator.programs.length > 0 && (
+                      <div className="mb-3">
+                        <span className="fw-bold" style={{ color: colors.killarney }}>Associated Programs:</span>
+                        <div className="ms-2">
+                          {selectedEducator.programs.map(programId => 
+                            <Badge key={programId} bg="info" className="me-1 mb-1">
+                              {programs[programId] || "Program"}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedEducator.role && (
+                      <div className="mb-3">
+                        <span className="fw-bold" style={{ color: colors.killarney }}>System Role:</span>
+                        <div className="ms-2">
+                          <Badge bg={selectedEducator.role === "admin" ? "danger" : "primary"}>
+                            {selectedEducator.role.charAt(0).toUpperCase() + selectedEducator.role.slice(1)}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Additional Educator Information (can be expanded) */}
+                  {selectedEducator.comments && (
+                    <div className="p-3 mb-3" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+                      <h6 className="mb-2 fw-bold" style={{ color: colors.killarney }}>Comments</h6>
+                      <p className="mb-0">{selectedEducator.comments}</p>
+                    </div>
+                  )}
+
                   <div className="d-flex justify-content-between mt-4">
                     <Button 
                       variant="outline-secondary" 
