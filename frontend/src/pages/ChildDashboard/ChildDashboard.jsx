@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
+import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx"; // Import WeeklyProgress
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from "../../components/Navbar/Navbar.jsx"
+import Navbar from "../../components/Navbar/Navbar.jsx";
+
 const ChildDashboard = () => {
   const { childName } = useParams(); // Get child's name from URL
   const [isApproved, setIsApproved] = useState(false); // Tracks approval status
@@ -54,13 +56,10 @@ const ChildDashboard = () => {
               {/* Magic Moments (Stories) at the Top */}
               <MagicMoments />
 
-              {/* Main Dashboard Section */}
-              <Card className="mt-4 shadow-sm">
-                <Card.Body>
-                  <h2 className="text-primary">Welcome to {childName}'s Dashboard</h2>
-                  <p className="text-muted">This is a placeholder for {childName}'s details.</p>
-                </Card.Body>
-              </Card>
+              {/* Weekly Progress Graph Below Magic Moments */}
+              <WeeklyProgress />
+
+              
             </Col>
           </Row>
         </Container>
