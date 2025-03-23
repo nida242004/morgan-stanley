@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Table, Badge, Form, Row, Col, Button, Card, InputGroup } from "react-bootstrap";
+import { Container, Table, Badge, Form, Row, Col, Button, Card, InputGroup, Modal } from "react-bootstrap";
 import { format } from "date-fns";
 import axios from "axios";
 import { Search } from 'react-bootstrap-icons';
-
+import './AppointmentPage.css';
 // Custom color palette
 const colors = {
   pampas: "#F4F1EC", // Light cream background
@@ -27,6 +27,7 @@ const AppointmentPage = () => {
   const [educatorSearchTerm, setEducatorSearchTerm] = useState("");
   const [filteredEducators, setFilteredEducators] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   // Fetch appointments on initial load and when refreshTrigger changes
   useEffect(() => {
@@ -154,7 +155,11 @@ const AppointmentPage = () => {
     setVerdict(appointment.verdict || "");
     setSelectedEducator(appointment.employee?.employeeID || "");
     setEducatorSearchTerm("");
+    handleShowModal(); // Open the modal
   };
+
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
 
   const handleScheduleAppointment = async () => {
     if (!selectedAppointment || !selectedEducator) {
@@ -196,6 +201,7 @@ const AppointmentPage = () => {
       // Refresh appointments list
       setRefreshTrigger(prev => prev + 1);
       setSelectedAppointment(null);
+      handleCloseModal(); // Close the modal
       
       alert("Appointment scheduled successfully!");
     } catch (err) {
@@ -244,6 +250,7 @@ const AppointmentPage = () => {
       // Refresh appointments list
       setRefreshTrigger(prev => prev + 1);
       setSelectedAppointment(null);
+      handleCloseModal(); // Close the modal
       
       alert(`Appointment status updated to ${newStatus}`);
     } catch (err) {
@@ -315,7 +322,7 @@ const AppointmentPage = () => {
 
         <Row>
           {/* Appointments Table */}
-          <Col md={selectedAppointment ? 8 : 12}>
+          <Col md={12}>
             <Card className="shadow-sm" style={{ borderRadius: "8px", border: "none" }}>
               <Card.Body className="p-0">
                 <Table hover responsive className="mb-0">
@@ -337,11 +344,7 @@ const AppointmentPage = () => {
                         <tr 
                           key={appointment._id} 
                           onClick={() => handleSelectAppointment(appointment)}
-                          className={selectedAppointment?._id === appointment._id ? "table-active" : ""}
-                          style={{ 
-                            cursor: "pointer",
-                            backgroundColor: selectedAppointment?._id === appointment._id ? `${colors.pampas}` : ""
-                          }}
+                          style={{ cursor: "pointer" }}
                         >
                           <td className="ps-4 align-middle">{appointment._id.substring(18)}</td>
                           <td className="align-middle">{appointment.studentName}</td>
@@ -382,225 +385,213 @@ const AppointmentPage = () => {
               </Card.Body>
             </Card>
           </Col>
+        </Row>
 
-          {/* Appointment Details */}
-          {selectedAppointment && (
-            <Col md={4}>
-              <Card className="shadow-sm" style={{ borderRadius: "8px", border: "none" }}>
-                <Card.Header style={{ 
-                  backgroundColor: colors.killarney, 
-                  color: "white",
-                  borderTopLeftRadius: "8px",
-                  borderTopRightRadius: "8px"
-                }}>
-                  <h5 className="mb-0">Appointment Details</h5>
-                </Card.Header>
-                <Card.Body>
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 style={{ color: colors.killarney }}>{selectedAppointment.studentName}</h5>
-                    <Badge 
-                      pill 
-                      bg={
-                        selectedAppointment.status === "pending" ? "warning" : 
-                        selectedAppointment.status === "scheduled" ? "info" : "success"
-                      }
-                      style={{ 
-                        backgroundColor: 
-                          selectedAppointment.status === "pending" ? colors.goldengrass : 
-                          selectedAppointment.status === "scheduled" ? colors.killarney : "#28a745",
-                        fontSize: "0.8rem",
-                        padding: "0.4rem 0.8rem"
-                      }}
-                    >
-                      {selectedAppointment.status.charAt(0).toUpperCase() + selectedAppointment.status.slice(1)}
-                    </Badge>
+        {/* Modal for Appointment Details */}
+        <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+          <Modal.Header closeButton style={{ backgroundColor: colors.killarney, color: "white" }}>
+            <Modal.Title>Appointment Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Move the content of the side panel here */}
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <h5 style={{ color: colors.killarney }}>{selectedAppointment?.studentName}</h5>
+              <Badge 
+                pill 
+                bg={
+                  selectedAppointment?.status === "pending" ? "warning" : 
+                  selectedAppointment?.status === "scheduled" ? "info" : "success"
+                }
+                style={{ 
+                  backgroundColor: 
+                    selectedAppointment?.status === "pending" ? colors.goldengrass : 
+                    selectedAppointment?.status === "scheduled" ? colors.killarney : "#28a745",
+                  fontSize: "0.8rem",
+                  padding: "0.4rem 0.8rem"
+                }}
+              >
+                {selectedAppointment?.status.charAt(0).toUpperCase() + selectedAppointment?.status.slice(1)}
+              </Badge>
+            </div>
+            
+            <p style={{ color: colors.mulberry, marginBottom: "1.5rem" }}>
+              <i className="bi bi-calendar-date me-2"></i>
+              {selectedAppointment && format(new Date(selectedAppointment.date), "MMMM dd, yyyy")} at {selectedAppointment && formatTime(selectedAppointment.time)}
+            </p>
+
+            <div className="p-3 mb-4" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
+              <div className="mb-3">
+                <span className="fw-bold" style={{ color: colors.killarney }}>Parent:</span>
+                <span className="ms-2">{selectedAppointment?.parentName}</span>
+              </div>
+              
+              <div className="mb-3">
+                <span className="fw-bold" style={{ color: colors.killarney }}>Contact:</span>
+                <div className="ms-2">
+                  <div>{selectedAppointment?.phone}</div>
+                  <small className="text-muted">{selectedAppointment?.email}</small>
+                </div>
+              </div>
+              
+              <div className="mb-3">
+                <span className="fw-bold" style={{ color: colors.killarney }}>Message:</span>
+                <p className="ms-2 mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                  {selectedAppointment?.message || "No message provided"}
+                </p>
+              </div>
+              
+              {(selectedAppointment?.status === "scheduled" || selectedAppointment?.status === "completed") && 
+                selectedAppointment?.employee && (
+                <div>
+                  <span className="fw-bold" style={{ color: colors.killarney }}>Assigned To:</span>
+                  <div className="ms-2">
+                    {selectedAppointment.employee.firstName && selectedAppointment.employee.lastName ? 
+                      `${selectedAppointment.employee.firstName} ${selectedAppointment.employee.lastName}` : 
+                      selectedAppointment.employee.email || selectedAppointment.employee._id}
+                    <br />
+                    <small className="text-muted">Email: {selectedAppointment.employee.email}</small>
                   </div>
-                  
-                  <p style={{ color: colors.mulberry, marginBottom: "1.5rem" }}>
-                    <i className="bi bi-calendar-date me-2"></i>
-                    {format(new Date(selectedAppointment.date), "MMMM dd, yyyy")} at {formatTime(selectedAppointment.time)}
-                  </p>
+                </div>
+              )}
+            </div>
 
-                  <div className="p-3 mb-4" style={{ backgroundColor: "#f8f9fa", borderRadius: "6px" }}>
-                    <div className="mb-3">
-                      <span className="fw-bold" style={{ color: colors.killarney }}>Parent:</span>
-                      <span className="ms-2">{selectedAppointment.parentName}</span>
-                    </div>
-                    
-                    <div className="mb-3">
-                      <span className="fw-bold" style={{ color: colors.killarney }}>Contact:</span>
-                      <div className="ms-2">
-                        <div>{selectedAppointment.phone}</div>
-                        <small className="text-muted">{selectedAppointment.email}</small>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-3">
-                      <span className="fw-bold" style={{ color: colors.killarney }}>Message:</span>
-                      <p className="ms-2 mb-0" style={{ whiteSpace: "pre-wrap" }}>
-                        {selectedAppointment.message || "No message provided"}
-                      </p>
-                    </div>
-                    
-                    {/* Display assigned educator for scheduled and completed appointments */}
-                    {(selectedAppointment.status === "scheduled" || selectedAppointment.status === "completed") && 
-                      selectedAppointment.employee && (
-                      <div>
-                        <span className="fw-bold" style={{ color: colors.killarney }}>Assigned To:</span>
-                        <div className="ms-2">
-                          {selectedAppointment.employee.firstName && selectedAppointment.employee.lastName ? 
-                            `${selectedAppointment.employee.firstName} ${selectedAppointment.employee.lastName}` : 
-                            selectedAppointment.employee.email || selectedAppointment.employee._id}
-                          <br />
-                          <small className="text-muted">Email: {selectedAppointment.employee.email}</small>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <Form>
-                    {/* Educator Selection - Show for pending appointments */}
-                    {selectedAppointment.status === "pending" && (
-                      <Form.Group className="mb-3">
-                        <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
-                          <i className="bi bi-person-badge me-2"></i>
-                          Assign Educator
-                        </Form.Label>
-                        <div>
-                          <InputGroup className="mb-2">
-                            <InputGroup.Text style={{ backgroundColor: colors.killarney, color: "white", border: "none" }}>
-                              <Search />
-                            </InputGroup.Text>
-                            <Form.Control
-                              type="text"
-                              placeholder="Search by name, email, or ID..."
-                              value={educatorSearchTerm}
-                              onChange={(e) => setEducatorSearchTerm(e.target.value)}
-                              style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
-                            />
-                          </InputGroup>
-                          
-                          <Form.Select
-                            value={selectedEducator}
-                            onChange={(e) => setSelectedEducator(e.target.value)}
-                            disabled={educatorsLoading}
-                            style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
-                            size="sm"
-                            className="form-select-sm"
-                          >
-                            <option value="">Select an educator</option>
-                            {filteredEducators.map(educator => (
-                              <option key={educator._id} value={educator.employeeID}>
-                                {educator.firstName} {educator.lastName} ({educator.email || educator.employeeID})
-                              </option>
-                            ))}
-                          </Form.Select>
-                          {educatorsLoading && (
-                            <small className="text-muted d-flex align-items-center mt-2">
-                              <div className="spinner-border spinner-border-sm me-2" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                              </div>
-                              Loading educators...
-                            </small>
-                          )}
-                          {!educatorsLoading && filteredEducators.length === 0 && educatorSearchTerm && (
-                            <small className="text-muted mt-2 d-block">
-                              No educators found matching your search.
-                            </small>
-                          )}
-                        </div>
-                      </Form.Group>
-                    )}
-
-                    {/* Remarks - Show for all appointments */}
-                    <Form.Group className="mb-3">
-                      <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
-                        <i className="bi bi-card-text me-2"></i>
-                        Remarks
-                      </Form.Label>
-                      <Form.Control 
-                        as="textarea" 
-                        rows={3} 
-                        value={remarks}
-                        onChange={(e) => setRemarks(e.target.value)}
-                        placeholder="Add notes about this appointment"
+            <Form>
+              {selectedAppointment?.status === "pending" && (
+                <Form.Group className="mb-3">
+                  <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
+                    <i className="bi bi-person-badge me-2"></i>
+                    Assign Educator
+                  </Form.Label>
+                  <div>
+                    <InputGroup className="mb-2">
+                      <InputGroup.Text style={{ backgroundColor: colors.killarney, color: "white", border: "none" }}>
+                        <Search />
+                      </InputGroup.Text>
+                      <Form.Control
+                        type="text"
+                        placeholder="Search by name, email, or ID..."
+                        value={educatorSearchTerm}
+                        onChange={(e) => setEducatorSearchTerm(e.target.value)}
                         style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
                       />
-                    </Form.Group>
-
-                    {/* Verdict - Show for completing appointments */}
-                    {(selectedAppointment.status === "scheduled" || selectedAppointment.status === "completed") && (
-                      <Form.Group className="mb-3">
-                        <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
-                          <i className="bi bi-check-circle me-2"></i>
-                          Verdict
-                        </Form.Label>
-                        <Form.Select 
-                          value={verdict}
-                          onChange={(e) => setVerdict(e.target.value)}
-                          style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
-                        >
-                          <option value="">Select verdict</option>
-                          <option value="joined">Joined</option>
-                          <option value="recommendation">Recommendation</option>
-                        </Form.Select>
-                      </Form.Group>
+                    </InputGroup>
+                    
+                    <Form.Select
+                      value={selectedEducator}
+                      onChange={(e) => setSelectedEducator(e.target.value)}
+                      disabled={educatorsLoading}
+                      style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
+                      size="sm"
+                      className="form-select-sm"
+                    >
+                      <option value="">Select an educator</option>
+                      {filteredEducators.map(educator => (
+                        <option key={educator._id} value={educator.employeeID}>
+                          {educator.firstName} {educator.lastName} ({educator.email || educator.employeeID})
+                        </option>
+                      ))}
+                    </Form.Select>
+                    {educatorsLoading && (
+                      <small className="text-muted d-flex align-items-center mt-2">
+                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                        Loading educators...
+                      </small>
                     )}
+                    {!educatorsLoading && filteredEducators.length === 0 && educatorSearchTerm && (
+                      <small className="text-muted mt-2 d-block">
+                        No educators found matching your search.
+                      </small>
+                    )}
+                  </div>
+                </Form.Group>
+              )}
 
-                    <div className="d-flex gap-2 mt-4 justify-content-between">
-                      <Button 
-                        variant="outline-secondary" 
-                        onClick={() => setSelectedAppointment(null)}
-                        style={{ 
-                          borderRadius: "6px",
-                          fontSize: "0.9rem",
-                          padding: "0.375rem 1rem",
-                        }}
-                      >
-                        <i className="bi bi-x me-1"></i>
-                        Cancel
-                      </Button>
-                      
-                      {selectedAppointment.status === "pending" && (
-                        <Button 
-                          style={{ 
-                            backgroundColor: colors.killarney,
-                            borderColor: colors.killarney,
-                            borderRadius: "6px",
-                            fontSize: "0.9rem",
-                            padding: "0.375rem 1rem",
-                          }}
-                          onClick={() => handleUpdateStatus("scheduled")}
-                          disabled={!selectedEducator}
-                        >
-                          <i className="bi bi-calendar-check me-1"></i>
-                          Schedule Appointment
-                        </Button>
-                      )}
-                      
-                      {selectedAppointment.status === "scheduled" && (
-                        <Button 
-                          style={{ 
-                            backgroundColor: "#28a745",
-                            borderColor: "#28a745",
-                            borderRadius: "6px",
-                            fontSize: "0.9rem",
-                            padding: "0.375rem 1rem",
-                          }}
-                          onClick={() => handleUpdateStatus("completed")}
-                          disabled={!verdict}
-                        >
-                          <i className="bi bi-check-circle me-1"></i>
-                          Mark Completed
-                        </Button>
-                      )}
-                    </div>
-                  </Form>
-                </Card.Body>
-              </Card>
-            </Col>
-          )}
-        </Row>
+              <Form.Group className="mb-3">
+                <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
+                  <i className="bi bi-card-text me-2"></i>
+                  Remarks
+                </Form.Label>
+                <Form.Control 
+                  as="textarea" 
+                  rows={3} 
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  placeholder="Add notes about this appointment"
+                  style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
+                />
+              </Form.Group>
+
+              {(selectedAppointment?.status === "scheduled" || selectedAppointment?.status === "completed") && (
+                <Form.Group className="mb-3">
+                  <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
+                    <i className="bi bi-check-circle me-2"></i>
+                    Verdict
+                  </Form.Label>
+                  <Form.Select 
+                    value={verdict}
+                    onChange={(e) => setVerdict(e.target.value)}
+                    style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
+                  >
+                    <option value="">Select verdict</option>
+                    <option value="joined">Joined</option>
+                    <option value="recommendation">Recommendation</option>
+                  </Form.Select>
+                </Form.Group>
+              )}
+
+              <div className="d-flex gap-2 mt-4 justify-content-between">
+                <Button 
+                  variant="outline-secondary" 
+                  onClick={handleCloseModal}
+                  style={{ 
+                    borderRadius: "6px",
+                    fontSize: "0.9rem",
+                    padding: "0.375rem 1rem",
+                  }}
+                >
+                  <i className="bi bi-x me-1"></i>
+                  Close
+                </Button>
+                
+                {selectedAppointment?.status === "pending" && (
+                  <Button 
+                    style={{ 
+                      backgroundColor: colors.killarney,
+                      borderColor: colors.killarney,
+                      borderRadius: "6px",
+                      fontSize: "0.9rem",
+                      padding: "0.375rem 1rem",
+                    }}
+                    onClick={() => handleUpdateStatus("scheduled")}
+                    disabled={!selectedEducator}
+                  >
+                    <i className="bi bi-calendar-check me-1"></i>
+                    Schedule Appointment
+                  </Button>
+                )}
+                
+                {selectedAppointment?.status === "scheduled" && (
+                  <Button 
+                    style={{ 
+                      backgroundColor: "#28a745",
+                      borderColor: "#28a745",
+                      borderRadius: "6px",
+                      fontSize: "0.9rem",
+                      padding: "0.375rem 1rem",
+                    }}
+                    onClick={() => handleUpdateStatus("completed")}
+                    disabled={!verdict}
+                  >
+                    <i className="bi bi-check-circle me-1"></i>
+                    Mark Completed
+                  </Button>
+                )}
+              </div>
+            </Form>
+          </Modal.Body>
+        </Modal>
       </Container>
     </div>
   );

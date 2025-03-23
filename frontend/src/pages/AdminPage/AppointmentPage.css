@@ -1,0 +1,110 @@
+/* AppointmentPage.css */
+
+/* Custom color palette */
+:root {
+    --pampas: #F4F1EC; /* Light cream background */
+    --killarney: #316C4D; /* Deep green */
+    --goldengrass: #DAA520; /* Golden yellow */
+    --mulberry: #774166; /* Purple */
+  }
+  
+  /* Fade-in animation for modal */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Modal styling with animation */
+  .modal-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+  }
+  
+  .modal-popup-content {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Table row hover effect */
+  .clickable-row {
+    transition: all 0.2s ease;
+  }
+  
+  .clickable-row:hover {
+    background-color: rgba(60, 110, 113, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Button hover effect */
+  .btn-primary {
+    background-color: var(--killarney);
+    border-color: var(--killarney);
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #285a3d;
+    border-color: #285a3d;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Badge hover effect */
+  .badge {
+    transition: all 0.2s ease;
+  }
+  
+  .badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Input focus effect */
+  .form-control:focus {
+    border-color: var(--killarney);
+    box-shadow: 0 0 0 0.2rem rgba(49, 108, 77, 0.25);
+  }
+  
+  /* Spinner animation */
+  .spinner-border {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Card hover effect */
+  .card {
+    transition: all 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }

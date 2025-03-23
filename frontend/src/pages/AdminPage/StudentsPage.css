@@ -1,0 +1,285 @@
+/* StudentsPage Animation Styles with Scroll Effects */
+
+/* General page transition */
+.container-fluid {
+  transition: opacity 0.3s ease;
+}
+
+/* Card animations */
+.card {
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Table row animations */
+tbody tr {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background-color: rgba(49, 108, 77, 0.05) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Badge animations */
+.badge {
+  transition: all 0.25s ease;
+}
+
+.badge:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Student photo animations */
+.student-photo {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.student-photo:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(49, 108, 77, 0.2);
+}
+
+/* Modal height reduction and scroll effect */
+.modal-dialog {
+  max-height: 85vh;
+  margin: 2.5vh auto;
+}
+
+.modal-content {
+  max-height: 85vh;
+}
+
+.modal-body {
+  max-height: calc(85vh - 120px); /* Adjust based on header/footer height */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(49, 108, 77, 0.5) rgba(244, 241, 236, 0.5);
+}
+
+/* Custom scrollbar styling */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(244, 241, 236, 0.5);
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background-color: rgba(49, 108, 77, 0.5);
+  border-radius: 10px;
+}
+
+/* Smooth scroll behavior */
+.modal-body {
+  scroll-behavior: smooth;
+}
+
+/* Modal animations */
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out !important;
+  transform: translateY(-20px) scale(0.95) !important;
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Modal content animations */
+.modal-content {
+  animation: modalFadeIn 0.4s ease forwards;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal sections animation */
+.modal-body .card {
+  animation: slideIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+.modal-body .card:nth-child(1) { animation-delay: 0.05s; }
+.modal-body .card:nth-child(2) { animation-delay: 0.1s; }
+.modal-body .card:nth-child(3) { animation-delay: 0.15s; }
+.modal-body .card:nth-child(4) { animation-delay: 0.2s; }
+.modal-body .card:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scroll indicator animation */
+.modal-body::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-body.scrollable::after {
+  opacity: 1;
+}
+
+/* Add scroll indicator class with JavaScript */
+.modal-body.scroll-active::after {
+  opacity: 1;
+}
+
+/* Button animations */
+button {
+  transition: all 0.2s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* Form control animations */
+.form-control, .form-select {
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(49, 108, 77, 0.1) !important;
+  border-color: rgba(49, 108, 77, 0.5) !important;
+}
+
+/* Student profile picture in modal */
+.modal-body .text-center img {
+  transition: all 0.4s ease;
+}
+
+.modal-body .text-center img:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 0 4px rgba(49, 108, 77, 0.2);
+}
+
+/* Table container with max height and scroll */
+.table-responsive {
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(49, 108, 77, 0.5) rgba(244, 241, 236, 0.5);
+}
+
+.table-responsive::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(244, 241, 236, 0.5);
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(49, 108, 77, 0.5);
+  border-radius: 10px;
+}
+
+/* Loading spinner animation */
+.spinner-border {
+  animation: spin 1s linear infinite, pulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Refresh button animation */
+button i.bi-arrow-clockwise {
+  transition: all 0.3s ease;
+}
+
+button:hover i.bi-arrow-clockwise {
+  transform: rotate(180deg);
+}
+
+/* Search bar animation */
+.input-group {
+  transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 108, 77, 0.15);
+}
+
+/* Smooth scroll to top when modal opens */
+.modal.show {
+  scroll-top: 0;
+}
+
+/* Fixed table header */
+.table-responsive thead {
+  position: sticky;
+  top: 0;
+  background-color: #f8f8f8;
+  z-index: 1;
+}
+
+/* Scroll indicator for the table */
+.table-responsive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background: linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.table-responsive.scroll-active::after {
+  opacity: 1;
+}

@@ -1,0 +1,76 @@
+/* Enrollment Page Styles */
+.modal-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+  }
+  
+  .modal-popup-content {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-popup-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-popup-body {
+    padding: 20px;
+  }
+  
+  .modal-popup-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .modal-popup-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .student-photo-container {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .student-photo-container:hover {
+    transform: scale(1.05);
+  }
+  
+  .student-profile-badge {
+    transition: all 0.3s ease;
+  }
+  
+  .student-profile-badge:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .clickable-row {
+    transition: all 0.2s ease;
+  }
+  
+  .clickable-row:hover {
+    background-color: rgba(60, 110, 113, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
