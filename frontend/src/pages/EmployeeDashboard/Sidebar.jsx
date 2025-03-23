@@ -53,7 +53,10 @@ const Sidebar = ({ activeTab, setActiveTab, profile, colors }) => {
         <h6 className="mb-3">{profile?.department?.name}</h6>
         <button 
           className="btn btn-sm btn-outline-light w-100"
-          onClick={() => alert("Logout functionality to be implemented")}
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/";
+          }}
         >
           Sign Out
         </button>
