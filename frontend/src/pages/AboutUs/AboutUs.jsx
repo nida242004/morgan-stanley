@@ -1,134 +1,312 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
-import { motion } from "framer-motion";
 
 const AboutUs = () => {
+  // Color palette
+  const colors = {
+    pampas: "#F3EEEA",
+    killarney: "#40724C",
+    goldenGrass: "#DAB42C",
+    mulberry: "#C6557D",
+  };
+
   return (
-    <div style={{ backgroundColor: "#F8F9FA", minHeight: "100vh" }}>
-      {/* Navbar */}
-      <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
-        <Container>
-          <Navbar.Brand href="/" className="fw-bold fs-4">
-            <span style={{ color: "#00A66E" }}>Ishaanya</span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link href="/appointment" className="mx-3 fw-medium">Schedule Appointment</Nav.Link>
-              <Nav.Link href="/apply" className="mx-3 fw-medium">Apply as Educator</Nav.Link>
-              <Nav.Link href="/milestones" className="mx-3 fw-medium">Milestone</Nav.Link>
-              <Nav.Link href="/faq" className="mx-3 fw-medium">FAQ</Nav.Link>
-              <Nav.Link href="/aboutUs" className="mx-3 fw-medium">About Us</Nav.Link>
-              <Nav.Link href="/contactus" className="mx-3 fw-medium">Contact Us</Nav.Link>
-            </Nav>
-            <Button variant="dark" className="ms-4 fw-medium" href="/signin">
-              Log In
-            </Button>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <div
+      style={{
+        backgroundColor: colors.pampas,
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "800px",
+          width: "100%",
+          padding: "30px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          borderRadius: "8px",
+          backgroundColor: "white",
+        }}
+      >
+        {/* Header Section */}
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <h1
+            style={{
+              color: colors.killarney,
+              fontSize: "40px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
+            About Ishaanya
+          </h1>
+          <p
+            style={{
+              fontSize: "20px",
+              maxWidth: "600px",
+              margin: "0 auto",
+              color: "#444",
+            }}
+          >
+            We are dedicated to creating a world of Diversity, Equity, and
+            Inclusion for individuals with special needs through education and
+            support.
+          </p>
+        </div>
 
-      {/* Hero Section */}
-      <Container className="text-center py-5 mt-5">
-        <motion.h1 
-          className="fw-bold" 
-          style={{ fontSize: "2.8rem", color: "#333" }}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        {/* Who We Are Section */}
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "16px",
+            border: `2px solid ${colors.mulberry}`,
+            borderRadius: "8px",
+            // backgroundColor: "rgba(64, 114, 76, 0.1)"
+          }}
         >
-          About <span style={{ color: "#00A66E" }}>Ishaanya</span>
-        </motion.h1>
-        <motion.p 
-          className="text-muted mt-3 mx-auto"
-          style={{ maxWidth: "800px", fontSize: "1.4rem", fontWeight: "500", lineHeight: "1.8" }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          <h2
+            style={{
+              color: colors.mulberry,
+              fontSize: "28px",
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: "12px",
+            }}
+          >
+            Who We Are
+          </h2>
+          <p
+            style={{
+              fontSize: "14px",
+              marginBottom: "10px",
+              color: "#444",
+              textAlign: "center",
+            }}
+          >
+            Ishanya India Foundation was founded in 2015 with the vision of
+            supporting individuals with Autism, Asperger's Syndrome, Down
+            Syndrome, ADHD, and other special needs.
+          </p>
+          <p
+            style={{
+              fontSize: "14px",
+              marginBottom: "10px",
+              color: "#444",
+              textAlign: "center",
+            }}
+          >
+            Our mission is to enable every individual to realize their full
+            potential, offering personalized learning programs that focus on
+            developing essential skills for daily life, education, and
+            employment.
+          </p>
+          <p style={{ fontSize: "14px", marginBottom: "10px", color: "#444" }}>
+            We collaborate with families, educators, and industry professionals
+            to create an inclusive society that embraces diversity and provides
+            equal opportunities for all. Our approach involves hands-on
+            training, mentorship, and social integration programs to ensure
+            long-term success.
+          </p>
+          <img
+            src="https://ishanyaindia.org/wp-content/uploads/2021/05/Ishanya_logo_2021_Pastel.png"
+            alt="Inclusive community activities"
+            style={{
+              width: "100%",
+              height: "auto",
+              marginTop: "12px",
+              marginBottom: "16px",
+              borderRadius: "4px",
+            }}
+          />
+        </div>
+
+        {/* Our Vision Section */}
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            borderRadius: "4px",
+            backgroundColor: "rgba(218, 180, 44, 0.2)",
+          }}
         >
-          We are dedicated to creating a world of <strong>Diversity, Equity, and Inclusion</strong>  
-          for individuals with special needs through education and support.
-        </motion.p>
-      </Container>
+          <h2
+            style={{
+              color: colors.killarney,
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
+            Our Vision
+          </h2>
+          <p style={{ fontSize: "14px", color: "#444" }}>
+            A future where individuals with disabilities are fully included,
+            valued, and empowered to lead independent and fulfilling lives. We
+            strive to build an equitable society where everyone has access to
+            education, employment, and community participation.
+          </p>
+        </div>
 
-      {/* Who We Are */}
-      <Container className="my-5">
-        <Row className="justify-content-center">
-          <Col lg={10}>
-            <motion.div 
-              className="p-4 rounded shadow-sm text-center"
-              style={{ backgroundColor: "#FFFFFF", borderLeft: "5px solid #00A66E" }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="fw-bold mb-3" style={{ fontSize: "2rem", color: "#00A66E" }}>Who We Are</h2>
-              <p className="text-muted" style={{ fontSize: "1.4rem", fontWeight: "500", lineHeight: "1.8" }}>
-                <strong>Ishanya India Foundation</strong> was established in <strong>2015</strong> to empower individuals  
-                with <strong>Autism, Asperger’s Syndrome, Down Syndrome, ADHD</strong>, and other special needs.
-              </p>
-              <p className="text-muted" style={{ fontSize: "1.4rem", fontWeight: "500", lineHeight: "1.8" }}>
-                We work with all age groups, offering <strong>tailored programs, employment training, and independent  
-                living skills</strong> to create an inclusive future.
-              </p>
-            </motion.div>
-          </Col>
-        </Row>
-      </Container>
+        {/* Our Mission Section */}
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            borderRadius: "4px",
+            backgroundColor: "rgba(198, 85, 125, 0.2)",
+          }}
+        >
+          <h2
+            style={{
+              color: colors.killarney,
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
+            Our Mission
+          </h2>
+          <p style={{ fontSize: "14px", color: "#444" }}>
+            To equip individuals with disabilities with the skills, resources,
+            and confidence needed to navigate daily life. We achieve this
+            through capacity-building, skill development, and career readiness
+            programs that prepare them for independent living and active
+            community engagement.
+          </p>
+        </div>
 
-      {/* Vision, Mission, and Inclusion Section */}
-      <Container className="text-center py-5">
-        <Row>
-          <Col md={4}>
-            <motion.div 
-              className="p-4 rounded shadow-sm"
-              style={{ backgroundColor: "#E8F5E9", borderLeft: "4px solid #00A66E" }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <h4 className="fw-bold" style={{ fontSize: "1.6rem" }}>Our Vision</h4>
-              <p className="mt-2 text-muted" style={{ fontSize: "1.2rem", fontWeight: "500" }}>
-                A society built on **Diversity, Equity, & Inclusion**  
-                for **Persons with Disabilities**.
-              </p>
-            </motion.div>
-          </Col>
+        {/* Promoting Inclusion Section */}
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            borderRadius: "4px",
+            backgroundColor: colors.killarney,
+            color: "white",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+              textAlign: "center",
+            }}
+          >
+            Promoting Inclusion
+          </h2>
+          <p
+            style={{
+              fontSize: "14px",
+              marginBottom: "16px",
+              textAlign: "center",
+            }}
+          >
+            We actively work towards fostering an inclusive culture by raising
+            awareness, advocating for policy changes, and building bridges
+            between communities. Our goal is to ensure that people with
+            disabilities are seen, heard, and provided with opportunities to
+            contribute meaningfully to society.
+          </p>
+          <button
+            style={{
+              backgroundColor: colors.goldenGrass,
+              color: "#333",
+              padding: "6px 16px",
+              border: "none",
+              borderRadius: "15px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              display: "block", // Ensures button takes full width of content
+              margin: "0 auto", // Centers the button horizontally
+            }}
+          >
+            Join Our Cause
+          </button>
+        </div>
 
-          <Col md={4}>
-            <motion.div 
-              className="p-4 rounded shadow-sm"
-              style={{ backgroundColor: "#FFF3E0", borderLeft: "4px solid #FF9800" }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <h4 className="fw-bold" style={{ fontSize: "1.6rem" }}>Our Mission</h4>
-              <p className="mt-2 text-muted" style={{ fontSize: "1.2rem", fontWeight: "500" }}>
-                Capacity-building, personalized learning,  
-                and **transitioning individuals into active contributors**.
-              </p>
-            </motion.div>
-          </Col>
+        {/* Our Core Values Section */}
+        <div style={{ marginBottom: "16px" }}>
+          <h2
+            style={{
+              color: colors.killarney,
+              fontSize: "24px",
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: "16px",
+            }}
+          >
+            Our Core Values
+          </h2>
 
-          <Col md={4}>
-            <motion.div 
-              className="p-4 rounded shadow-sm"
-              style={{ backgroundColor: "#E3F2FD", borderLeft: "4px solid #2196F3" }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+          <div
+            style={{
+              borderTop: `2px solid ${colors.killarney}`,
+              padding: "12px 0",
+              marginBottom: "8px",
+            }}
+          >
+            <h3
+              style={{
+                color: colors.killarney,
+                fontSize: "18px",
+                fontWeight: "bold",
+                marginBottom: "4px",
+              }}
             >
-              <h4 className="fw-bold" style={{ fontSize: "1.6rem" }}>Promoting Inclusion</h4>
-              <p className="mt-2 text-muted" style={{ fontSize: "1.2rem", fontWeight: "500" }}>
-                **New opportunities, independence, and awareness**  
-                for a truly inclusive world.
-              </p>
-            </motion.div>
-          </Col>
-        </Row>
-      </Container>
+              Dignity
+            </h3>
+            <p style={{ fontSize: "14px", color: "#444" }}>
+              Respecting the inherent worth and uniqueness of every individual
+            </p>
+          </div>
+
+          <div
+            style={{
+              borderTop: `2px solid ${colors.goldenGrass}`,
+              padding: "12px 0",
+              marginBottom: "8px",
+            }}
+          >
+            <h3
+              style={{
+                color: colors.goldenGrass,
+                fontSize: "18px",
+                fontWeight: "bold",
+                marginBottom: "4px",
+              }}
+            >
+              Empowerment
+            </h3>
+            <p style={{ fontSize: "14px", color: "#444" }}>
+              Building skills and confidence for independent living
+            </p>
+          </div>
+
+          <div
+            style={{
+              borderTop: `2px solid ${colors.mulberry}`,
+              padding: "12px 0",
+              marginBottom: "8px",
+            }}
+          >
+            <h3
+              style={{
+                color: colors.mulberry,
+                fontSize: "18px",
+                fontWeight: "bold",
+                marginBottom: "4px",
+              }}
+            >
+              Inclusion
+            </h3>
+            <p style={{ fontSize: "14px", color: "#444" }}>
+              Creating spaces where everyone belongs and can contribute
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
