@@ -12,7 +12,7 @@ const SignIn = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    userType: 'parent'
+    userType: 'student'
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -32,8 +32,9 @@ const SignIn = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
+    console.log(formData)
     const response = await axios.post(
-      `http://localhost:8000/api/v1/${formData.userType}/login`,
+      `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${formData.userType}/login`,
       formData
     );
      
@@ -54,7 +55,7 @@ const handleSubmit = async (e) => {
 };
 
   const userTypes = [
-    { id: 'parent', label: 'Parent', icon: 'bi-people' },
+    { id: 'student', label: 'Parent', icon: 'bi-people' },
     { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },
     { id: 'admin', label: 'Administrator', icon: 'bi-shield-lock' }
   ];
