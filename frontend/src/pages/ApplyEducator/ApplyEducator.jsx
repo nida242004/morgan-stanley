@@ -13,7 +13,7 @@ const ApplyEducator = () => {
     portfolioLink: '',
     highestQualification: '',
     howDidYouHearAboutUs: 'Job Board',
-    employmentType: 'Full-time',
+    employmentType: 'Full-Time',
     whyJoinUs: '',
     availability: []
   });
