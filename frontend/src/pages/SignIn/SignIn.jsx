@@ -29,30 +29,37 @@ const SignIn = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    console.log(formData)
-    const response = await axios.post(
-      `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${formData.userType}/login`,
-      formData
-    );
-     
-    let token = response.data.data?.accessToken; // Correctly extract token
-
-    if (token) {
-      console.log("Token found and stored:", token.substring(0, 10) + "...");
-      localStorage.setItem('authToken', token); // Store the correct token
-    } else {
-      console.error("No token found in response.");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log(formData);
+      const response = await axios.post(
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${formData.userType}/login`,
+        formData
+      );
+       
+      let token = response.data.data?.accessToken; // Correctly extract token
+  
+      if (token) {
+        console.log("Token found and stored:", token.substring(0, 10) + "...");
+        localStorage.setItem('authToken', token); // Store the correct token
+      } else {
+        console.error("No token found in response.");
+      }
+  
+      // Navigate based on user type
+      navigate(
+        formData.userType === "admin" 
+          ? "/admin" 
+          : formData.userType === "employee" 
+          ? "/employee" 
+          : "/student" // Navigate to student route if userType is student
+      );
+    } catch (error) {
+      console.error("Login failed:", error.response?.data?.message || error.message);
+      alert("Login failed. Please check your credentials.");
     }
-
-    navigate(formData.userType === "admin" ? "/admin" : `/employee`);
-  } catch (error) {
-    console.error("Login failed:", error.response?.data?.message || error.message);
-    alert("Login failed. Please check your credentials.");
-  }
-};
+  };
 
   const userTypes = [
     { id: 'student', label: 'Parent', icon: 'bi-people' },
