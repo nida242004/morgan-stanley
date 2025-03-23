@@ -31,7 +31,7 @@ const ChildDashboard = () => {
   return (
     <Container fluid className="vh-100 p-0">
       {/* Navbar */}
-      <NavbarBrand />
+     
 
       <div className="dashboard-wrapper">
         {/* Sidebar - using the existing component */}

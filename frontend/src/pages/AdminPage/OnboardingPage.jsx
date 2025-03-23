@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Container, Tabs, Tab, Form, Button, Row, Col, Card, Alert } from "react-bootstrap";
+import {
+  Container,
+  Tabs,
+  Tab,
+  Form,
+  Button,
+  Row,
+  Col,
+  Card,
+  Alert,
+} from "react-bootstrap";
 import axios from "axios";
 import { FaUserPlus, FaBriefcase } from "react-icons/fa";
 
 // Color palette
 const colors = {
-  pampas: "#F0EEEB",      // Light background
-  kilarney: "#3A6B35",    // Dark green
+  pampas: "#F0EEEB", // Light background
+  kilarney: "#3A6B35", // Dark green
   goldengrass: "#C19A6B", // Golden accent
-  mulberry: "#C17594"     // Purple/Pink accent
+  mulberry: "#C17594", // Purple/Pink accent
 };
 
 // Base API URL - hardcoded for now, but should be moved to env variables
-const API_BASE_URL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
+const API_BASE_URL =
+  "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
 
 const OnboardingPage = () => {
   const [key, setKey] = useState("student");
@@ -46,7 +57,7 @@ const OnboardingPage = () => {
     strengths: "",
     weaknesses: "",
     photo: null,
-    enrollmentDate: new Date().toISOString().split("T")[0]
+    enrollmentDate: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
@@ -57,8 +68,8 @@ const OnboardingPage = () => {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('authToken');
-      
+      const token = localStorage.getItem("authToken");
+
       if (!token) {
         console.error("No token found in localStorage");
         setError("Unauthorized: No token found");
@@ -68,20 +79,24 @@ const OnboardingPage = () => {
 
       const response = await axios.get(`${API_BASE_URL}/admin/appointments`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log("Fetched Appointments:", response.data);
-      
+
       const eligibleAppointments = response.data.data.appointments.filter(
-        appointment => appointment.status === "completed" && appointment.verdict === "joined"
+        (appointment) =>
+          appointment.status === "completed" && appointment.verdict === "joined"
       );
-      
+
       setAppointments(eligibleAppointments);
     } catch (err) {
       setError("Failed to fetch appointments");
-      console.error("Error fetching appointments:", err.response?.data || err.message);
+      console.error(
+        "Error fetching appointments:",
+        err.response?.data || err.message
+      );
     } finally {
       setLoading(false);
     }
@@ -89,8 +104,8 @@ const OnboardingPage = () => {
 
   const fetchDiagnoses = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      
+      const token = localStorage.getItem("authToken");
+
       if (!token) {
         console.error("No token found in localStorage");
         return;
@@ -99,12 +114,12 @@ const OnboardingPage = () => {
       // Use the correct admin/diagnosis endpoint
       const response = await axios.get(`${API_BASE_URL}/admin/diagnosis`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log("Diagnoses response:", response.data);
-      
+
       // Check if the expected data structure exists
       if (response.data && response.data.data && response.data.data.diagnoses) {
         setDiagnoses(response.data.data.diagnoses);
@@ -114,13 +129,16 @@ const OnboardingPage = () => {
         setDiagnoses(response.data.data || []);
       }
     } catch (err) {
-      console.error("Error fetching diagnoses:", err.response?.data || err.message);
+      console.error(
+        "Error fetching diagnoses:",
+        err.response?.data || err.message
+      );
     }
   };
 
   const handleAppointmentSelect = (appointment) => {
     setSelectedAppointment(appointment);
-    
+
     const names = appointment.studentName.split(" ");
     setStudentForm({
       ...studentForm,
@@ -135,11 +153,14 @@ const OnboardingPage = () => {
 
   const handleStudentFormChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    
+
     if (type === "checkbox") {
       setStudentForm({ ...studentForm, [name]: checked });
     } else if (name === "comorbidity") {
-      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+      const selectedOptions = Array.from(
+        e.target.selectedOptions,
+        (option) => option.value
+      );
       setStudentForm({ ...studentForm, [name]: selectedOptions });
     } else if (name === "photo" && files && files.length > 0) {
       const file = files[0];
@@ -157,8 +178,8 @@ const OnboardingPage = () => {
     setErrorMessage("");
 
     try {
-      const token = localStorage.getItem('authToken');
-      
+      const token = localStorage.getItem("authToken");
+
       if (!token) {
         setErrorMessage("Unauthorized: No token found");
         setFormSubmitting(false);
@@ -167,34 +188,34 @@ const OnboardingPage = () => {
 
       // Create FormData object
       const formData = new FormData();
-      
+
       // Add all form fields except comorbidity to FormData
-      Object.keys(studentForm).forEach(key => {
-        if (key !== 'comorbidity') {
+      Object.keys(studentForm).forEach((key) => {
+        if (key !== "comorbidity") {
           formData.append(key, studentForm[key]);
         }
       });
-      
+
       // Add each comorbidity item separately to create an array on the server
-      studentForm.comorbidity.forEach(item => {
-        formData.append('comorbidity', item);
+      studentForm.comorbidity.forEach((item) => {
+        formData.append("comorbidity", item);
       });
-      
+
       console.log("Submitting student data:", studentForm);
-      
+
       const response = await axios.post(
-        `${API_BASE_URL}/admin/add_student`, 
+        `${API_BASE_URL}/admin/add_student`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-      
+
       setSuccessMessage("Student added successfully!");
-      
+
       setStudentForm({
         firstName: "",
         lastName: "",
@@ -215,9 +236,9 @@ const OnboardingPage = () => {
         strengths: "",
         weaknesses: "",
         photo: null,
-        enrollmentDate: new Date().toISOString().split("T")[0]
+        enrollmentDate: new Date().toISOString().split("T")[0],
       });
-      
+
       setPhotoPreview(null);
       setSelectedAppointment(null);
     } catch (error) {
@@ -230,19 +251,35 @@ const OnboardingPage = () => {
 
   return (
     <Container fluid className="p-4" style={{ backgroundColor: colors.pampas }}>
-      <h2 className="mb-4" style={{ color: colors.kilarney }}>Onboarding</h2>
-      
+      <h2 className="mb-4" style={{ color: colors.kilarney }}>
+        Onboarding
+      </h2>
+
       <Tabs
         id="onboarding-tabs"
         activeKey={key}
         onSelect={(k) => setKey(k)}
         className="mb-4"
       >
-        <Tab eventKey="student" title={<><FaUserPlus className="me-2" /> Student Onboarding</>}>
+        <Tab
+          eventKey="student"
+          title={
+            <>
+              <FaUserPlus className="me-2" /> Student Onboarding
+            </>
+          }
+        >
           <Row>
             <Col md={4} className="mb-4">
-              <Card style={{ backgroundColor: colors.pampas, borderColor: colors.kilarney }}>
-                <Card.Header style={{ backgroundColor: colors.kilarney, color: "white" }}>
+              <Card
+                style={{
+                  backgroundColor: colors.pampas,
+                  borderColor: colors.kilarney,
+                }}
+              >
+                <Card.Header
+                  style={{ backgroundColor: colors.kilarney, color: "white" }}
+                >
                   <h5 className="mb-0">Eligible Appointments for Onboarding</h5>
                 </Card.Header>
                 <Card.Body style={{ maxHeight: "500px", overflowY: "auto" }}>
@@ -252,22 +289,28 @@ const OnboardingPage = () => {
                     <Alert variant="danger">{error}</Alert>
                   ) : appointments.length === 0 ? (
                     <Alert variant="info">
-                      No eligible appointments found. Only appointments with "completed" status and "joined" verdict can be onboarded.
+                      No eligible appointments found. Only appointments with
+                      "completed" status and "joined" verdict can be onboarded.
                     </Alert>
                   ) : (
                     appointments.map((appointment) => (
-                      <Card 
-                        key={appointment._id} 
-                        className={`mb-2 ${selectedAppointment?._id === appointment._id ? 'border-primary' : ''}`}
+                      <Card
+                        key={appointment._id}
+                        className={`mb-2 ${selectedAppointment?._id === appointment._id ? "border-primary" : ""}`}
                         onClick={() => handleAppointmentSelect(appointment)}
-                        style={{ 
-                          cursor: "pointer", 
-                          backgroundColor: colors.pampas, 
-                          borderColor: selectedAppointment?._id === appointment._id ? colors.mulberry : colors.kilarney 
+                        style={{
+                          cursor: "pointer",
+                          backgroundColor: colors.pampas,
+                          borderColor:
+                            selectedAppointment?._id === appointment._id
+                              ? colors.mulberry
+                              : colors.kilarney,
                         }}
                       >
                         <Card.Body>
-                          <Card.Title style={{ color: colors.kilarney }}>{appointment.studentName}</Card.Title>
+                          <Card.Title style={{ color: colors.kilarney }}>
+                            {appointment.studentName}
+                          </Card.Title>
                           <Card.Subtitle className="mb-2 text-muted">
                             Parent: {appointment.parentName}
                           </Card.Subtitle>
@@ -275,8 +318,18 @@ const OnboardingPage = () => {
                             <small>
                               <div>Email: {appointment.email}</div>
                               <div>Phone: {appointment.phone}</div>
-                              <div>Date: {new Date(appointment.date).toLocaleDateString()}</div>
-                              <div>Time: {appointment.time.hr}:{appointment.time.min.toString().padStart(2, '0')}</div>
+                              <div>
+                                Date:{" "}
+                                {new Date(
+                                  appointment.date
+                                ).toLocaleDateString()}
+                              </div>
+                              <div>
+                                Time: {appointment.time.hr}:
+                                {appointment.time.min
+                                  .toString()
+                                  .padStart(2, "0")}
+                              </div>
                               {appointment.message && (
                                 <div className="mt-2">
                                   <strong>Notes:</strong> {appointment.message}
@@ -284,11 +337,19 @@ const OnboardingPage = () => {
                               )}
                               {appointment.remarks && (
                                 <div className="mt-1">
-                                  <strong>Remarks:</strong> {appointment.remarks}
+                                  <strong>Remarks:</strong>{" "}
+                                  {appointment.remarks}
                                 </div>
                               )}
                               <div className="mt-1">
-                                <span className="badge" style={{ backgroundColor: colors.goldengrass }}>Joined</span>
+                                <span
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: colors.goldengrass,
+                                  }}
+                                >
+                                  Joined
+                                </span>
                               </div>
                             </small>
                           </div>
@@ -299,26 +360,44 @@ const OnboardingPage = () => {
                 </Card.Body>
               </Card>
             </Col>
-            
+
             <Col md={8}>
-              <Card style={{ backgroundColor: colors.pampas, borderColor: colors.kilarney }}>
-                <Card.Header style={{ backgroundColor: colors.kilarney, color: "white" }}>
+              <Card
+                style={{
+                  backgroundColor: colors.pampas,
+                  borderColor: colors.kilarney,
+                }}
+              >
+                <Card.Header
+                  style={{ backgroundColor: colors.kilarney, color: "white" }}
+                >
                   <h5 className="mb-0">Student Registration Form</h5>
                 </Card.Header>
                 <Card.Body>
                   {successMessage && (
-                    <Alert variant="success" onClose={() => setSuccessMessage("")} dismissible>
+                    <Alert
+                      variant="success"
+                      onClose={() => setSuccessMessage("")}
+                      dismissible
+                    >
                       {successMessage}
                     </Alert>
                   )}
-                  
+
                   {errorMessage && (
-                    <Alert variant="danger" onClose={() => setErrorMessage("")} dismissible>
+                    <Alert
+                      variant="danger"
+                      onClose={() => setErrorMessage("")}
+                      dismissible
+                    >
                       {errorMessage}
                     </Alert>
                   )}
-                  
-                  <Form onSubmit={handleStudentSubmit} encType="multipart/form-data">
+
+                  <Form
+                    onSubmit={handleStudentSubmit}
+                    encType="multipart/form-data"
+                  >
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -345,7 +424,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -376,7 +455,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -411,7 +490,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -438,7 +517,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -463,7 +542,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -475,7 +554,7 @@ const OnboardingPage = () => {
                             required
                           >
                             <option value="">Select Diagnosis</option>
-                            {diagnoses.map(diagnosis => (
+                            {diagnoses.map((diagnosis) => (
                               <option key={diagnosis._id} value={diagnosis._id}>
                                 {diagnosis.name}
                               </option>
@@ -488,11 +567,11 @@ const OnboardingPage = () => {
                           <Form.Label>Comorbidity</Form.Label>
                           <Form.Select
                             name="comorbidity"
-                            value={studentForm.comorbidity}
+                            value={studentForm.comorbidity || []} // Ensure value is always an array
                             onChange={handleStudentFormChange}
                             multiple
                           >
-                            {diagnoses.map(diagnosis => (
+                            {diagnoses.map((diagnosis) => (
                               <option key={diagnosis._id} value={diagnosis._id}>
                                 {diagnosis.name}
                               </option>
@@ -504,7 +583,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Form.Group className="mb-3">
                       <Form.Label>Address</Form.Label>
                       <Form.Control
@@ -516,7 +595,7 @@ const OnboardingPage = () => {
                         required
                       />
                     </Form.Group>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -542,7 +621,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -571,7 +650,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -583,7 +662,11 @@ const OnboardingPage = () => {
                           />
                           {photoPreview && (
                             <div className="mt-2">
-                              <img src={photoPreview} alt="Preview" width="100" />
+                              <img
+                                src={photoPreview}
+                                alt="Preview"
+                                width="100"
+                              />
                             </div>
                           )}
                         </Form.Group>
@@ -601,7 +684,7 @@ const OnboardingPage = () => {
                         </Form.Group>
                       </Col>
                     </Row>
-                    
+
                     <Form.Group className="mb-3">
                       <Form.Check
                         type="checkbox"
@@ -611,13 +694,16 @@ const OnboardingPage = () => {
                         onChange={handleStudentFormChange}
                       />
                     </Form.Group>
-                    
+
                     <div className="d-flex justify-content-end mt-4">
-                      <Button 
-                        variant="primary" 
-                        type="submit" 
+                      <Button
+                        variant="primary"
+                        type="submit"
                         disabled={formSubmitting}
-                        style={{ backgroundColor: colors.goldengrass, borderColor: colors.goldengrass }}
+                        style={{
+                          backgroundColor: colors.goldengrass,
+                          borderColor: colors.goldengrass,
+                        }}
                       >
                         {formSubmitting ? "Submitting..." : "Register Student"}
                       </Button>
@@ -628,19 +714,31 @@ const OnboardingPage = () => {
             </Col>
           </Row>
         </Tab>
-        
-        <Tab eventKey="employee" title={<><FaBriefcase className="me-2" /> Employee Onboarding</>}>
-          <Card style={{ backgroundColor: colors.pampas, borderColor: colors.kilarney }}>
+
+        <Tab
+          eventKey="employee"
+          title={
+            <>
+              <FaBriefcase className="me-2" /> Employee Onboarding
+            </>
+          }
+        >
+          <Card
+            style={{
+              backgroundColor: colors.pampas,
+              borderColor: colors.kilarney,
+            }}
+          >
             <Card.Body className="text-center p-5">
               <h4 style={{ color: colors.kilarney }}>Employee Onboarding</h4>
               <p className="text-muted">This section is coming soon.</p>
-              <Button 
-                variant="outline-primary" 
-                disabled 
-                style={{ 
-                  color: colors.mulberry, 
+              <Button
+                variant="outline-primary"
+                disabled
+                style={{
+                  color: colors.mulberry,
                   borderColor: colors.mulberry,
-                  opacity: 0.7
+                  opacity: 0.7,
                 }}
               >
                 Coming Soon
