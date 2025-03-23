@@ -39,10 +39,10 @@ const EducatorsPage = () => {
       }
 
       const [educatorsRes, designationsRes, departmentsRes, programsRes] = await Promise.all([
-        axios.get("http://localhost:8000/api/v1/admin/allEmployees", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://localhost:8000/api/v1/admin/designations", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://localhost:8000/api/v1/admin/departments", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://localhost:8000/api/v1/admin/programs", { headers: { Authorization: `Bearer ${token}` } })
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/allEmployees", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/designations", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/departments", { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/programs", { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       setDesignations(Object.fromEntries(designationsRes.data.data.designations.map(d => [d._id, d.title])));

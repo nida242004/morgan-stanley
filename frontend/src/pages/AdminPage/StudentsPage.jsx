@@ -38,10 +38,10 @@ const StudentsPage = () => {
       }
 
       const [studentsRes, diagnosesRes] = await Promise.all([
-        axios.get("http://localhost:8000/api/v1/admin/allStudents", { 
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/allStudents", { 
           headers: { Authorization: `Bearer ${token}` } 
         }),
-        axios.get("http://localhost:8000/api/v1/admin/diagnosis", { 
+        axios.get("https://team-5-ishanyaindiafoundation.onrender.com/api/v1/admin/diagnosis", { 
           headers: { Authorization: `Bearer ${token}` } 
         })
       ]);

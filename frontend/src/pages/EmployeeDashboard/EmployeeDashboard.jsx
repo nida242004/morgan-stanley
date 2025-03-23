@@ -44,15 +44,15 @@ const EmployeeDashboard = () => {
         setLoading(true);
         
         // Fetch profile data
-        const profileRes = await axios.get('http://localhost:8000/api/v1/employee/', axiosConfig);
+        const profileRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/', axiosConfig);
         setProfile(profileRes.data.data.employee);
         
         // Fetch enrollments (students)
-        const studentsRes = await axios.get('http://localhost:8000/api/v1/employee/myEnrollments', axiosConfig);
+        const studentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/myEnrollments', axiosConfig);
         setStudents(studentsRes.data.data.enrollments);
         
         // Fetch appointments
-        const appointmentsRes = await axios.get('http://localhost:8000/api/v1/employee/appointments', axiosConfig);
+        const appointmentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/v1/employee/appointments', axiosConfig);
         setAppointments(appointmentsRes.data.data.appointments);
         
         setLoading(false);
@@ -75,7 +75,7 @@ const EmployeeDashboard = () => {
       };
 
       await axios.post(
-        'http://localhost:8000/api/v1/employee/update_appointment',
+        'https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/update_appointment',
         payload,
         axiosConfig
       );

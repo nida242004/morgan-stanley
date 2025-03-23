@@ -12,7 +12,7 @@ const colors = {
 };
 
 // Base API URL - hardcoded for now, but should be moved to env variables
-const API_BASE_URL = "http://localhost:8000/api/v1";
+const API_BASE_URL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
 
 const OnboardingPage = () => {
   const [key, setKey] = useState("student");

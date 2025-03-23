@@ -1,15 +1,24 @@
 import React from "react";
-import { Nav } from "react-bootstrap";
+import { Nav, Button } from "react-bootstrap";
 import { 
   FaUsers, 
   FaUserCheck, 
   FaSignInAlt, 
   FaSignOutAlt, 
-  FaCalendarAlt 
+  FaCalendarAlt, 
+  FaPowerOff 
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div
       className="d-flex flex-column bg-dark text-white vh-100 p-3"
@@ -54,6 +63,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <FaSignOutAlt className="me-2 text-danger" /> Deboard
         </Nav.Link>
       </Nav>
+      <div className="mt-auto">
+        <Button variant="danger" className="w-100 mt-3" onClick={handleLogout}>
+          <FaPowerOff className="me-2" /> Logout
+        </Button>
+      </div>
     </div>
   );
 };
