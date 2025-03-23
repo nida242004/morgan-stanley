@@ -57,9 +57,18 @@ const BookSession = () => {
   const minutes = [0, 15, 30, 45];
 
   return (
-    <>
+    <div>
       <NavbarComponent />
-      <div style={{ backgroundColor: colors.pampas, minHeight: '100vh' }} className="py-5">
+      <div style={{ 
+        backgroundImage: "url('https://th.bing.com/th/id/OIP.32L20-UNxXIM2KJYP3YrTAHaE8?w=768&h=512&rs=1&pid=ImgDetMain')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundRepeat: "no-repeat",
+        position: "relative",
+        minHeight: '100vh'
+      }} 
+      className="py-5">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-10">
@@ -331,7 +340,7 @@ const BookSession = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

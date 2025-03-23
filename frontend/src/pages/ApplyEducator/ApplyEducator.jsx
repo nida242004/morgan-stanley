@@ -127,8 +127,31 @@ const ApplyEducator = () => {
   return (
     <>
     <NavbarComponent/>
-    <div style={{ backgroundColor: colors.pampas, minHeight: '100vh' }} className="py-5">
-      <div className="container">
+    <div 
+      style={{ 
+        backgroundImage: "url('https://th.bing.com/th/id/OIP.32L20-UNxXIM2KJYP3YrTAHaE8?w=768&h=512&rs=1&pid=ImgDetMain')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        backgroundRepeat: "no-repeat",
+        position: "relative",
+        minHeight: '100vh'
+      }} 
+      className="py-5"
+    >
+      {/* Overlay to make background image darker and text more readable */}
+      <div 
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.6)"
+        }}
+      ></div>
+      
+      <div className="container position-relative">
         <div className="row justify-content-center">
           <div className="col-lg-10">
             <div className="card border-0 shadow-lg animate__animated animate__fadeIn">
