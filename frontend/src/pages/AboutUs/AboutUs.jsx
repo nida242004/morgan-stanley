@@ -1,4 +1,5 @@
 import React from "react";
+import { Navbar, Container, Nav, Button } from "react-bootstrap";
 
 const AboutUs = () => {
   // Color palette
@@ -10,50 +11,76 @@ const AboutUs = () => {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: colors.pampas,
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        padding: "20px",
-      }}
-    >
+    <>
+      {/* Navbar */}
+      <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
+        <Container>
+          <Navbar.Brand href="/" className="fw-bold fs-4">
+            <span style={{ color: "#40724C" }}>Ishaanya</span>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link href="/appointment" className="mx-2 fw-medium">Schedule Appointment</Nav.Link>
+              <Nav.Link href="/apply" className="mx-2 fw-medium">Apply as Educator</Nav.Link>
+              <Nav.Link href="/milestones" className="mx-2 fw-medium">Milestone</Nav.Link>
+              <Nav.Link href="/faq" className="mx-2 fw-medium">FAQ</Nav.Link>
+              <Nav.Link href="/aboutus" className="mx-2 fw-medium">About Us</Nav.Link>
+              <Nav.Link href="/contactus" className="mx-2 fw-medium">Contact Us</Nav.Link>
+            </Nav>
+            <Button variant="outline-dark" className="ms-3 fw-medium" href="/signin">
+              Log In
+            </Button>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
+      {/* About Us Content */}
       <div
         style={{
-          maxWidth: "800px",
-          width: "100%",
-          padding: "30px",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-          borderRadius: "8px",
-          backgroundColor: "white",
+          backgroundColor: colors.pampas,
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          padding: "20px",
+          marginTop: "80px", // Adjust for fixed navbar
         }}
       >
-        {/* Header Section */}
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <h1
-            style={{
-              color: colors.killarney,
-              fontSize: "40px",
-              fontWeight: "bold",
-              marginBottom: "8px",
-            }}
-          >
-            About Ishaanya
-          </h1>
-          <p
-            style={{
-              fontSize: "20px",
-              maxWidth: "600px",
-              margin: "0 auto",
-              color: "#444",
-            }}
-          >
-            We are dedicated to creating a world of Diversity, Equity, and
-            Inclusion for individuals with special needs through education and
-            support.
-          </p>
-        </div>
+        <div
+          style={{
+            maxWidth: "800px",
+            width: "100%",
+            padding: "30px",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            borderRadius: "8px",
+            backgroundColor: "white",
+          }}
+        >
+          {/* Header Section */}
+          <div style={{ textAlign: "center", marginBottom: "24px" }}>
+            <h1
+              style={{
+                color: colors.killarney,
+                fontSize: "40px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+              }}
+            >
+              About Ishaanya
+            </h1>
+            <p
+              style={{
+                fontSize: "20px",
+                maxWidth: "600px",
+                margin: "0 auto",
+                color: "#444",
+              }}
+            >
+              We are dedicated to creating a world of Diversity, Equity, and
+              Inclusion for individuals with special needs through education and
+              support.
+            </p>
+          </div>
 
         {/* Who We Are Section */}
         <div
@@ -199,7 +226,7 @@ const AboutUs = () => {
           <p
             style={{
               fontSize: "14px",
-              marginBottom: "16px",
+              marginBottom: "18px",
               textAlign: "center",
             }}
           >
@@ -213,16 +240,16 @@ const AboutUs = () => {
             style={{
               backgroundColor: colors.goldenGrass,
               color: "#333",
-              padding: "6px 16px",
+              padding: "8px 20px",
               border: "none",
-              borderRadius: "15px",
+              borderRadius: "20px",
               fontWeight: "bold",
               cursor: "pointer",
               display: "block", // Ensures button takes full width of content
-              margin: "0 auto", // Centers the button horizontally
+              margin: "6px auto", // Centers the button horizontally
             }}
           >
-            Join Our Cause
+            JOIN OUR CAUSE
           </button>
         </div>
 
@@ -306,8 +333,9 @@ const AboutUs = () => {
             </p>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
