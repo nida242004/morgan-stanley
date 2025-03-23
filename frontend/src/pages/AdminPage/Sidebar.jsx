@@ -40,8 +40,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </Nav.Link>
         <hr className="bg-light" />
         <Nav.Link
-          className="text-white"
-          onClick={() => alert("Onboarding process initiated")}
+          className={`text-white ${activeTab === "onboarding" ? "fw-bold" : ""}`}
+          onClick={() => setActiveTab("onboarding")}
           style={{ cursor: "pointer" }}
         >
           <FaSignInAlt className="me-2 text-success" /> Onboard

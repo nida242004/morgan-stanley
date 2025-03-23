@@ -4,8 +4,8 @@ import Sidebar from "./Sidebar";
 import ProfileModal from "../../components/ProfileModal/ProfileModal";
 import AppointmentPage from "./AppointmentPage";
 import EducatorsPage from "./Educators";
-import StudentsPage from "./StudentsPage";  // ✅ Import StudentsPage
-
+import StudentsPage from "./StudentsPage";
+import OnboardingPage from "./OnboardingPage"; 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("students");
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -34,7 +34,9 @@ const AdminPage = () => {
         ) : activeTab === "employees" ? (
           <EducatorsPage />
         ) : activeTab === "students" ? (
-          <StudentsPage handleShowProfile={handleShowProfile} /> // ✅ Render StudentsPage
+          <StudentsPage handleShowProfile={handleShowProfile} />
+        ) : activeTab === "onboarding" ? (
+          <OnboardingPage />
         ) : (
           <Container fluid className="p-4">
             <h2>Welcome to Admin Dashboard</h2>
