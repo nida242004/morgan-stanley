@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
+
 const ApplyEducator = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    phone: '',
-    qualification: '',
-    experience: '',
+    phoneNumber: '',
+    gender: 'Prefer not to say',
+    yearsOfExperience: '',
     resumeLink: '',
     portfolioLink: '',
-    coverLetter: '',
-    heardFrom: 'Job Board',
+    highestQualification: '',
+    howDidYouHearAboutUs: 'Job Board',
+    employmentType: 'Full-time',
+    whyJoinUs: '',
     availability: []
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [formComplete, setFormComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Custom color scheme
   const colors = {
@@ -47,10 +52,62 @@ const ApplyEducator = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Format name from fullName field if it exists
+      let firstName = formData.firstName;
+      let lastName = formData.lastName;
+      
+      if (formData.fullName) {
+        const nameParts = formData.fullName.split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
+      
+      // Prepare the data in the format expected by the backend
+      const payload = {
+        firstName,
+        lastName,
+        email: formData.email,
+        phoneNumber: formData.phone || formData.phoneNumber,
+        gender: formData.gender,
+        yearsOfExperience: formData.experience || formData.yearsOfExperience,
+        resumeLink: formData.resumeLink,
+        portfolioLink: formData.portfolioLink,
+        highestQualification: formData.qualification || formData.highestQualification,
+        howDidYouHearAboutUs: formData.heardFrom || formData.howDidYouHearAboutUs,
+        employmentType: formData.employmentType,
+        whyJoinUs: formData.coverLetter || formData.whyJoinUs
+      };
+      
+      console.log('Sending data to backend:', payload);
+      
+      const response = await fetch(`https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/job_application`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      
+      const responseData = await response.json();
+      console.log('Response from server:', responseData);
+      
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError(err.message || 'Failed to submit application. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const nextStep = () => {
@@ -142,15 +199,18 @@ const ApplyEducator = () => {
                       setSubmitted(false);
                       setCurrentStep(1);
                       setFormData({
-                        fullName: '',
+                        firstName: '',
+                        lastName: '',
                         email: '',
-                        phone: '',
-                        qualification: '',
-                        experience: '',
+                        phoneNumber: '',
+                        gender: 'Prefer not to say',
+                        yearsOfExperience: '',
                         resumeLink: '',
                         portfolioLink: '',
-                        coverLetter: '',
-                        heardFrom: 'Job Board',
+                        highestQualification: '',
+                        howDidYouHearAboutUs: 'Job Board',
+                        employmentType: 'Full-Time',
+                        whyJoinUs: '',
                         availability: []
                       });
                     }}
@@ -181,6 +241,13 @@ const ApplyEducator = () => {
                     </div>
                   </div>
                   
+                  {error && (
+                    <div className="alert alert-danger mb-4" role="alert">
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                      {error}
+                    </div>
+                  )}
+                  
                   <form onSubmit={handleSubmit}>
                     {/* Step 1: Personal Information */}
                     <div className={getAnimationClass(1)}>
@@ -194,8 +261,8 @@ const ApplyEducator = () => {
                       </div>
                       
                       <div className="row g-4">
-                        <div className="col-md-12">
-                          <label className="form-label fw-medium" htmlFor="fullName">Full Name</label>
+                        <div className="col-md-6">
+                          <label className="form-label fw-medium" htmlFor="firstName">First Name</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-person"></i>
@@ -203,12 +270,31 @@ const ApplyEducator = () => {
                             <input
                               type="text"
                               className="form-control shadow-none"
-                              id="fullName"
-                              name="fullName"
+                              id="firstName"
+                              name="firstName"
                               required
-                              value={formData.fullName}
+                              value={formData.firstName}
                               onChange={handleChange}
-                              placeholder="Enter your full name"
+                              placeholder="Enter your first name"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="col-md-6">
+                          <label className="form-label fw-medium" htmlFor="lastName">Last Name</label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-white">
+                              <i className="bi bi-person"></i>
+                            </span>
+                            <input
+                              type="text"
+                              className="form-control shadow-none"
+                              id="lastName"
+                              name="lastName"
+                              required
+                              value={formData.lastName}
+                              onChange={handleChange}
+                              placeholder="Enter your last name"
                             />
                           </div>
                         </div>
@@ -233,7 +319,7 @@ const ApplyEducator = () => {
                         </div>
                         
                         <div className="col-md-6">
-                          <label className="form-label fw-medium" htmlFor="phone">Phone Number</label>
+                          <label className="form-label fw-medium" htmlFor="phoneNumber">Phone Number</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-telephone"></i>
@@ -241,10 +327,10 @@ const ApplyEducator = () => {
                             <input
                               type="tel"
                               className="form-control shadow-none"
-                              id="phone"
-                              name="phone"
+                              id="phoneNumber"
+                              name="phoneNumber"
                               required
-                              value={formData.phone}
+                              value={formData.phoneNumber}
                               onChange={handleChange}
                               placeholder="Your contact number"
                             />
@@ -252,17 +338,17 @@ const ApplyEducator = () => {
                         </div>
                         
                         <div className="col-md-6">
-                          <label className="form-label fw-medium" htmlFor="qualification">Highest Qualification</label>
+                          <label className="form-label fw-medium" htmlFor="highestQualification">Highest Qualification</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-award"></i>
                             </span>
                             <select
                               className="form-select shadow-none"
-                              id="qualification"
-                              name="qualification"
+                              id="highestQualification"
+                              name="highestQualification"
                               required
-                              value={formData.qualification}
+                              value={formData.highestQualification}
                               onChange={handleChange}
                             >
                               <option value="" disabled>Select your qualification</option>
@@ -276,25 +362,68 @@ const ApplyEducator = () => {
                         </div>
                         
                         <div className="col-md-6">
-                          <label className="form-label fw-medium" htmlFor="experience">Years of Experience</label>
+                          <label className="form-label fw-medium" htmlFor="yearsOfExperience">Years of Experience</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-briefcase"></i>
                             </span>
                             <select
                               className="form-select shadow-none"
-                              id="experience"
-                              name="experience"
+                              id="yearsOfExperience"
+                              name="yearsOfExperience"
                               required
-                              value={formData.experience}
+                              value={formData.yearsOfExperience}
                               onChange={handleChange}
                             >
                               <option value="" disabled>Select experience level</option>
-                              <option value="0-1 years">0-1 years</option>
-                              <option value="2-3 years">2-3 years</option>
-                              <option value="4-6 years">4-6 years</option>
-                              <option value="7-10 years">7-10 years</option>
-                              <option value="10+ years">10+ years</option>
+                              <option value="0-1">0-1 years</option>
+                              <option value="2-3">2-3 years</option>
+                              <option value="4-6">4-6 years</option>
+                              <option value="7-10">7-10 years</option>
+                              <option value="10+">10+ years</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div className="col-md-6">
+                          <label className="form-label fw-medium" htmlFor="gender">Gender</label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-white">
+                              <i className="bi bi-person-badge"></i>
+                            </span>
+                            <select
+                              className="form-select shadow-none"
+                              id="gender"
+                              name="gender"
+                              value={formData.gender}
+                              onChange={handleChange}
+                            >
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
+                              <option value="Other">Other</option>
+                              <option value="Prefer not to say">Prefer not to say</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                        <div className="col-md-6">
+                          <label className="form-label fw-medium" htmlFor="employmentType">Employment Type</label>
+                          <div className="input-group">
+                            <span className="input-group-text bg-white">
+                              <i className="bi bi-clock"></i>
+                            </span>
+                            <select
+                              className="form-select shadow-none"
+                              id="employmentType"
+                              name="employmentType"
+                              required
+                              value={formData.employmentType}
+                              onChange={handleChange}
+                            >
+                              <option value="Full-Time">Full-time</option>
+                              <option value="Part-Time">Part-time</option>
+                              <option value="Contract">Contract</option>
+                              <option value="Freelance">Freelance</option>
                             </select>
                           </div>
                         </div>
@@ -365,17 +494,17 @@ const ApplyEducator = () => {
                         </div>
                         
                         <div className="col-12">
-                          <label className="form-label fw-medium" htmlFor="heardFrom">How did you hear about us?</label>
+                          <label className="form-label fw-medium" htmlFor="howDidYouHearAboutUs">How did you hear about us?</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-megaphone"></i>
                             </span>
                             <select
                               className="form-select shadow-none"
-                              id="heardFrom"
-                              name="heardFrom"
+                              id="howDidYouHearAboutUs"
+                              name="howDidYouHearAboutUs"
                               required
-                              value={formData.heardFrom}
+                              value={formData.howDidYouHearAboutUs}
                               onChange={handleChange}
                             >
                               <option value="Job Board">Job Board</option>
@@ -444,18 +573,18 @@ const ApplyEducator = () => {
                       
                       <div className="row g-4">
                         <div className="col-12">
-                          <label className="form-label fw-medium" htmlFor="coverLetter">Why do you want to join our team?</label>
+                          <label className="form-label fw-medium" htmlFor="whyJoinUs">Why do you want to join our team?</label>
                           <div className="input-group">
                             <span className="input-group-text bg-white">
                               <i className="bi bi-pencil-square"></i>
                             </span>
                             <textarea
                               className="form-control shadow-none"
-                              id="coverLetter"
-                              name="coverLetter"
+                              id="whyJoinUs"
+                              name="whyJoinUs"
                               rows="8"
                               required
-                              value={formData.coverLetter}
+                              value={formData.whyJoinUs}
                               onChange={handleChange}
                               placeholder="Share your teaching philosophy, what draws you to our institution, and how your unique skills and experiences would benefit our students..."
                             ></textarea>
@@ -489,9 +618,19 @@ const ApplyEducator = () => {
                           type="submit" 
                           className="btn px-5 py-2 rounded-pill animate__animated animate__pulse"
                           style={{ backgroundColor: colors.goldenGrass, color: 'white' }}
+                          disabled={isLoading}
                         >
-                          <i className="bi bi-send me-2"></i>
-                          Submit Application
+                          {isLoading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-send me-2"></i>
+                              Submit Application
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
