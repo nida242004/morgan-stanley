@@ -151,7 +151,7 @@ const Sidebar = ({ setSelectedSection }) => {
 
       {/* Sign Out Button */}
       <div className="sidebar-footer">
-        <button className="signout-btn">
+        <button className="signout-btn" onClick={()=>{localStorage.clear(); window.location.href = "/";}}>
           <FaSignOutAlt className="me-2" /> Sign Out
         </button>
       </div>
