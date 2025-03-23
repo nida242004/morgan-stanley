@@ -24,6 +24,7 @@ const OnboardingPage = () => {
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   const [studentForm, setStudentForm] = useState({
     firstName: "",
@@ -43,7 +44,9 @@ const OnboardingPage = () => {
     allergies: "",
     secondaryPhoneNumber: "",
     strengths: "",
-    weaknesses: ""
+    weaknesses: "",
+    photo: null,
+    enrollmentDate: new Date().toISOString().split("T")[0]
   });
 
   useEffect(() => {
@@ -131,13 +134,17 @@ const OnboardingPage = () => {
   };
 
   const handleStudentFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
     
     if (type === "checkbox") {
       setStudentForm({ ...studentForm, [name]: checked });
     } else if (name === "comorbidity") {
       const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
       setStudentForm({ ...studentForm, [name]: selectedOptions });
+    } else if (name === "photo" && files && files.length > 0) {
+      const file = files[0];
+      setStudentForm({ ...studentForm, [name]: file });
+      setPhotoPreview(URL.createObjectURL(file));
     } else {
       setStudentForm({ ...studentForm, [name]: value });
     }
@@ -158,12 +165,30 @@ const OnboardingPage = () => {
         return;
       }
 
+      // Create FormData object
+      const formData = new FormData();
+      
+      // Add all form fields except comorbidity to FormData
+      Object.keys(studentForm).forEach(key => {
+        if (key !== 'comorbidity') {
+          formData.append(key, studentForm[key]);
+        }
+      });
+      
+      // Add each comorbidity item separately to create an array on the server
+      studentForm.comorbidity.forEach(item => {
+        formData.append('comorbidity', item);
+      });
+      
+      console.log("Submitting student data:", studentForm);
+      
       const response = await axios.post(
         `${API_BASE_URL}/admin/add_student`, 
-        studentForm,
+        formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
           }
         }
       );
@@ -188,9 +213,12 @@ const OnboardingPage = () => {
         allergies: "",
         secondaryPhoneNumber: "",
         strengths: "",
-        weaknesses: ""
+        weaknesses: "",
+        photo: null,
+        enrollmentDate: new Date().toISOString().split("T")[0]
       });
       
+      setPhotoPreview(null);
       setSelectedAppointment(null);
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "Failed to add student");
@@ -243,7 +271,6 @@ const OnboardingPage = () => {
                           <Card.Subtitle className="mb-2 text-muted">
                             Parent: {appointment.parentName}
                           </Card.Subtitle>
-                          {/* Fix: Use div instead of Card.Text to avoid p > div nesting issue */}
                           <div className="card-text">
                             <small>
                               <div>Email: {appointment.email}</div>
@@ -291,7 +318,7 @@ const OnboardingPage = () => {
                     </Alert>
                   )}
                   
-                  <Form onSubmit={handleStudentSubmit}>
+                  <Form onSubmit={handleStudentSubmit} encType="multipart/form-data">
                     <Row>
                       <Col md={6}>
                         <Form.Group className="mb-3">
@@ -540,6 +567,36 @@ const OnboardingPage = () => {
                             value={studentForm.weaknesses}
                             onChange={handleStudentFormChange}
                             placeholder="Areas that need support"
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    
+                    <Row>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Photo</Form.Label>
+                          <Form.Control
+                            type="file"
+                            name="photo"
+                            onChange={handleStudentFormChange}
+                          />
+                          {photoPreview && (
+                            <div className="mt-2">
+                              <img src={photoPreview} alt="Preview" width="100" />
+                            </div>
+                          )}
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Enrollment Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="enrollmentDate"
+                            value={studentForm.enrollmentDate}
+                            onChange={handleStudentFormChange}
+                            required
                           />
                         </Form.Group>
                       </Col>
