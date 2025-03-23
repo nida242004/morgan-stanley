@@ -52,7 +52,7 @@ const EmployeeDashboard = () => {
         setStudents(studentsRes.data.data.enrollments);
         
         // Fetch appointments
-        const appointmentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/v1/employee/appointments', axiosConfig);
+        const appointmentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/appointments', axiosConfig);
         setAppointments(appointmentsRes.data.data.appointments);
         
         setLoading(false);

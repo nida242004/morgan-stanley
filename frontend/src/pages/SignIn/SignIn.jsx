@@ -36,7 +36,7 @@ const handleSubmit = async (e) => {
       `http://10.24.115.12:8000/api/v1/${formData.userType}/login`,
       formData
     );
-
+     
     let token = response.data.data?.accessToken; // Correctly extract token
 
     if (token) {
@@ -46,7 +46,7 @@ const handleSubmit = async (e) => {
       console.error("No token found in response.");
     }
 
-    navigate(formData.userType === "admin" ? "/admin" : `/employee-dashboard/0157575`);
+    navigate(formData.userType === "admin" ? "/admin" : `/employee`);
   } catch (error) {
     console.error("Login failed:", error.response?.data?.message || error.message);
     alert("Login failed. Please check your credentials.");

@@ -21,7 +21,7 @@ function App() {
         <Route path="/Signin" element={<SignIn />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/child-dashboard/:childName" element={<ChildDashboard />} />
-        <Route path="/employee-dashboard/:educatorID" element={<EmployeeDashboard />} />
+        <Route path="/employee" element={<EmployeeDashboard />} />
         <Route path='/appointment' element={<BookSession/>}/>
         <Route path='/apply' element={<ApplyEducator/>}/>
         <Route path='/apply' element={<ApplyEducator/>}/>
