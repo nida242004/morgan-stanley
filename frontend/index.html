@@ -1,27 +1,452 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ISHANYA</title>
-    <link rel="stylesheet" href="index.css"> <!-- Link to your CSS file -->
-    <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en',
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false,
-          includedLanguages: '',
-          gaTrack: false
-        }, 'google_translate_element');
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISHANYA</title>
+  <style>
+    /* Custom Airbnb-like language selector */
+    .custom-language-selector {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    .language-button {
+      background: white;
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .language-button:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .language-button img {
+      width: 20px;
+      height: 15px;
+      border-radius: 2px;
+    }
+    
+    .language-dropdown {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      width: 240px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      padding: 8px 0;
+      margin-bottom: 10px;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .language-dropdown.show {
+      display: block;
+    }
+    
+    .section-title {
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #717171;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .language-option {
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .language-option:hover {
+      background: #f7f7f7;
+    }
+
+    /* Highlight the selected language */
+    .language-option.selected {
+      background: #f0f8ff;
+      position: relative;
+    }
+
+    .language-option.selected::after {
+      content: "✓";
+      color: #4285f4;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    
+    .language-option img {
+      width: 20px;
+      height: 15px;
+      border-radius: 2px;
+    }
+    
+    .language-text {
+      flex-grow: 1;
+    }
+    
+    .language-name {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .language-region {
+      color: #717171;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    
+    .divider {
+      height: 1px;
+      background: #ebebeb;
+      margin: 8px 0;
+    }
+    
+    /* Hide all Google Translate UI elements */
+    .goog-te-banner-frame, 
+    .goog-te-menu-frame, 
+    .goog-te-combo, 
+    .goog-te-gadget, 
+    .goog-te-ftab, 
+    .skiptranslate,
+    .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+    }
+    
+    body {
+      top: 0 !important;
+    }
+    
+    @media (max-width: 600px) {
+      .custom-language-selector {
+        right: 10px;
+        bottom: 10px;
       }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  </head>
-  <body>
-    <div id="google_translate_element"></div>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+      
+      .language-dropdown {
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Custom language selector -->
+  <div class="custom-language-selector notranslate">
+    <div class="language-button" id="languageToggle">
+      <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+      <span>English (India)</span>
+    </div>
+    
+    <div class="language-dropdown" id="languageDropdown">
+      <div class="section-title">SUGGESTED LANGUAGES</div>
+      <div class="language-option" data-lang="en">
+        <img src="https://flagcdn.com/w20/us.png" alt="US flag">
+        <div class="language-text">
+          <div class="language-name">English</div>
+          <div class="language-region">United States</div>
+        </div>
+      </div>
+      <div class="language-option" data-lang="en-GB">
+        <img src="https://flagcdn.com/w20/gb.png" alt="UK flag">
+        <div class="language-text">
+          <div class="language-name">English</div>
+          <div class="language-region">United Kingdom</div>
+        </div>
+      </div>
+      
+      <div class="divider"></div>
+      <div class="section-title">INDIAN LANGUAGES</div>
+
+      <div class="language-option" data-lang="hi">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">हिन्दी</div>
+          <div class="language-region">भारत</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="bn">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">বাংলা</div>
+          <div class="language-region">ভারত</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="te">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">తెలుగు</div>
+          <div class="language-region">భారతదేశం</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="mr">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">मराठी</div>
+          <div class="language-region">भारत</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="ta">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">தமிழ்</div>
+          <div class="language-region">இந்தியா</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="gu">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">ગુજરાતી</div>
+          <div class="language-region">ભારત</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="kn">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">ಕನ್ನಡ</div>
+          <div class="language-region">ಭಾರತ</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="ml">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">മലയാളം</div>
+          <div class="language-region">ഇന്ത്യ</div>
+        </div>
+      </div>
+
+      <div class="language-option" data-lang="pa">
+        <img src="https://flagcdn.com/w20/in.png" alt="India flag">
+        <div class="language-text">
+          <div class="language-name">ਪੰਜਾਬੀ</div>
+          <div class="language-region">ਭਾਰਤ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Google Translate element -->
+  <div id="google_translate_element" style="display:none;"></div>
+  
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  
+  <script>
+    // Translation state management
+    const translationState = {
+      initialized: false,
+      currentLang: 'en',
+      defaultLang: 'en',
+      supportedLangs: ['en', 'en-GB', 'hi', 'bn', 'te', 'mr', 'ta', 'gu', 'kn', 'ml', 'pa'],
+      langData: {
+        'en': { name: 'English', region: 'United States', flag: 'us' },
+        'en-GB': { name: 'English', region: 'United Kingdom', flag: 'gb' },
+        'hi': { name: 'हिन्दी', region: 'भारत', flag: 'in' },
+        'bn': { name: 'বাংলা', region: 'ভারত', flag: 'in' },
+        'te': { name: 'తెలుగు', region: 'భారతదేశం', flag: 'in' },
+        'mr': { name: 'मराठी', region: 'भारत', flag: 'in' },
+        'ta': { name: 'தமிழ்', region: 'இந்தியா', flag: 'in' },
+        'gu': { name: 'ગુજરાતી', region: 'ભારત', flag: 'in' },
+        'kn': { name: 'ಕನ್ನಡ', region: 'ಭಾರತ', flag: 'in' },
+        'ml': { name: 'മലയാളം', region: 'ഇന്ത്യ', flag: 'in' },
+        'pa': { name: 'ਪੰਜਾਬੀ', region: 'ਭਾਰਤ', flag: 'in' }
+      }
+    };
+
+    // Initialize Google Translate
+    function initializeGoogleTranslate() {
+      if (translationState.initialized) return;
+      
+      // Remove any existing Google Translate elements
+      const existingScript = document.querySelector('script[src*="translate.google.com"]');
+      if (existingScript) existingScript.remove();
+      
+      // Create new script
+      const script = document.createElement('script');
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.body.appendChild(script);
+      
+      translationState.initialized = true;
+    }
+
+    // Google Translate callback
+    function googleTranslateElementInit() {
+      if (!window.google || !google.translate) {
+        console.error('Google Translate API not loaded');
+        setTimeout(googleTranslateElementInit, 100);
+        return;
+      }
+      
+      new google.translate.TranslateElement({
+        pageLanguage: translationState.defaultLang,
+        includedLanguages: translationState.supportedLangs.join(','),
+        layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+        autoDisplay: false
+      }, 'google_translate_element');
+      
+      // Set up mutation observer to watch for Google Translate UI elements
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes) {
+            mutation.addedNodes.forEach(function(node) {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.classList.contains('goog-te-banner-frame') || 
+                    node.classList.contains('goog-te-menu-frame') || 
+                    node.classList.contains('skiptranslate')) {
+                  node.style.display = 'none';
+                }
+              }
+            });
+          }
+        });
+      });
+      
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      
+      // Check for existing language preference
+      checkCurrentLanguage();
+    }
+
+    // Change language function
+    function changeLanguage(lang) {
+      if (!translationState.supportedLangs.includes(lang)) {
+        console.error('Unsupported language:', lang);
+        return;
+      }
+      
+      translationState.currentLang = lang;
+      
+      // Update UI
+      updateLanguageUI(lang);
+      
+      // Change the language in Google Translate
+      if (window.google && google.translate) {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+          select.value = lang;
+          select.dispatchEvent(new Event('change'));
+        } else {
+          setLanguageCookie(lang);
+          window.location.reload();
+        }
+      } else {
+        setLanguageCookie(lang);
+        window.location.reload();
+      }
+    }
+
+    // Update language UI
+    function updateLanguageUI(lang) {
+      const langInfo = translationState.langData[lang] || translationState.langData[translationState.defaultLang];
+      const toggle = document.getElementById('languageToggle');
+      
+      if (toggle) {
+        const span = toggle.querySelector('span');
+        const img = toggle.querySelector('img');
+        
+        if (span) span.textContent = `${langInfo.name} (${langInfo.region})`;
+        if (img) img.src = `https://flagcdn.com/w20/${langInfo.flag}.png`;
+      }
+
+      // Update selected state in dropdown
+      document.querySelectorAll('.language-option').forEach(option => {
+        if (option.getAttribute('data-lang') === lang) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+    }
+
+    // Set language cookie
+    function setLanguageCookie(lang) {
+      document.cookie = `googtrans=/en/${lang}; path=/; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}`;
+      window.location.hash = `googtrans(en|${lang})`;
+    }
+
+    // Check current language from cookie or hash
+    function checkCurrentLanguage() {
+      // Check hash first
+      const hashMatch = window.location.hash.match(/googtrans\(en\|([^)]+)\)/);
+      if (hashMatch && hashMatch[1] && translationState.supportedLangs.includes(hashMatch[1])) {
+        translationState.currentLang = hashMatch[1];
+        updateLanguageUI(hashMatch[1]);
+        return;
+      }
+      
+      // Check cookie
+      const cookieMatch = document.cookie.match(/googtrans=([^;]+)/);
+      if (cookieMatch && cookieMatch[1]) {
+        const langMatch = cookieMatch[1].match(/\/en\/([^\/]+)/);
+        if (langMatch && langMatch[1] && translationState.supportedLangs.includes(langMatch[1])) {
+          translationState.currentLang = langMatch[1];
+          updateLanguageUI(langMatch[1]);
+          return;
+        }
+      }
+      
+      // Default to English
+      translationState.currentLang = translationState.defaultLang;
+      updateLanguageUI(translationState.defaultLang);
+    }
+
+    // Toggle dropdown
+    document.getElementById('languageToggle')?.addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.getElementById('languageDropdown').classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.custom-language-selector')) {
+        document.getElementById('languageDropdown').classList.remove('show');
+      }
+    });
+
+    // Language selection handler
+    document.querySelectorAll('.language-option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const lang = this.getAttribute('data-lang');
+        changeLanguage(lang);
+        document.getElementById('languageDropdown').classList.remove('show');
+      });
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeGoogleTranslate();
+      checkCurrentLanguage();
+      
+      // Fallback check in case Google Translate takes longer to load
+      setTimeout(checkCurrentLanguage, 1000);
+    });
+  </script>
+</body>
 </html>
