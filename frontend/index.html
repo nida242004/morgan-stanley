@@ -5,8 +5,73 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+    <style>
+      #google_translate_element {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+      }
+      
+      #google_translate_element:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+      }
+      
+      /* Style the Google Translate dropdown */
+      .goog-te-combo {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+ 
+      .goog-te-combo:hover {
+        border-color: #aaa;
+      }
+      
+      .goog-te-combo:focus {
+        border-color: #4285f4;
+        box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+      }
+      
+      /* Hide Google Translate link, display button only */
+      .skiptranslate iframe {
+        display: none !important;
+      }
+      
+      /* Hide the top bar */
+      .goog-te-banner-frame {
+        display: none !important;
+      }
+      
+      body {
+        top: 0 !important;
+      }
+    </style>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+          includedLanguages: '', // Include all languages
+          gaTrack: false
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   </head>
   <body>
+    <div id="google_translate_element"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
