@@ -16,7 +16,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Only one import
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -84,22 +84,18 @@ export default function StudentScreen() {
         }
       );
 
-      setProfileData(response.data.data.student);
+      // Combine student data and enrollment data into one object
+      const combinedData = {
+        ...response.data.data.student,
+        enrollment: response.data.data.enrollment,
+      };
+
+      setProfileData(combinedData);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching profile:", error);
       Alert.alert("Error", "Could not load profile data");
       setLoading(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await AsyncStorage.multiRemove(["authToken", "userType"]);
-      router.replace("/signin");
-    } catch (error) {
-      console.error("Error signing out:", error);
-      Alert.alert("Error", "Could not sign out properly");
     }
   };
 
@@ -178,13 +174,40 @@ export default function StudentScreen() {
 
       // System instruction prompt
       const systemPrompt = `
-      You are an AI assistant designed to help special children and their parents.
-      Your responses should always be clear and easy to understand.
-      If asked about how to do something, provide simple step-by-step instructions.
-      Do not use Markdown formatting; return answers in plain text formatted as it will be shown directly. 
-      Also return text as something which can read aloud as well like if explaning steps dont return text like 1. ... 2. ... go like, step 1... step 2... like this.
-      If an image is provided, analyze it and give useful, basic guidance related to it.
-    `;
+  You are an AI assistant designed to help parents of special needs children. 
+  You have access to confidential student information and should provide helpful, compassionate guidance.
+
+  Student Information:
+  - Name: ${profileData.firstName} ${profileData.lastName}
+  - Student ID: ${profileData.studentID}
+  - Primary Diagnosis: ${profileData.primaryDiagnosis.name}
+  - Diagnosis Description: ${profileData.primaryDiagnosis.description}
+  
+  Comorbidities: ${profileData.comorbidity.map((c) => c.name).join(", ")}
+  
+  Educational Program: ${profileData.enrollment.programs[0].name}
+  Program Description: ${profileData.enrollment.programs[0].description}
+  
+  Educators:
+  - Primary Educator: ${profileData.enrollment.educator.firstName} (Phone: ${
+        profileData.enrollment.educator.phoneNumber
+      })
+  - Secondary Educator: ${
+    profileData.enrollment.secondaryEducator.firstName
+  } (Phone: ${profileData.enrollment.secondaryEducator.phoneNumber})
+  
+  Student Strengths: ${profileData.strengths}
+  Areas to Develop: ${profileData.weaknesses}
+
+  Guidelines:
+  - Provide clear, supportive, and easy-to-understand responses
+  - Focus on positive aspects and potential growth
+  - Offer practical advice for parents
+  - Maintain confidentiality and sensitivity
+  - Do not use Markdown; return plain text
+  - Speak in a warm, empathetic tone
+  - For simple queries, give concise to the point polite answer
+`;
 
       // Prepare content parts
       const contentParts = [systemPrompt];
@@ -251,7 +274,6 @@ export default function StudentScreen() {
     }
   };
 
-
   const playTTS = async () => {
     if (!aiResponse?.text) {
       Alert.alert("No Content", "There's no text to speak");
@@ -309,171 +331,224 @@ export default function StudentScreen() {
     });
   };
 
+  const handleSignOut = async () => {
+    try {
+      await AsyncStorage.multiRemove(["authToken", "userType"]);
+      router.replace("/signin");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      Alert.alert("Error", "Could not sign out properly");
+    }
+  };
+
   // Profile Tab Content
-  const renderProfileTab = () => (
-    <ScrollView contentContainerStyle={styles.profileContent}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#1ba94c" style={styles.loader} />
-      ) : profileData ? (
-        <>
-          <View style={styles.profileHeader}>
-            <Image
-              source={{
-                uri: profileData.photo
-                  ? profileData.photo
-                  : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
-              }}
-              style={styles.profilePhoto}
-            />
-            <Text style={styles.profileName}>
-              {profileData.firstName} {profileData.lastName}
-            </Text>
-            <Text style={styles.profileId}>ID: {profileData.studentID}</Text>
-          </View>
+ const renderProfileTab = () => (
+   <ScrollView contentContainerStyle={styles.profileContent}>
+     {loading ? (
+       <ActivityIndicator size="large" color="#1ba94c" style={styles.loader} />
+     ) : profileData ? (
+       <>
+         <View style={styles.profileHeader}>
+           <Image
+             source={{
+               uri: profileData.photo
+                 ? profileData.photo
+                 : "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+             }}
+             style={styles.profilePhoto}
+           />
+           <Text style={styles.profileName}>
+             {profileData.firstName} {profileData.lastName}
+           </Text>
+           <Text style={styles.profileId}>ID: {profileData.studentID}</Text>
+         </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+         <View style={styles.infoCard}>
+           <Text style={styles.sectionTitle}>Personal Information</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Gender:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.gender || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Gender:</Text>
+             <Text style={styles.infoValue}>{profileData.gender || "N/A"}</Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Date of Birth:</Text>
-              <Text style={styles.infoValue}>
-                {formatDate(profileData.dob)}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Date of Birth:</Text>
+             <Text style={styles.infoValue}>{formatDate(profileData.dob)}</Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Blood Group:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.bloodGroup || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Blood Group:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.bloodGroup || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Enrollment Date:</Text>
-              <Text style={styles.infoValue}>
-                {formatDate(profileData.enrollmentDate)}
-              </Text>
-            </View>
-          </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Enrollment Date:</Text>
+             <Text style={styles.infoValue}>
+               {formatDate(profileData.enrollment.updatedAt)}
+             </Text>
+           </View>
+         </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>Contact Information</Text>
+         <View style={styles.infoCard}>
+           <Text style={styles.sectionTitle}>Contact Information</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Email:</Text>
-              <Text style={styles.infoValue}>{profileData.email || "N/A"}</Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Email:</Text>
+             <Text style={styles.infoValue}>{profileData.email || "N/A"}</Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Phone:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.phoneNumber || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Phone:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.phoneNumber || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Alternative Phone:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.secondaryPhoneNumber || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Alternative Phone:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.secondaryPhoneNumber || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Address:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.address || "N/A"}
-              </Text>
-            </View>
-          </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Address:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.address || "N/A"}
+             </Text>
+           </View>
+         </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>Family Information</Text>
+         <View style={styles.infoCard}>
+           <Text style={styles.sectionTitle}>Family Information</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Father's Name:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.fatherName || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Father's Name:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.fatherName || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Mother's Name:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.motherName || "N/A"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Mother's Name:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.motherName || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Parent Email:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.parentEmail || "N/A"}
-              </Text>
-            </View>
-          </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Parent Email:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.parentEmail || "N/A"}
+             </Text>
+           </View>
+         </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>Medical Information</Text>
+         <View style={styles.infoCard}>
+           <Text style={styles.sectionTitle}>Medical Information</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Allergies:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.allergies || "None"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Allergies:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.allergies || "None"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Primary Diagnosis:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.primaryDiagnosis || "N/A"}
-              </Text>
-            </View>
-          </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Primary Diagnosis:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.primaryDiagnosis?.name || "N/A"}
+             </Text>
+           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.sectionTitle}>Educational Profile</Text>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Diagnosis Description:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.primaryDiagnosis?.description || "N/A"}
+             </Text>
+           </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Strengths:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.strengths || "Not specified"}
-              </Text>
-            </View>
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Comorbidities:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.comorbidity?.map((c) => c.name).join(", ") ||
+                 "None"}
+             </Text>
+           </View>
+         </View>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Areas to Develop:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.weaknesses || "Not specified"}
-              </Text>
-            </View>
+         <View style={styles.infoCard}>
+           <Text style={styles.sectionTitle}>Educational Profile</Text>
 
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Transport Required:</Text>
-              <Text style={styles.infoValue}>
-                {profileData.transport ? "Yes" : "No"}
-              </Text>
-            </View>
-          </View>
-        </>
-      ) : (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Could not load profile data</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={fetchProfileData}
-          >
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </ScrollView>
-  );
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Program:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.enrollment?.programs[0]?.name || "N/A"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Program Description:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.enrollment?.programs[0]?.description || "N/A"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Primary Educator:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.enrollment?.educator?.firstName
+                 ? `${profileData.enrollment.educator.firstName} (${profileData.enrollment.educator.phoneNumber})`
+                 : "N/A"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Secondary Educator:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.enrollment?.secondaryEducator?.firstName
+                 ? `${profileData.enrollment.secondaryEducator.firstName} (${profileData.enrollment.secondaryEducator.phoneNumber})`
+                 : "N/A"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Strengths:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.strengths || "Not specified"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Areas to Develop:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.weaknesses || "Not specified"}
+             </Text>
+           </View>
+
+           <View style={styles.infoRow}>
+             <Text style={styles.infoLabel}>Transport Required:</Text>
+             <Text style={styles.infoValue}>
+               {profileData.transport ? "Yes" : "No"}
+             </Text>
+           </View>
+         </View>
+       </>
+     ) : (
+       <View style={styles.errorContainer}>
+         <Text style={styles.errorText}>Could not load profile data</Text>
+         <TouchableOpacity
+           style={styles.retryButton}
+           onPress={fetchProfileData}
+         >
+           <Text style={styles.retryButtonText}>Retry</Text>
+         </TouchableOpacity>
+       </View>
+     )}
+   </ScrollView>
+ );
 
   // Reports Tab Content
   const renderReportsTab = () => (
