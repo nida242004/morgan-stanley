@@ -110,10 +110,10 @@ const SignIn = () => {
     try {
       // This would be the actual API call in a real implementation
       const response = await axios.post(
-        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/password-reset`,
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/auth/sendResetPasswordOTP`,
         { email: recoveryEmail }
       );
-      
+      console.log(response.data)
       // Simulating successful API call for demonstration
       console.log(`Password reset requested for ${recoveryEmail} (${recoveryUserType})`);
       
@@ -183,12 +183,13 @@ const SignIn = () => {
     
     try {
       // This would be the actual password update API call
-      // const response = await axios.post(
-      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/update-password`,
-      //   { email: recoveryEmail, otp: otpCode, newPassword }
-      // );
+      const response = await axios.post(
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/auth/resetPasswordWithOTP`,
+        { email: recoveryEmail, otp: otpCode, newPassword }
+      );
       
       // Simulating successful password update
+      console.log(response.data)
       console.log(`Password updated for ${recoveryEmail}`);
       
       // Reset form and show success message
