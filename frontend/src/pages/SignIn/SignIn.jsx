@@ -42,7 +42,7 @@ const SignIn = () => {
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('authToken');
-      
+
       if (token) {
         // Determine where to redirect based on user type
         const userType = localStorage.getItem('userType') || 'student';
@@ -77,7 +77,7 @@ const SignIn = () => {
         `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${formData.userType}/login`,
         formData
       );
-       
+       console.log(response)
       let token = response.data.data?.accessToken;
   
       if (token) {

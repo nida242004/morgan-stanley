@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
@@ -7,31 +7,86 @@ import ProgramCard from "../../components/ProgramCard/ProgramCard.jsx";
 import NavbarBrand from "../../components/Navbar/Navbar.jsx";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
 
 const ChildDashboard = () => {
+  useEffect(() => {
+    fetchDetails();
+  }, []);
+
+  const fetchDetails = async () => {
+    const profileRes = await axios.get(
+      "https://team-5-ishanyaindiafoundation.onrender.com/api/v1/student/",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    );
+    console.log(profileRes.data.data.student); // this is the data of the student
+
+    // Sample data
+    //   address: "45 Patel Street, Mumbai, India"
+    // allergies: "Dust"
+    // bloodGroup: "A+"
+    // comorbidity: (2) ['67de2a1f55b1e2d5fc5e2ab5', '67de2a0c55b1e2d5fc5e2a8b']
+    // dob: "2002-08-15T00:00:00.000Z"
+    // email: "
+    //
+    // "
+    // enrollmentDate: "2025-03-22T00:00:00.000Z"
+    // fatherName: "Amit Singh"
+    // firstName:"Ritika"
+    // gender:"Female"
+    // lastName:"Singh"
+    // motherName:"Sunita Singh"
+    // parentEmail:"parents@ishanyafoundation.org"
+    // phoneNumber:"9876501234"
+    // photo:"https://example.com/photos/ritika.jpg"
+    // primaryDiagnosis:"67de2a1d55b1e2d5fc5e2ab2"
+    // resetPasswordAttempts:0
+    // secondaryPhoneNumber:"9123450678"
+    // status:"Active"
+    // strengths:"Arts, Literature"
+    // studentID:"2025002"
+    // transport:true
+    // uuid: "550e8400-e29b-41d4-a716-446655440001"
+    // weaknesses: "Sports"
+    // _id:"67decb6f2f22223fc23ca6b1"
+  };
   const { childName } = useParams();
-  const [selectedSection, setSelectedSection] = useState("dashboard"); 
+
+  const [selectedSection, setSelectedSection] = useState("dashboard");
 
   const program1Data = [
-    { name: "Motor Skills", date: "24/03/2025", description: "Lorem ipsum...", studentIds: ["0157575", "0167628"] },
+    {
+      name: "Motor Skills",
+      date: "24/03/2025",
+      description: "Lorem ipsum...",
+      studentIds: ["0157575", "0167628"],
+    },
   ];
 
   const program2Data = [
-    { name: "Social Skills", date: "26/03/2025", description: "Lorem ipsum...", studentIds: ["0157577", "0167630"] },
+    {
+      name: "Social Skills",
+      date: "26/03/2025",
+      description: "Lorem ipsum...",
+      studentIds: ["0157577", "0167630"],
+    },
   ];
 
   // Colors palette
   const colors = {
-    pampas: "#F3EEEA",    // Light beige background
+    pampas: "#F3EEEA", // Light beige background
     killarney: "#2D2D2D", // Dark grey/almost black
     goldengrass: "#DAB42C", // Golden yellow
-    mulberry: "#C86B85"   // Pinkish/purple accent
+    mulberry: "#C86B85", // Pinkish/purple accent
   };
 
   return (
     <Container fluid className="vh-100 p-0">
       {/* Navbar */}
-     
 
       <div className="dashboard-wrapper">
         {/* Sidebar - using the existing component */}
@@ -74,14 +129,40 @@ const ChildDashboard = () => {
             </>
           )}
 
-          {selectedSection === "profile" && <div className="section">Profile content here</div>}
-          {selectedSection === "reports" && <div className="section">Reports overview</div>}
-          {selectedSection === "quarterly" && <div className="section"><WeeklyProgress /></div>}
-          {selectedSection === "annual" && <div className="section"><WeeklyProgress /></div>}
-          {selectedSection === "courses" && <div className="section">Courses overview</div>}
-          {selectedSection === "primary" && <div className="section"><ProgramCard title="Program 1" activities={program1Data} /></div>}
-          {selectedSection === "secondary" && <div className="section"><ProgramCard title="Program 2" activities={program2Data} /></div>}
-          {selectedSection === "moment" && <div className="section"><MagicMoments /></div>}
+          {selectedSection === "profile" && (
+            <div className="section">Profile content here</div>
+          )}
+          {selectedSection === "reports" && (
+            <div className="section">Reports overview</div>
+          )}
+          {selectedSection === "quarterly" && (
+            <div className="section">
+              <WeeklyProgress />
+            </div>
+          )}
+          {selectedSection === "annual" && (
+            <div className="section">
+              <WeeklyProgress />
+            </div>
+          )}
+          {selectedSection === "courses" && (
+            <div className="section">Courses overview</div>
+          )}
+          {selectedSection === "primary" && (
+            <div className="section">
+              <ProgramCard title="Program 1" activities={program1Data} />
+            </div>
+          )}
+          {selectedSection === "secondary" && (
+            <div className="section">
+              <ProgramCard title="Program 2" activities={program2Data} />
+            </div>
+          )}
+          {selectedSection === "moment" && (
+            <div className="section">
+              <MagicMoments />
+            </div>
+          )}
         </div>
       </div>
 
@@ -130,7 +211,7 @@ const ChildDashboard = () => {
         }
 
         .section-title:after {
-          content: '';
+          content: "";
           flex: 1;
           height: 1px;
           background: ${colors.killarney}30;
@@ -148,11 +229,11 @@ const ChildDashboard = () => {
             margin-left: 180px; /* Match sidebar's width in media query */
             padding: 1rem;
           }
-          
+
           .dashboard-title {
             font-size: 1.5rem;
           }
-          
+
           .section {
             padding: 1rem;
           }
