@@ -174,7 +174,7 @@ export default function StudentScreen() {
 
       // System instruction prompt
       const systemPrompt = `
-  You are an AI assistant designed to help parents of special needs children. 
+  You are an AI assistant named 'Maya', designed to help parents of special needs children. 
   You have access to confidential student information and should provide helpful, compassionate guidance.
 
   Student Information:
