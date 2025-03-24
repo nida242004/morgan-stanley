@@ -6,7 +6,8 @@ import {
   FaUserGraduate,
   FaCalendarCheck,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaFileAlt  // Added for Reports
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -72,35 +73,46 @@ const Sidebar = ({ activeTab, setActiveTab, profile, colors }) => {
         </div>
         
         <Nav className="flex-column">
-          <Nav.Link
-            className={`text-white ${activeTab === "profile" ? "fw-bold" : ""}`}
-            onClick={() => {
-              setActiveTab("profile");
-              if (window.innerWidth < 768) setIsMobileOpen(false);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <FaIdCard className="me-2 text-warning" /> My Profile
-          </Nav.Link>
-          <Nav.Link
-            className={`text-white ${activeTab === "students" ? "fw-bold" : ""}`}
-            onClick={() => {
-              setActiveTab("students");
-              if (window.innerWidth < 768) setIsMobileOpen(false);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <FaUserGraduate className="me-2 text-info" /> My Students
-          </Nav.Link>
-          <Nav.Link
-            className={`text-white ${activeTab === "appointments" ? "fw-bold" : ""}`}
-            onClick={() => {
-              setActiveTab("appointments");
-              if (window.innerWidth < 768) setIsMobileOpen(false);
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <FaCalendarCheck className="me-2 text-success" /> My Appointments
+        <Nav.Link
+          className={`text-white ${activeTab === "profile" ? "fw-bold" : ""}`}
+          onClick={() => {
+            setActiveTab("profile");
+            if (window.innerWidth < 768) setIsMobileOpen(false);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+           <FaIdCard className="me-2 text-warning" /> My Profile
+        </Nav.Link>
+        <Nav.Link
+          className={`text-white ${activeTab === "students" ? "fw-bold" : ""}`}
+          onClick={() => {
+            setActiveTab("students");
+            if (window.innerWidth < 768) setIsMobileOpen(false);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+             <FaUserGraduate className="me-2 text-info" /> My Students
+        </Nav.Link>
+        <Nav.Link
+          className={`text-white ${activeTab === "appointments" ? "fw-bold" : ""}`}
+          onClick={() => {
+            setActiveTab("appointments");
+            if (window.innerWidth < 768) setIsMobileOpen(false);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+        <FaCalendarCheck className="me-2 text-success" /> My Appointments
+        </Nav.Link>
+        {/* New Reports Tab */}
+        <Nav.Link
+          className={`text-white ${activeTab === "reports" ? "fw-bold" : ""}`}
+          onClick={() => {
+            setActiveTab("reports");
+            if (window.innerWidth < 768) setIsMobileOpen(false);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+            <FaFileAlt className="me-2 text-success" /> Reports
           </Nav.Link>
         </Nav>
         

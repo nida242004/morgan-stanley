@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Tab, Card, Badge, Form, Button, Table, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar'; // Import the new Sidebar component
+import Sidebar from './Sidebar'; 
+import ReportsTab from './ReportsTab';
 
 // Custom color scheme
 const colors = {
@@ -314,6 +315,16 @@ const EmployeeDashboard = () => {
                 </Card.Body>
               </Card>
             </Tab.Pane>
+
+            <Tab.Pane active={activeTab === 'reports'}>
+              <ReportsTab 
+                students={students} 
+                colors={colors} 
+                authToken={authToken}
+                navigate={navigate}
+              />
+            </Tab.Pane>
+
           </Tab.Content>
         </Container>
       </div>
