@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Tab, Card, Badge, Form, Button, Table, Modal } from 'react-bootstrap';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar'; // Import the new Sidebar component
 
 // Custom color scheme
@@ -14,6 +14,7 @@ const colors = {
 
 const EmployeeDashboard = () => {
   const { employeeId } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate for redirection
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState(null);
   const [students, setStudents] = useState([]);
@@ -31,6 +32,15 @@ const EmployeeDashboard = () => {
 
   const authToken = localStorage.getItem('authToken');
 
+  // Check if user is logged in when component mounts
+  useEffect(() => {
+    if (!authToken) {
+      // Redirect to signin page if no auth token is found
+      navigate('/signin');
+      return;
+    }
+  }, [authToken, navigate]);
+
   // Configure axios headers
   const axiosConfig = {
     headers: {
@@ -40,6 +50,9 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Skip fetching if no auth token (will redirect anyway)
+      if (!authToken) return;
+      
       try {
         setLoading(true);
         
@@ -58,12 +71,17 @@ const EmployeeDashboard = () => {
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        // If unauthorized error (401), redirect to signin
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem('authToken'); // Clear invalid token
+          navigate('/signin');
+        }
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [authToken]);
+  }, [authToken, navigate]);
 
   const handleUpdateAppointment = async () => {
     try {
@@ -91,6 +109,11 @@ const EmployeeDashboard = () => {
       setShowModal(false);
     } catch (error) {
       console.error('Error updating appointment:', error);
+      // If unauthorized error (401), redirect to signin
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('authToken'); // Clear invalid token
+        navigate('/signin');
+      }
     }
   };
 
