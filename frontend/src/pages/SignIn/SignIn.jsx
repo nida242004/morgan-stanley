@@ -216,7 +216,7 @@ const SignIn = () => {
   const userTypes = [
     { id: 'student', label: 'Parent', icon: 'bi-people' },
     { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },
-    { id: 'admin', label: 'Administrator', icon: 'bi-shield-lock' }
+    { id: 'admin', label: 'Admin', icon: 'bi-shield-lock' }
   ];
 
   // Forgot password handlers

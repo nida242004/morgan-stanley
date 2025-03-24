@@ -283,3 +283,99 @@ button:hover i.bi-arrow-clockwise {
 .table-responsive.scroll-active::after {
   opacity: 1;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Adjust modal height for mobile */
+  .modal-dialog {
+    max-height: 90vh;
+    margin: 5vh auto;
+  }
+
+  .modal-content {
+    max-height: 90vh;
+  }
+
+  .modal-body {
+    max-height: calc(90vh - 120px);
+  }
+
+  /* Adjust table container height for mobile */
+  .table-responsive {
+    max-height: 50vh;
+  }
+
+  /* Adjust card hover effects for mobile */
+  .card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust table row hover effects for mobile */
+  tbody tr:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust badge hover effects for mobile */
+  .badge:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust student photo hover effects for mobile */
+  .student-photo:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust button hover effects for mobile */
+  button:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust form control focus effects for mobile */
+  .form-control:focus, .form-select:focus {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust modal body scroll indicator for mobile */
+  .modal-body::after {
+    height: 10px;
+  }
+
+  /* Adjust table scroll indicator for mobile */
+  .table-responsive::after {
+    height: 10px;
+  }
+
+  /* Adjust search bar animation for mobile */
+  .input-group:focus-within {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Adjust modal content animations for mobile */
+  .modal-content {
+    animation: none;
+  }
+
+  /* Adjust modal sections animation for mobile */
+  .modal-body .card {
+    animation: none;
+    opacity: 1;
+  }
+
+  /* Adjust refresh button animation for mobile */
+  button:hover i.bi-arrow-clockwise {
+    transform: none;
+  }
+
+  /* Adjust student profile picture in modal for mobile */
+  .modal-body .text-center img:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
