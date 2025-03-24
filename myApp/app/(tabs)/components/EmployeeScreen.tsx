@@ -22,10 +22,10 @@ import axios from 'axios';
 
 // Color scheme matching the web version
 const colors = {
-  pampas: '#f2f1ed',    // Light beige/neutral
-  killarney: '#2c5545',  // Deep green
-  goldenGrass: '#daa520', // Golden yellow
-  mulberry: '#C54B8C'    // Purple/pink
+  pampas: "#f2f1ed", // Light beige/neutral
+  killarney: "#1ba94c", // Deep green
+  goldenGrass: "#daa520", // Golden yellow
+  mulberry: "#C54B8C", // Purple/pink
 };
 
 export default function EmployeeScreen() {
