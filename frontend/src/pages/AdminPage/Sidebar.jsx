@@ -32,7 +32,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <span className="ms-2 text-white">Logging out...</span>
         </div>
       )}
-      <div
+      <div 
   className="d-flex flex-column vh-100 p-3"
   style={{
     width: "250px",
