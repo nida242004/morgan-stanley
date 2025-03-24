@@ -42,7 +42,7 @@ const BookSession = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/v1/student/requestAppointment',
+        'https://team-5-ishanyaindiafoundation.onrender.com/api/v1/student/requestAppointment',
         formData
       );
       console.log('API Response:', response.data);

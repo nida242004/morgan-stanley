@@ -110,10 +110,10 @@ const SignIn = () => {
     try {
       // This would be the actual API call in a real implementation
       const response = await axios.post(
-        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/password-reset`,
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/auth/sendResetPasswordOTP`,
         { email: recoveryEmail }
       );
-      
+      console.log(response.data)
       // Simulating successful API call for demonstration
       console.log(`Password reset requested for ${recoveryEmail} (${recoveryUserType})`);
       
@@ -183,12 +183,13 @@ const SignIn = () => {
     
     try {
       // This would be the actual password update API call
-      // const response = await axios.post(
-      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/update-password`,
-      //   { email: recoveryEmail, otp: otpCode, newPassword }
-      // );
+      const response = await axios.post(
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/auth/resetPasswordWithOTP`,
+        { email: recoveryEmail, otp: otpCode, newPassword }
+      );
       
       // Simulating successful password update
+      console.log(response.data)
       console.log(`Password updated for ${recoveryEmail}`);
       
       // Reset form and show success message
@@ -325,22 +326,22 @@ const SignIn = () => {
             <h1 className="display-4 fw-bold mb-4">Empowering Education for Every Child</h1>
             <p className="lead mb-4">Join our community of parents, educators, and administrators committed to providing quality education and support for children with special needs.</p>
             <div className="d-flex justify-content-center gap-3">
-              <Button 
+              {/* <Button 
                 variant="outline-light" 
                 size="lg" 
                 className="rounded-pill px-4"
                 href="/learn-more"
               >
                 Learn More
-              </Button>
-              <Button 
-                style={{ backgroundColor: colors.primary, borderColor: colors.primary }} 
-                size="lg" 
-                className="rounded-pill px-4 text-white"
-                href="/apply"
-              >
-                Join Us
-              </Button>
+              </Button> */}
+              {/* <Button 
+              //   style={{ backgroundColor: colors.primary, borderColor: colors.primary }} 
+              //   size="lg" 
+              //   className="rounded-pill px-4 text-white"
+              //   href="/apply"
+              // >
+              //   Join Us
+              // </Button> */}
             </div>
           </div>
         </div>
@@ -497,7 +498,7 @@ const SignIn = () => {
             {/* Create Account Link */}
             <div className="text-center">
               <p className="mb-0" style={{ color: colors.textLight }}>
-                Don't have an account? 
+                First Time <b>Here</b>? 
                 <a href="/appointment" className="text-decoration-none ms-2" style={{ color: colors.primary }}>
                   Schedule Appointments
                 </a>
