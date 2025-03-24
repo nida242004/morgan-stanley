@@ -8,6 +8,7 @@ import NavbarBrand from "../../components/Navbar/Navbar.jsx";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import StudentProfile from "./StudentProfile.jsx";
 
 const ChildDashboard = () => {
   useEffect(() => {
@@ -117,7 +118,7 @@ const ChildDashboard = () => {
                 <h4 className="section-title">Weekly Progress</h4>
                 <WeeklyProgress />
               </div>
-
+  
               <Row className="mt-4">
                 <Col md={6} className="mb-4">
                   <ProgramCard title="Program 1" activities={program1Data} />
@@ -130,7 +131,7 @@ const ChildDashboard = () => {
           )}
 
           {selectedSection === "profile" && (
-            <div className="section">Profile content here</div>
+            <div className="section"><StudentProfile/></div>
           )}
           {selectedSection === "reports" && (
             <div className="section">Reports overview</div>

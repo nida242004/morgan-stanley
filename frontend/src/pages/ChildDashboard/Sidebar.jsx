@@ -12,6 +12,7 @@ import {
   FaCalendarAlt
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import StudentProfile from "./StudentProfile.jsx";
 
 const Sidebar = ({ setSelectedSection }) => {
   const [showReports, setShowReports] = useState(false);
