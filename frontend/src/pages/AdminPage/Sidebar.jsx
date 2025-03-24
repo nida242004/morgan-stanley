@@ -33,34 +33,43 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
       )}
       <div
-        className="d-flex flex-column bg-dark text-white vh-100 p-3"
-        style={{ width: "250px", position: "fixed", top: "0", left: "0", zIndex: 10 }}
-      >
+  className="d-flex flex-column vh-100 p-3"
+  style={{
+    width: "250px",
+    position: "fixed",
+    top: "0",
+    left: "0",
+    zIndex: 10,
+    backgroundColor: "#F3EEEA",
+    color: "#2D2D2D",
+    borderRight: "0.5px solid #D6CCC2",
+  }}
+>
         <h5 className="mb-4 fw-bold">Admin Dashboard</h5>
         <Nav className="flex-column">
           <Nav.Link
-            className={`text-white ${activeTab === "students" ? "fw-bold" : ""}`}
+            className={`text-dark ${activeTab === "students" ? "fw-bold" : ""}`}
             onClick={() => setActiveTab("students")}
             style={{ cursor: "pointer" }}
           >
             <FaUsers className="me-2" /> Students
           </Nav.Link>
           <Nav.Link
-            className={`text-white ${activeTab === "employees" ? "fw-bold" : ""}`}
+            className={`text-dark ${activeTab === "employees" ? "fw-bold" : ""}`}
             onClick={() => setActiveTab("employees")}
             style={{ cursor: "pointer" }}
           >
             <FaUserCheck className="me-2 text-warning" /> Educators
           </Nav.Link>
           <Nav.Link
-            className={`text-white ${activeTab === "appointments" ? "fw-bold" : ""}`}
+            className={`text-dark ${activeTab === "appointments" ? "fw-bold" : ""}`}
             onClick={() => setActiveTab("appointments")}
             style={{ cursor: "pointer" }}
           >
             <FaCalendarAlt className="me-2 text-info" /> Appointments
           </Nav.Link>
           <Nav.Link
-            className={`text-white ${activeTab === "enrollments" ? "fw-bold" : ""}`}
+            className={`text-dark ${activeTab === "enrollments" ? "fw-bold" : ""}`}
             onClick={() => setActiveTab("enrollments")}
             style={{ cursor: "pointer" }}
           >
@@ -68,14 +77,14 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           </Nav.Link>
           <hr className="bg-light" />
           <Nav.Link
-            className={`text-white ${activeTab === "onboarding" ? "fw-bold" : ""}`}
+            className={`text-dark ${activeTab === "onboarding" ? "fw-bold" : ""}`}
             onClick={() => setActiveTab("onboarding")}
             style={{ cursor: "pointer" }}
           >
             <FaSignInAlt className="me-2 text-success" /> Onboard
           </Nav.Link>
           <Nav.Link
-            className="text-white"
+            className="text-dark"
             onClick={() => alert("Deboarding process initiated")}
             style={{ cursor: "pointer" }}
           >
@@ -84,7 +93,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </Nav>
         <div className="mt-auto">
           <Button variant="danger" className="w-100 mt-3" onClick={handleLogout} disabled={loading}>
-            <FaPowerOff className="me-2" /> Logout
+            <FaSignOutAlt className="me-2" /> Logout
           </Button>
         </div>
       </div>
