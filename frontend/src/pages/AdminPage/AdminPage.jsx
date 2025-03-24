@@ -8,6 +8,7 @@ import EducatorsPage from "./Educators";
 import StudentsPage from "./StudentsPage";
 import OnboardingPage from "./OnboardingPage";
 import EnrollmentsPage from "./EnrollmentsPage";
+import SettingsPage from "./SettingsPage"; // Import the new component
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("students");
@@ -39,9 +40,10 @@ const AdminPage = () => {
       {/* Content Area */}
       <div
         style={{
-          marginLeft: "250px",
-          width: "calc(100% - 250px)",
+          marginLeft: window.innerWidth < 992 ? "0" : "250px",
+          width: window.innerWidth < 992 ? "100%" : "calc(100% - 250px)",
           overflow: "auto",
+          paddingTop: window.innerWidth < 992 ? "56px" : "0", // Add padding for mobile navbar
         }}
       >
         {activeTab === "appointments" ? (
@@ -54,6 +56,8 @@ const AdminPage = () => {
           <OnboardingPage />
         ) : activeTab === "enrollments" ? (
           <EnrollmentsPage />
+        ) : activeTab === "settings" ? (
+          <SettingsPage />
         ) : (
           <Container fluid className="p-4">
             <h2>Welcome to Admin Dashboard</h2>

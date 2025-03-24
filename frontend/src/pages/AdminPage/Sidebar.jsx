@@ -8,7 +8,8 @@ import {
   FaCalendarAlt,
   FaPowerOff,
   FaGraduationCap,
-  FaBars
+  FaBars,
+  FaCogs
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -73,6 +74,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         style={{ cursor: "pointer" }}
       >
         <FaGraduationCap className="me-2 text-success" /> Enrollments
+      </Nav.Link>
+      <Nav.Link
+        className={`text-dark ${activeTab === "settings" ? "fw-bold" : ""}`}
+        onClick={() => handleNavClick("settings")}
+        style={{ cursor: "pointer" }}
+      >
+        <FaCogs className="me-2 text-primary" /> Settings
       </Nav.Link>
       <hr className="bg-light" />
       <Nav.Link

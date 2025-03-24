@@ -209,8 +209,8 @@ const EmployeeDashboard = () => {
         onLogout={handleLogout}
       />
       
-      {/* Main Content */}
-      <div style={{ marginLeft: "250px", width: "calc(100% - 250px)" }}>
+      {/* Main Content - Removed margin-left and adjusted width */}
+      <div className="flex-grow-1">
         <Container fluid className="py-4" style={{ backgroundColor: colors.pampas, minHeight: '100vh' }}>
           <Tab.Content>
             {/* Profile Tab */}
