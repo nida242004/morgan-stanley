@@ -109,10 +109,10 @@ const SignIn = () => {
     
     try {
       // This would be the actual API call in a real implementation
-      // const response = await axios.post(
-      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/password-reset`,
-      //   { email: recoveryEmail }
-      // );
+      const response = await axios.post(
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/password-reset`,
+        { email: recoveryEmail }
+      );
       
       // Simulating successful API call for demonstration
       console.log(`Password reset requested for ${recoveryEmail} (${recoveryUserType})`);
@@ -498,8 +498,8 @@ const SignIn = () => {
             <div className="text-center">
               <p className="mb-0" style={{ color: colors.textLight }}>
                 Don't have an account? 
-                <a href="#" className="text-decoration-none ms-2" style={{ color: colors.primary }}>
-                  Create Account
+                <a href="/appointment" className="text-decoration-none ms-2" style={{ color: colors.primary }}>
+                  Schedule Appointments
                 </a>
               </p>
             </div>
