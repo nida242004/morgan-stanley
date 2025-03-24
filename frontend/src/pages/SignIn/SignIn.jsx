@@ -4,7 +4,7 @@ import { Navbar, Nav, Button, Container, Modal, Form, Alert } from "react-bootst
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 const SignIn = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,6 +14,8 @@ const SignIn = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
   // Forgot password states
@@ -664,7 +666,7 @@ const SignIn = () => {
                     <i className="bi bi-lock" style={{ color: colors.textLight }}></i>
                   </span>
                   <Form.Control
-                    type="password"
+                    type={showNewPassword ? "text" : "password"}
                     placeholder="Create new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -672,6 +674,13 @@ const SignIn = () => {
                     className="shadow-none"
                     minLength="8"
                   />
+                  <button 
+                    className="input-group-text bg-white"
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    <i className={`bi ${showNewPassword ? 'bi-eye-slash' : 'bi-eye'}`} style={{ color: colors.textLight }}></i>
+                  </button>
                 </div>
                 <Form.Text className="text-muted">
                   Password must be at least 8 characters long.
@@ -687,13 +696,20 @@ const SignIn = () => {
                     <i className="bi bi-lock-fill" style={{ color: colors.textLight }}></i>
                   </span>
                   <Form.Control
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm new password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     className="shadow-none"
                   />
+                  <button 
+                    className="input-group-text bg-white"
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`} style={{ color: colors.textLight }}></i>
+                  </button>
                 </div>
               </Form.Group>
               
