@@ -1,19 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col } from "react-bootstrap";
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
 
 function Home() {
-  // Add fade-in animation on page load
+  // Add state for authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
   useEffect(() => {
+    // Add fade-in animation on page load
     const elements = document.querySelectorAll(".fade-in");
     elements.forEach((el) => el.classList.add("visible"));
+    
+    // Check if user is authenticated
+    // This is where you would check your auth service, localStorage, or context
+    // For demo purposes, I'm using a mock check
+    const checkAuthentication = () => {
+      // Replace this with your actual authentication check
+      const userToken = localStorage.getItem('userToken');
+      setIsAuthenticated(!!userToken);
+    };
+    
+    checkAuthentication();
   }, []);
 
   return (
     <>
       {/* Navigation Bar */}
-      <NavbarComponent/>
+      <NavbarComponent isAuthenticated={isAuthenticated} />
+      
       {/* Hero Section */}
       <section
         className="hero-section d-flex align-items-center fade-in"
@@ -36,22 +51,47 @@ function Home() {
                 programs designed for everyone.
               </p>
               <div className="d-flex fade-in">
-                <Button
-                  variant="dark"
-                  size="lg"
-                  className="me-3 fw-medium"
-                  style={{ background: "#00A66E", border: "none" }}
-                >
-                  Explore Courses
-                </Button>
-                <Button
-                  variant="outline-dark"
-                  size="lg"
-                  className="fw-medium"
-                  style={{ borderColor: "#00A66E", color: "#00A66E" }}
-                >
-                  Learn More
-                </Button>
+                {isAuthenticated ? (
+                  // Content for authenticated users
+                  <>
+                    <Button
+                      variant="dark"
+                      size="lg"
+                      className="me-3 fw-medium"
+                      style={{ background: "#00A66E", border: "none" }}
+                    >
+                      My Courses
+                    </Button>
+                    <Button
+                      variant="outline-dark"
+                      size="lg"
+                      className="fw-medium"
+                      style={{ borderColor: "#00A66E", color: "#00A66E" }}
+                    >
+                      Dashboard
+                    </Button>
+                  </>
+                ) : (
+                  // Content for non-authenticated users
+                  <>
+                    <Button
+                      variant="dark"
+                      size="lg"
+                      className="me-3 fw-medium"
+                      style={{ background: "#00A66E", border: "none" }}
+                    >
+                      Explore Courses
+                    </Button>
+                    <Button
+                      variant="outline-dark"
+                      size="lg"
+                      className="fw-medium"
+                      style={{ borderColor: "#00A66E", color: "#00A66E" }}
+                    >
+                      Learn More
+                    </Button>
+                  </>
+                )}
               </div>
             </Col>
 
@@ -74,7 +114,7 @@ function Home() {
                   animation: "float 4s ease-in-out infinite",
                 }}
               >
-                <p>Accessible Learning for All</p>
+                <p>{isAuthenticated ? "Welcome Back!" : "Accessible Learning for All"}</p>
               </div>
             </Col>
           </Row>

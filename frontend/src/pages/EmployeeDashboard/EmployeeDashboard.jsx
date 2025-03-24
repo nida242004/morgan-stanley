@@ -29,6 +29,8 @@ const EmployeeDashboard = () => {
     remarks: '',
     status: ''
   });
+  // Add state for logout animation
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const authToken = localStorage.getItem('authToken');
 
@@ -83,6 +85,17 @@ const EmployeeDashboard = () => {
     fetchData();
   }, [authToken, navigate]);
 
+  // Handle logout with animation
+  const handleLogout = () => {
+    setLoggingOut(true);
+    
+    // Add a delay to show the animation before redirecting
+    setTimeout(() => {
+      localStorage.removeItem('authToken');
+      navigate('/signin');
+    }, 800); // Animation duration
+  };
+
   const handleUpdateAppointment = async () => {
     try {
       const payload = {
@@ -134,6 +147,13 @@ const EmployeeDashboard = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Define CSS for logout animation
+  const logoutAnimationStyle = loggingOut ? {
+    opacity: 0,
+    transform: 'scale(0.95) translateY(10px)',
+    transition: 'opacity 0.8s ease, transform 0.8s ease',
+  } : {};
+
   if (loading) {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
@@ -148,13 +168,45 @@ const EmployeeDashboard = () => {
   }
 
   return (
-    <div className="d-flex">
-      {/* Sidebar */}
+    <div className="d-flex" style={{
+      ...logoutAnimationStyle,
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Logout Overlay - Shown when logging out */}
+      {loggingOut && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            zIndex: 1050,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            animation: 'fadeIn 0.5s ease-in-out'
+          }}
+        >
+          <div className="text-center">
+            <div className="spinner-border mb-3" role="status" style={{ color: colors.killarney }}>
+              <span className="visually-hidden">Logging out...</span>
+            </div>
+            <h4>Logging out...</h4>
+            <p className="text-muted">Thank you for your service today!</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Sidebar - with logout function */}
       <Sidebar 
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         profile={profile}
         colors={colors}
+        onLogout={handleLogout}
       />
       
       {/* Main Content */}
@@ -327,6 +379,34 @@ const EmployeeDashboard = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      
+      {/* Add CSS for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          
+          @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+          }
+          
+          @keyframes slideOut {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+          }
+          
+          .fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+          }
+          
+          .fadeOut {
+            animation: fadeOut 0.5s ease-in-out;
+          }
+        `}
+      </style>
     </div>
   );
 };
