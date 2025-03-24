@@ -1,0 +1,71 @@
+/* Google Translate Widget - Bottom Right Fixed Position */
+#google_translate_element {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Dropdown styling */
+  .goog-te-combo {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 120px; /* Ensures consistent width */
+  }
+  
+  /* Hover effects */
+  #google_translate_element:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .goog-te-combo:hover {
+    border-color: #aaa;
+  }
+  
+  .goog-te-combo:focus {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+  }
+  
+  /* Hide unnecessary elements */
+  .skiptranslate iframe,
+  .goog-te-banner-frame {
+    display: none !important;
+  }
+  
+  body {
+    top: 0 !important;
+  }
+  
+  /* Ensure dropdown menu stays visible */
+  .goog-te-menu-frame {
+    max-width: 100% !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 100% !important;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 600px) {
+    #google_translate_element {
+      right: 10px;
+      bottom: 10px;
+      padding: 6px 8px;
+    }
+    
+    .goog-te-combo {
+      font-size: 12px;
+      padding: 4px 6px;
+      min-width: 100px;
+    }
+  }
