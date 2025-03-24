@@ -50,7 +50,7 @@ const EnrollmentsPage = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === "level" ? parseInt(value, 10) : value // Convert level to integer
     }));
   };
 
@@ -123,40 +123,42 @@ const EnrollmentsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+  
     try {
-      // Get JWT token from localStorage
       const token = localStorage.getItem("authToken");
       if (!token) {
         setError("Authentication token not found");
         setIsSubmitting(false);
         return;
       }
-      
-      // Set base URL
+  
       const baseURL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
-      
-      // Submit enrollment with axios and JWT token
+  
+      // Ensure level is sent as an integer
+      const payload = {
+        ...formData,
+        level: parseInt(formData.level, 10) // Convert level to integer
+      };
+      console.log(formData)
+  
       const response = await axios.post(
         `${baseURL}/admin/enroll_student`, 
-        formData, 
+        payload, // Use the updated payload
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+  
       if (response.data.status) {
-        // Fetch updated enrollments
         const enrollmentsRes = await axios.get(
           `${baseURL}/admin/enrollments`, 
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        
+  
         if (enrollmentsRes.data.status) {
           setEnrollments(enrollmentsRes.data.data.enrollments);
         }
-        
+  
         setSuccessMessage("Student enrolled successfully!");
-        
-        // Reset form and close modal after a delay
+  
         setTimeout(() => {
           setFormData({
             student_id: "",
@@ -402,11 +404,11 @@ const EnrollmentsPage = () => {
                     onChange={handleInputChange}
                     required
                   >
-                    <option value="1">Level 1</option>
-                    <option value="2">Level 2</option>
-                    <option value="3">Level 3</option>
-                    <option value="4">Level 4</option>
-                    <option value="5">Level 5</option>
+                    <option value={1}>Level 1</option>
+                    <option value={2}>Level 2</option>
+                    <option value={3}>Level 3</option>
+                    <option value={4}>Level 4</option>
+                    <option value={5}>Level 5</option>
                   </Form.Select>
                 </Form.Group>
               </Col>

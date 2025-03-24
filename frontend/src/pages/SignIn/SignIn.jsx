@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Navbar, Nav, Button, Container, Modal, Form, Alert } from "react-bootstrap";
 import NavbarComponent from "../../components/Navbar/Navbar.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
@@ -15,6 +15,16 @@ const SignIn = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Forgot password states
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoveryUserType, setRecoveryUserType] = useState('student');
+  const [resetStatus, setResetStatus] = useState({ show: false, type: '', message: '' });
+  const [resetStep, setResetStep] = useState(1); // 1: Email form, 2: OTP verification, 3: New password
+  const [otpCode, setOtpCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // HackerRank-inspired color scheme
   const colors = {
@@ -90,11 +100,139 @@ const SignIn = () => {
     }
   };
 
+  // Handle password reset request
+  const handleResetRequest = async (e) => {
+    e.preventDefault();
+    setResetStatus({ show: false, type: '', message: '' });
+    
+    try {
+      // This would be the actual API call in a real implementation
+      // const response = await axios.post(
+      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/password-reset`,
+      //   { email: recoveryEmail }
+      // );
+      
+      // Simulating successful API call for demonstration
+      console.log(`Password reset requested for ${recoveryEmail} (${recoveryUserType})`);
+      
+      // Move to OTP verification step
+      setResetStep(2);
+      setResetStatus({
+        show: true,
+        type: 'success',
+        message: 'A verification code has been sent to your email.'
+      });
+    } catch (error) {
+      console.error("Password reset failed:", error);
+      setResetStatus({
+        show: true,
+        type: 'danger',
+        message: 'Unable to process your request. Please try again later.'
+      });
+    }
+  };
+
+  // Handle OTP verification
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setResetStatus({ show: false, type: '', message: '' });
+    
+    try {
+      // This would be the actual OTP verification API call
+      // const response = await axios.post(
+      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/verify-otp`,
+      //   { email: recoveryEmail, otp: otpCode }
+      // );
+      
+      // Simulating successful OTP verification
+      console.log(`OTP verification for ${recoveryEmail}: ${otpCode}`);
+      
+      // Move to new password step
+      setResetStep(3);
+      setResetStatus({
+        show: true,
+        type: 'success',
+        message: 'Verification successful. Please set your new password.'
+      });
+    } catch (error) {
+      console.error("OTP verification failed:", error);
+      setResetStatus({
+        show: true,
+        type: 'danger',
+        message: 'Invalid verification code. Please try again.'
+      });
+    }
+  };
+
+  // Handle password update
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    setResetStatus({ show: false, type: '', message: '' });
+    
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      setResetStatus({
+        show: true,
+        type: 'danger',
+        message: 'Passwords do not match.'
+      });
+      return;
+    }
+    
+    try {
+      // This would be the actual password update API call
+      // const response = await axios.post(
+      //   `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/${recoveryUserType}/update-password`,
+      //   { email: recoveryEmail, otp: otpCode, newPassword }
+      // );
+      
+      // Simulating successful password update
+      console.log(`Password updated for ${recoveryEmail}`);
+      
+      // Reset form and show success message
+      setResetStatus({
+        show: true,
+        type: 'success',
+        message: 'Your password has been successfully updated. You can now log in with your new password.'
+      });
+      
+      // Close modal after short delay
+      setTimeout(() => {
+        handleCloseForgotPassword();
+        setFormData(prev => ({ ...prev, email: recoveryEmail }));
+      }, 3000);
+    } catch (error) {
+      console.error("Password update failed:", error);
+      setResetStatus({
+        show: true,
+        type: 'danger',
+        message: 'Unable to update password. Please try again later.'
+      });
+    }
+  };
+
   const userTypes = [
     { id: 'student', label: 'Parent', icon: 'bi-people' },
     { id: 'employee', label: 'Educator', icon: 'bi-person-workspace' },
     { id: 'admin', label: 'Administrator', icon: 'bi-shield-lock' }
   ];
+
+  // Forgot password handlers
+  const handleShowForgotPassword = () => {
+    setRecoveryUserType(formData.userType);
+    setRecoveryEmail(formData.email);
+    setResetStep(1);
+    setResetStatus({ show: false, type: '', message: '' });
+    setShowForgotPassword(true);
+  };
+
+  const handleCloseForgotPassword = () => {
+    setShowForgotPassword(false);
+    setResetStep(1);
+    setOtpCode('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -279,9 +417,14 @@ const SignIn = () => {
             <div className="mb-3">
               <div className="d-flex justify-content-between">
                 <label className="form-label fw-medium" htmlFor="password" style={{ color: colors.textDark }}>Password</label>
-                <a href="#" className="small text-decoration-none" style={{ color: colors.primary }}>
+                <button 
+                  type="button" 
+                  className="btn btn-link p-0 text-decoration-none" 
+                  style={{ color: colors.primary, fontSize: '0.875rem' }}
+                  onClick={handleShowForgotPassword}
+                >
                   Forgot Password?
-                </a>
+                </button>
               </div>
               <div className="input-group">
                 <span className="input-group-text bg-white">
@@ -361,6 +504,222 @@ const SignIn = () => {
           </form>
         </div>
       </div>
+      
+      {/* Forgot Password Modal */}
+      <Modal show={showForgotPassword} onHide={handleCloseForgotPassword} centered>
+        <Modal.Header closeButton style={{ backgroundColor: colors.light }}>
+          <Modal.Title className="fw-bold" style={{ color: colors.secondary }}>
+            <i className="bi bi-shield-lock me-2"></i>
+            Reset Your Password
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: colors.light }}>
+          {resetStatus.show && (
+            <Alert variant={resetStatus.type} className="mb-3">
+              {resetStatus.message}
+            </Alert>
+          )}
+          
+          {/* Step 1: Email & User Type Form */}
+          {resetStep === 1 && (
+            <Form onSubmit={handleResetRequest}>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium" style={{ color: colors.textDark }}>Account Type</Form.Label>
+                <div className="d-flex gap-2 mb-3">
+                  {userTypes.map(type => (
+                    <div 
+                      key={type.id}
+                      className={`flex-grow-1 text-center p-2 rounded-3 border ${
+                        recoveryUserType === type.id ? 'border-success' : ''
+                      }`}
+                      style={{
+                        backgroundColor: recoveryUserType === type.id ? colors.primary + '15' : 'white',
+                        borderColor: recoveryUserType === type.id ? colors.primary : '#dee2e6',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => setRecoveryUserType(type.id)}
+                    >
+                      <i className={`bi ${type.icon}`} style={{ 
+                        color: recoveryUserType === type.id ? colors.primary : colors.textLight
+                      }}></i>
+                      <div style={{ 
+                        color: recoveryUserType === type.id ? colors.primary : colors.textLight,
+                        fontWeight: recoveryUserType === type.id ? '600' : '400',
+                        fontSize: '0.9rem'
+                      }}>
+                        {type.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Form.Group>
+              
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium" style={{ color: colors.textDark }}>
+                  Email Address
+                </Form.Label>
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-envelope" style={{ color: colors.textLight }}></i>
+                  </span>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter your registered email"
+                    value={recoveryEmail}
+                    onChange={(e) => setRecoveryEmail(e.target.value)}
+                    required
+                    className="shadow-none"
+                  />
+                </div>
+                <Form.Text className="text-muted">
+                  We'll send a verification code to this email.
+                </Form.Text>
+              </Form.Group>
+              
+              <div className="d-grid gap-2 mt-4">
+                <Button 
+                  type="submit" 
+                  style={{ backgroundColor: colors.primary, borderColor: colors.primary }}
+                  className="py-2 fw-medium"
+                >
+                  <i className="bi bi-send me-2"></i>
+                  Send Reset Link
+                </Button>
+                <Button 
+                  variant="outline-secondary" 
+                  onClick={handleCloseForgotPassword}
+                  className="py-2"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </Form>
+          )}
+          
+          {/* Step 2: OTP Verification */}
+          {resetStep === 2 && (
+            <Form onSubmit={handleVerifyOTP}>
+              <div className="text-center mb-3">
+                <i className="bi bi-envelope-check" style={{ fontSize: '2rem', color: colors.primary }}></i>
+                <p className="mt-2 mb-3" style={{ color: colors.textDark }}>
+                  Please enter the verification code sent to <strong>{recoveryEmail}</strong>
+                </p>
+              </div>
+              
+              <Form.Group className="mb-4">
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-key" style={{ color: colors.textLight }}></i>
+                  </span>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter verification code"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    required
+                    className="shadow-none text-center"
+                    style={{ letterSpacing: '0.5em', fontWeight: '600' }}
+                  />
+                </div>
+              </Form.Group>
+              
+              <div className="d-grid gap-2">
+                <Button 
+                  type="submit" 
+                  style={{ backgroundColor: colors.primary, borderColor: colors.primary }}
+                  className="py-2 fw-medium"
+                >
+                  <i className="bi bi-check-circle me-2"></i>
+                  Verify Code
+                </Button>
+                <Button 
+                  variant="link" 
+                  className="text-decoration-none"
+                  onClick={() => setResetStep(1)}
+                  style={{ color: colors.textLight }}
+                >
+                  <i className="bi bi-arrow-left me-1"></i>
+                  Back
+                </Button>
+              </div>
+            </Form>
+          )}
+          
+          {/* Step 3: New Password */}
+          {resetStep === 3 && (
+            <Form onSubmit={handlePasswordUpdate}>
+              <div className="text-center mb-3">
+                <i className="bi bi-shield-check" style={{ fontSize: '2rem', color: colors.primary }}></i>
+                <p className="mt-2 mb-3" style={{ color: colors.textDark }}>
+                  Create a new password for your account
+                </p>
+              </div>
+              
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium" style={{ color: colors.textDark }}>
+                  New Password
+                </Form.Label>
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-lock" style={{ color: colors.textLight }}></i>
+                  </span>
+                  <Form.Control
+                    type="password"
+                    placeholder="Create new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="shadow-none"
+                    minLength="8"
+                  />
+                </div>
+                <Form.Text className="text-muted">
+                  Password must be at least 8 characters long.
+                </Form.Text>
+              </Form.Group>
+              
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-medium" style={{ color: colors.textDark }}>
+                  Confirm Password
+                </Form.Label>
+                <div className="input-group">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-lock-fill" style={{ color: colors.textLight }}></i>
+                  </span>
+                  <Form.Control
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="shadow-none"
+                  />
+                </div>
+              </Form.Group>
+              
+              <div className="d-grid gap-2 mt-4">
+                <Button 
+                  type="submit" 
+                  style={{ backgroundColor: colors.primary, borderColor: colors.primary }}
+                  className="py-2 fw-medium"
+                >
+                  <i className="bi bi-check-lg me-2"></i>
+                  Update Password
+                </Button>
+                <Button 
+                  variant="link" 
+                  className="text-decoration-none"
+                  onClick={() => setResetStep(2)}
+                  style={{ color: colors.textLight }}
+                >
+                  <i className="bi bi-arrow-left me-1"></i>
+                  Back
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Modal.Body>
+      </Modal>
     </>
   );
 };
