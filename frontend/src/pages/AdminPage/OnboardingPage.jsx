@@ -26,7 +26,7 @@ const API_BASE_URL =
   "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
 
 const OnboardingPage = () => {
-  const [key, setKey] = useState("student");
+  const [key, setKey] = useState("employee");
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

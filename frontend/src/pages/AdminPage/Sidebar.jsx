@@ -9,7 +9,8 @@ import {
   FaPowerOff,
   FaGraduationCap,
   FaBars,
-  FaCogs
+  FaCogs,
+  FaTachometerAlt
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -47,6 +48,14 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   // Sidebar content - reused in both desktop and mobile views
   const navigationLinks = (
     <Nav className="flex-column w-100">
+      <Nav.Link
+        className={`text-dark ${activeTab === "dashboard" ? "fw-bold" : ""}`}
+        onClick={() => handleNavClick("dashboard")}
+        style={{ cursor: "pointer" }}
+      >
+        <FaTachometerAlt className="me-2" /> Dashboard
+      </Nav.Link>
+
       <Nav.Link
         className={`text-dark ${activeTab === "students" ? "fw-bold" : ""}`}
         onClick={() => handleNavClick("students")}

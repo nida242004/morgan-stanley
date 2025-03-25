@@ -8,10 +8,11 @@ import EducatorsPage from "./Educators";
 import StudentsPage from "./StudentsPage";
 import OnboardingPage from "./OnboardingPage";
 import EnrollmentsPage from "./EnrollmentsPage";
-import SettingsPage from "./SettingsPage"; // Import the new component
+import SettingsPage from "./SettingsPage";
+import AdminDashboard from './AdminDashboard';
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState("students");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const navigate = useNavigate(); // Initialize useNavigate
@@ -58,6 +59,8 @@ const AdminPage = () => {
           <EnrollmentsPage />
         ) : activeTab === "settings" ? (
           <SettingsPage />
+        ) : activeTab === "dashboard" ? (
+          <AdminDashboard setActiveTab={setActiveTab} navigate={navigate}/>
         ) : (
           <Container fluid className="p-4">
             <h2>Welcome to Admin Dashboard</h2>
