@@ -14,7 +14,8 @@ import {
   Alert, 
   InputGroup 
 } from "react-bootstrap";
-import { FaGraduationCap, FaUserPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { FaGraduationCap, FaUserPlus, FaEdit, FaTrash, FaSearch, FaRobot } from "react-icons/fa";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const EnrollmentsPage = () => {
   // State for enrollments, students, programs, educators
@@ -28,6 +29,12 @@ const EnrollmentsPage = () => {
   // State for search and filtering
   const [studentSearchTerm, setStudentSearchTerm] = useState("");
   
+  // AI-related states
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [aiThoughts, setAiThoughts] = useState("");
+  const [diagnoses, setDiagnoses] = useState([]);
+  const [genAI, setGenAI] = useState(null);
+
   // State for the enrollment form
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -49,9 +56,161 @@ const EnrollmentsPage = () => {
     mulberry: "#C17C74"
   };
 
+  // Initialize Google AI
+  useEffect(() => {
+    const initializeAI = async () => {
+      try {
+        const apiKey = import.meta.env.VITE_GENERATIVE_AI_KEY;
+        if (!apiKey) throw new Error("API key is missing");
+
+        const generativeAI = new GoogleGenerativeAI(apiKey);
+        setGenAI(generativeAI);
+      } catch (error) {
+        console.error("Failed to initialize AI:", error);
+      }
+    };
+
+    initializeAI();
+  }, []);
+
+  // Fetch diagnoses
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const baseURL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
+        
+        const diagnosesRes = await axios.get(`${baseURL}/admin/diagnosis`, { 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
+
+        if (diagnosesRes.data.status) {
+          setDiagnoses(diagnosesRes.data.data.diagnoses);
+        }
+      } catch (error) {
+        console.error("Failed to fetch diagnoses:", error);
+      }
+    };
+
+    fetchDiagnoses();
+  }, []);
+
+  // Helper function to calculate age
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
+  // AI Auto-fill Function
+  const generateAIEnrollmentSuggestions = async (selectedStudent, selectedDiagnosis) => {
+    if (!genAI || !selectedStudent || !selectedDiagnosis) return;
+
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = JSON.stringify({
+        task: "Recommend enrollment details for a student with special needs",
+        student: {
+          name: `${selectedStudent.firstName} ${selectedStudent.lastName}`,
+          diagnosis: selectedDiagnosis.name,
+          diagnosisCategory: selectedDiagnosis.category,
+          age: calculateAge(selectedStudent.dob)
+        },
+        context: {
+          programs: programs.map(p => ({ 
+            name: p.name, 
+            description: p.description 
+          })),
+          educators: educators.map(e => ({
+            name: `${e.firstName} ${e.lastName}`,
+            comments: e.comments || ""
+          }))
+        }
+      });
+
+      const aiPrompt = `
+        Based on the following student and program details, provide recommendations for:
+        1. Best suited program(s)
+        2. Recommended educator(s)
+        3. Appropriate enrollment level
+        4. A brief explanation of your reasoning
+
+        Output a precise JSON with these keys:
+        {
+          "programs": string[],
+          "primaryEducator": string,
+          "secondaryEducator": string | null,
+          "level": number,
+          "reasoning": string
+        }
+        
+        Student and Context Details:
+        ${prompt}
+      `;
+
+      const result = await model.generateContent(aiPrompt);
+      const aiResponse = result.response.text();
+      
+      // Extract JSON from response (remove markdown code block if present)
+      const jsonMatch = aiResponse.match(/```json\n([\s\S]*)\n```/) || 
+                        aiResponse.match(/\{[\s\S]*\}/);
+      
+      const parsedResponse = jsonMatch 
+        ? JSON.parse(jsonMatch[1] || jsonMatch[0]) 
+        : JSON.parse(aiResponse);
+
+      // Map AI suggestions to form
+      const suggestedFormData = {
+        program_ids: parsedResponse.programs.map(programName => 
+          programs.find(p => p.name === programName)?._id
+        ).filter(Boolean),
+        educator_id: educators.find(e => 
+          `${e.firstName} ${e.lastName}` === parsedResponse.primaryEducator
+        )?._id,
+        secondaryEducator_id: educators.find(e => 
+          `${e.firstName} ${e.lastName}` === parsedResponse.secondaryEducator
+        )?._id || "",
+        level: parsedResponse.level
+      };
+
+      setAiSuggestions(suggestedFormData);
+      setAiThoughts(parsedResponse.reasoning);
+    } catch (error) {
+      console.error("AI Suggestion Error:", error);
+      setAiSuggestions(null);
+      setAiThoughts("Unable to generate AI suggestions.");
+    }
+  };
+
   // Handle input changes for form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // If a student is selected, trigger AI suggestions
+    if (name === "student_id") {
+      const selectedStudent = students.find(s => s._id === value);
+      const selectedDiagnosis = diagnoses.find(d => 
+        d._id === selectedStudent.primaryDiagnosis
+      );
+      
+      // Reset AI suggestions when a new student is selected
+      setAiSuggestions(null);
+      setAiThoughts("");
+      
+      // Generate AI suggestions if student has a diagnosis
+      if (selectedDiagnosis) {
+        generateAIEnrollmentSuggestions(selectedStudent, selectedDiagnosis);
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: name === "level" ? parseInt(value, 10) : value
@@ -208,6 +367,8 @@ const EnrollmentsPage = () => {
           });
           setShowEnrollModal(false);
           setSuccessMessage("");
+          setAiSuggestions(null);
+          setAiThoughts("");
         }, 2000);
       } else {
         setError(response.data.message || "Failed to enroll student");
@@ -384,7 +545,7 @@ const EnrollmentsPage = () => {
       </Card>
       
       {/* Enrollment Modal */}
-      <Modal show={showEnrollModal} onHide={() => setShowEnrollModal(false)} size="lg">
+      <Modal show={showEnrollModal} onHide={() => setShowEnrollModal(false)} size="xl">
         <Modal.Header style={{ backgroundColor: colors.killarney, color: "white" }}>
           <Modal.Title>New Student Enrollment</Modal.Title>
         </Modal.Header>
@@ -393,6 +554,38 @@ const EnrollmentsPage = () => {
             <Alert variant="success" className="mb-3">
               {successMessage}
             </Alert>
+          )}
+          
+          {aiSuggestions && (
+            <Card className="mb-3" style={{ backgroundColor: colors.pampas }}>
+              <Card.Header 
+                className="d-flex align-items-center" 
+                style={{ backgroundColor: colors.killarney, color: "white" }}
+              >
+                <FaRobot className="me-2" /> AI Enrollment Suggestions
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  <Col md={8}>
+                    <p><strong>AI Reasoning:</strong> {aiThoughts}</p>
+                  </Col>
+                  <Col md={4} className="text-end">
+                    <Button 
+                      variant="primary" 
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          ...aiSuggestions
+                        }));
+                      }}
+                      style={{ backgroundColor: colors.killarney, borderColor: colors.killarney }}
+                    >
+                      Apply AI Suggestions
+                    </Button>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
           )}
           
           <Form onSubmit={handleSubmit}>
@@ -444,13 +637,13 @@ const EnrollmentsPage = () => {
               </Col>
             </Row>
             
-            {/* Rest of the form remains the same */}
             <Form.Group className="mb-3" controlId="program_ids">
               <Form.Label>Programs</Form.Label>
               <Form.Select 
                 multiple 
                 name="program_ids"
                 onChange={handleProgramSelect}
+                value={formData.program_ids}
                 style={{ height: "120px" }}
                 required
               >

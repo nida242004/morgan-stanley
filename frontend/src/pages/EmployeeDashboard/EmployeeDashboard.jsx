@@ -32,7 +32,6 @@ const EmployeeDashboard = () => {
   });
   // Add state for logout animation
   const [loggingOut, setLoggingOut] = useState(false);
-
   const authToken = localStorage.getItem('authToken');
 
   // Check if user is logged in when component mounts
@@ -55,22 +54,17 @@ const EmployeeDashboard = () => {
     const fetchData = async () => {
       // Skip fetching if no auth token (will redirect anyway)
       if (!authToken) return;
-      
       try {
         setLoading(true);
-        
         // Fetch profile data
         const profileRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/', axiosConfig);
         setProfile(profileRes.data.data.employee);
-        
         // Fetch enrollments (students)
         const studentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/myEnrollments', axiosConfig);
         setStudents(studentsRes.data.data.enrollments);
-        
         // Fetch appointments
         const appointmentsRes = await axios.get('https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/appointments', axiosConfig);
         setAppointments(appointmentsRes.data.data.appointments);
-        
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -82,14 +76,12 @@ const EmployeeDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [authToken, navigate]);
 
   // Handle logout with animation
   const handleLogout = () => {
     setLoggingOut(true);
-    
     // Add a delay to show the animation before redirecting
     setTimeout(() => {
       localStorage.removeItem('authToken');
@@ -105,20 +97,17 @@ const EmployeeDashboard = () => {
         remarks: updateForm.remarks,
         status: updateForm.status
       };
-
       await axios.post(
         'https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/update_appointment',
         payload,
         axiosConfig
       );
-
       // Update the appointments list
       const updatedAppointments = appointments.map(app => 
         app._id === selectedAppointment._id 
           ? { ...app, verdict: updateForm.verdict, remarks: updateForm.remarks, status: updateForm.status }
           : app
       );
-      
       setAppointments(updatedAppointments);
       setShowModal(false);
     } catch (error) {
@@ -200,7 +189,7 @@ const EmployeeDashboard = () => {
           </div>
         </div>
       )}
-      
+
       {/* Sidebar - with logout function */}
       <Sidebar 
         activeTab={activeTab}
@@ -209,7 +198,7 @@ const EmployeeDashboard = () => {
         colors={colors}
         onLogout={handleLogout}
       />
-      
+
       {/* Main Content - Removed margin-left and adjusted width */}
       <div className="flex-grow-1">
         <Container fluid className="py-4" style={{ backgroundColor: colors.pampas, minHeight: '100vh' }}>
@@ -218,18 +207,17 @@ const EmployeeDashboard = () => {
             <Tab.Pane active={activeTab === 'profile'}>
               <ProfileTab profile={profile} colors={colors} />
             </Tab.Pane>
-            
+
             {/* Students Tab */}
             <Tab.Pane active={activeTab === 'students'}>
               <StudentsTab students={students} colors={colors} />
             </Tab.Pane>
-            
+
             {/* Appointments Tab */}
             <Tab.Pane active={activeTab === 'appointments'}>
               <Card className="border-0 shadow-sm">
                 <Card.Body>
                   <h4 className="mb-4" style={{ color: colors.killarney }}>My Appointments</h4>
-                  
                   {/* Filters and Search */}
                   <Row className="mb-4 align-items-center">
                     <Col md={6}>
@@ -255,7 +243,6 @@ const EmployeeDashboard = () => {
                       </Form.Group>
                     </Col>
                   </Row>
-                  
                   {/* Appointments Table */}
                   <div className="table-responsive">
                     <Table hover>
@@ -296,6 +283,7 @@ const EmployeeDashboard = () => {
                                   variant="outline-secondary" 
                                   size="sm"
                                   onClick={() => openUpdateModal(appointment)}
+                                  disabled={appointment.status === 'completed'} // Disable if status is completed
                                 >
                                   <i className="bi bi-pencil-square"></i> Update
                                 </Button>
@@ -324,11 +312,10 @@ const EmployeeDashboard = () => {
                 navigate={navigate}
               />
             </Tab.Pane>
-
           </Tab.Content>
         </Container>
       </div>
-      
+
       {/* Update Appointment Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton style={{ backgroundColor: colors.killarney, color: 'white' }}>
@@ -341,18 +328,17 @@ const EmployeeDashboard = () => {
                 <Form.Label>Student</Form.Label>
                 <Form.Control type="text" readOnly value={selectedAppointment.studentName} />
               </Form.Group>
-              
               <Form.Group className="mb-3">
                 <Form.Label>Status</Form.Label>
                 <Form.Select 
                   value={updateForm.status}
                   onChange={(e) => setUpdateForm({...updateForm, status: e.target.value})}
+                  disabled={selectedAppointment.status === 'completed'} // Disable if status is completed
                 >
                   <option value="scheduled">Scheduled</option>
                   <option value="completed">Completed</option>
                 </Form.Select>
               </Form.Group>
-              
               <Form.Group className="mb-3">
                 <Form.Label>Verdict</Form.Label>
                 <Form.Select 
@@ -364,7 +350,6 @@ const EmployeeDashboard = () => {
                   <option value="recommendation">Recommended for a different NGO</option>
                 </Form.Select>
               </Form.Group>
-              
               <Form.Group className="mb-3">
                 <Form.Label>Remarks</Form.Label>
                 <Form.Control 
@@ -385,12 +370,13 @@ const EmployeeDashboard = () => {
           <Button 
             style={{ backgroundColor: colors.goldenGrass, borderColor: colors.goldenGrass }}
             onClick={handleUpdateAppointment}
+            disabled={selectedAppointment?.status === 'completed'} // Disable save if status is completed
           >
             Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
-      
+
       {/* Add CSS for animations */}
       <style>
         {`
@@ -398,21 +384,17 @@ const EmployeeDashboard = () => {
             from { opacity: 0; }
             to { opacity: 1; }
           }
-          
           @keyframes fadeOut {
             from { opacity: 1; }
             to { opacity: 0; }
           }
-          
           @keyframes slideOut {
             from { transform: translateX(0); }
             to { transform: translateX(-100%); }
           }
-          
           .fadeIn {
             animation: fadeIn 0.5s ease-in-out;
           }
-          
           .fadeOut {
             animation: fadeOut 0.5s ease-in-out;
           }
@@ -425,7 +407,7 @@ const EmployeeDashboard = () => {
 // Profile Tab Component - Enhanced for a nicer look
 const ProfileTab = ({ profile, colors }) => {
   if (!profile) return null;
-  
+
   const personalInfo = [
     { label: 'Employee ID', value: profile.employeeID, icon: 'bi bi-person-badge' },
     { label: 'Full Name', value: `${profile.firstName} ${profile.lastName}`, icon: 'bi bi-person' },
@@ -434,7 +416,7 @@ const ProfileTab = ({ profile, colors }) => {
     { label: 'Contact', value: profile.contact, icon: 'bi bi-phone' },
     { label: 'Address', value: profile.address, icon: 'bi bi-geo-alt' }
   ];
-  
+
   const employmentInfo = [
     { label: 'Employment Type', value: profile.employmentType, icon: 'bi bi-briefcase' },
     { label: 'Status', value: profile.status, icon: 'bi bi-check-circle' },
@@ -472,14 +454,13 @@ const ProfileTab = ({ profile, colors }) => {
           </div>
         </Card.Body>
       </Card>
-      
+
       {/* Personal Info Card */}
       <Card className="border-0 shadow-sm mb-4">
         <Card.Body>
           <h4 className="mb-4" style={{ color: colors.killarney, borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
             <i className="bi bi-person-vcard me-2"></i> Personal Information
           </h4>
-          
           <Row>
             {personalInfo.map((field, index) => (
               <Col md={6} key={index} className="mb-3">
@@ -499,14 +480,13 @@ const ProfileTab = ({ profile, colors }) => {
           </Row>
         </Card.Body>
       </Card>
-      
+
       {/* Employment Info Card */}
       <Card className="border-0 shadow-sm">
         <Card.Body>
           <h4 className="mb-4" style={{ color: colors.killarney, borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
             <i className="bi bi-briefcase me-2"></i> Employment Information
           </h4>
-          
           <Row>
             {employmentInfo.map((field, index) => (
               <Col md={6} key={index} className="mb-3">
@@ -544,7 +524,6 @@ const StudentsTab = ({ students, colors }) => {
     <Card className="border-0 shadow-sm">
       <Card.Body>
         <h4 className="mb-4" style={{ color: colors.killarney }}>My Students</h4>
-        
         {/* Search */}
         <Form.Group className="mb-4">
           <Form.Control 
@@ -554,7 +533,6 @@ const StudentsTab = ({ students, colors }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </Form.Group>
-        
         <Row>
           {filteredStudents.length > 0 ? (
             filteredStudents.map((enrollment) => (
@@ -588,28 +566,23 @@ const StudentsTab = ({ students, colors }) => {
                         </Badge>
                       </div>
                     </div>
-                    
                     <div className="border-top pt-3 mt-2">
                       <div className="mb-2">
                         <strong>Primary Diagnosis:</strong> {enrollment.student.primaryDiagnosis?.name || 'N/A'}
                       </div>
-                      
                       {enrollment.student.comorbidity && enrollment.student.comorbidity.length > 0 && (
                         <div className="mb-2">
                           <strong>Comorbidity:</strong>{' '}
                           {enrollment.student.comorbidity.map(c => c.name).join(', ')}
                         </div>
                       )}
-                      
                       <div className="mb-2">
                         <strong>Level:</strong> {enrollment.level}
                       </div>
-                      
                       <div className="mb-2">
                         <strong>Programs:</strong>{' '}
                         {enrollment.programs.map(p => p.name).join(', ')}
                       </div>
-                      
                       <div className="mb-0">
                         <strong>Primary Educator:</strong>{' '}
                         {enrollment.educator?.firstName} {enrollment.educator?.lastName}

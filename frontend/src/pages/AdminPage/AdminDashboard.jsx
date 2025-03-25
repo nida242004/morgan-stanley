@@ -177,7 +177,7 @@ const AdminDashboard = ({ setActiveTab }) => {
           educators: educatorsResponse.data.data.Employees.length,
           appointments: {
             total: appointments.length,
-            pending: appointments.filter(a => a.status === 'scheduled').length,
+            pending: appointments.filter(a => a.status === 'pending').length,
             completed: appointments.filter(a => a.status === 'completed').length
           },
           programs: programs.length,
