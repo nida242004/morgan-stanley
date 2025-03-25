@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { 
   Container, 
@@ -11,9 +11,10 @@ import {
   Modal, 
   Spinner, 
   Badge, 
-  Alert 
+  Alert, 
+  InputGroup 
 } from "react-bootstrap";
-import { FaGraduationCap, FaUserPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaGraduationCap, FaUserPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
 
 const EnrollmentsPage = () => {
   // State for enrollments, students, programs, educators
@@ -23,6 +24,9 @@ const EnrollmentsPage = () => {
   const [educators, setEducators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // State for search and filtering
+  const [studentSearchTerm, setStudentSearchTerm] = useState("");
   
   // State for the enrollment form
   const [showEnrollModal, setShowEnrollModal] = useState(false);
@@ -45,16 +49,16 @@ const EnrollmentsPage = () => {
     mulberry: "#C17C74"
   };
 
-  // Add missing handleInputChange function
+  // Handle input changes for form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === "level" ? parseInt(value, 10) : value // Convert level to integer
+      [name]: name === "level" ? parseInt(value, 10) : value
     }));
   };
 
-  // Add missing handleProgramSelect function
+  // Handle program selection
   const handleProgramSelect = (e) => {
     const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
     setFormData(prev => ({
@@ -63,12 +67,20 @@ const EnrollmentsPage = () => {
     }));
   };
 
+  // Filter available students for enrollment
+  const filteredStudents = useMemo(() => {
+    return students.filter(student => 
+      `${student.firstName} ${student.lastName} ${student.studentID}`
+        .toLowerCase()
+        .includes(studentSearchTerm.toLowerCase())
+    );
+  }, [students, studentSearchTerm]);
+
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Get JWT token from localStorage
         const token = localStorage.getItem("authToken");
         if (!token) {
           setError("Authentication token not found");
@@ -76,10 +88,8 @@ const EnrollmentsPage = () => {
           return;
         }
         
-        // Set base URL
         const baseURL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
         
-        // Fetch all data in parallel using axios with authentication
         const [enrollmentsRes, studentsRes, programsRes, educatorsRes] = await Promise.all([
           axios.get(`${baseURL}/admin/enrollments`, { 
             headers: { Authorization: `Bearer ${token}` } 
@@ -95,13 +105,28 @@ const EnrollmentsPage = () => {
           })
         ]);
         
-        // Check responses and update state
         if (enrollmentsRes.data.status && 
             studentsRes.data.status && 
             programsRes.data.status && 
             educatorsRes.data.status) {
           
-          setEnrollments(enrollmentsRes.data.data.enrollments);
+          // Group enrollments by student
+          const groupedEnrollments = {};
+          enrollmentsRes.data.data.enrollments.forEach(enrollment => {
+            const studentId = enrollment.student._id;
+            if (!groupedEnrollments[studentId]) {
+              groupedEnrollments[studentId] = { ...enrollment };
+              groupedEnrollments[studentId].allPrograms = [...enrollment.programs];
+            } else {
+              // Merge programs for students with multiple enrollments
+              groupedEnrollments[studentId].allPrograms = [
+                ...groupedEnrollments[studentId].allPrograms,
+                ...enrollment.programs
+              ];
+            }
+          });
+
+          setEnrollments(Object.values(groupedEnrollments));
           setStudents(studentsRes.data.data.Students);
           setPrograms(programsRes.data.data.programs);
           setEducators(educatorsRes.data.data.Employees);
@@ -119,7 +144,7 @@ const EnrollmentsPage = () => {
     fetchData();
   }, []);
   
-  // Handle form submission with axios and JWT token
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -134,16 +159,14 @@ const EnrollmentsPage = () => {
   
       const baseURL = "https://team-5-ishanyaindiafoundation.onrender.com/api/v1";
   
-      // Ensure level is sent as an integer
       const payload = {
         ...formData,
-        level: parseInt(formData.level, 10) // Convert level to integer
+        level: parseInt(formData.level, 10)
       };
-      console.log(formData)
   
       const response = await axios.post(
         `${baseURL}/admin/enroll_student`, 
-        payload, // Use the updated payload
+        payload, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
   
@@ -154,7 +177,22 @@ const EnrollmentsPage = () => {
         );
   
         if (enrollmentsRes.data.status) {
-          setEnrollments(enrollmentsRes.data.data.enrollments);
+          // Reuse the same grouping logic from initial data fetch
+          const groupedEnrollments = {};
+          enrollmentsRes.data.data.enrollments.forEach(enrollment => {
+            const studentId = enrollment.student._id;
+            if (!groupedEnrollments[studentId]) {
+              groupedEnrollments[studentId] = { ...enrollment };
+              groupedEnrollments[studentId].allPrograms = [...enrollment.programs];
+            } else {
+              groupedEnrollments[studentId].allPrograms = [
+                ...groupedEnrollments[studentId].allPrograms,
+                ...enrollment.programs
+              ];
+            }
+          });
+
+          setEnrollments(Object.values(groupedEnrollments));
         }
   
         setSuccessMessage("Student enrolled successfully!");
@@ -180,24 +218,6 @@ const EnrollmentsPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-  
-  // Get student name by ID
-  const getStudentName = (id) => {
-    const student = students.find(s => s._id === id);
-    return student ? `${student.firstName} ${student.lastName}` : "Unknown";
-  };
-  
-  // Get educator name by ID
-  const getEducatorName = (id) => {
-    const educator = educators.find(e => e._id === id);
-    return educator ? `${educator.firstName} ${educator.lastName}` : "Unknown";
-  };
-  
-  // Get program name by ID
-  const getProgramName = (id) => {
-    const program = programs.find(p => p._id === id);
-    return program ? program.name : "Unknown";
   };
   
   // Render loading spinner
@@ -276,7 +296,7 @@ const EnrollmentsPage = () => {
                 </thead>
                 <tbody>
                   {enrollments.map((enrollment) => (
-                    <tr key={enrollment._id}>
+                    <tr key={enrollment.student._id}>
                       <td>
                         <div className="d-flex align-items-center">
                           {enrollment.student.photo ? (
@@ -309,7 +329,7 @@ const EnrollmentsPage = () => {
                         </div>
                       </td>
                       <td>
-                        {enrollment.programs.map((program, idx) => (
+                        {enrollment.allPrograms.map((program, idx) => (
                           <Badge 
                             key={idx} 
                             bg="warning" 
@@ -376,6 +396,16 @@ const EnrollmentsPage = () => {
           )}
           
           <Form onSubmit={handleSubmit}>
+            <InputGroup className="mb-3">
+              <InputGroup.Text><FaSearch /></InputGroup.Text>
+              <Form.Control 
+                type="text" 
+                placeholder="Search students by name or ID" 
+                value={studentSearchTerm}
+                onChange={(e) => setStudentSearchTerm(e.target.value)}
+              />
+            </InputGroup>
+            
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="student_id">
@@ -387,7 +417,7 @@ const EnrollmentsPage = () => {
                     required
                   >
                     <option value="">Select a student...</option>
-                    {students.map((student) => (
+                    {filteredStudents.map((student) => (
                       <option key={student._id} value={student._id}>
                         {student.firstName} {student.lastName} ({student.studentID})
                       </option>
@@ -414,6 +444,7 @@ const EnrollmentsPage = () => {
               </Col>
             </Row>
             
+            {/* Rest of the form remains the same */}
             <Form.Group className="mb-3" controlId="program_ids">
               <Form.Label>Programs</Form.Label>
               <Form.Select 
@@ -481,7 +512,6 @@ const EnrollmentsPage = () => {
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
-                <option value="On Hold">On Hold</option>
                 <option value="Completed">Completed</option>
               </Form.Select>
             </Form.Group>

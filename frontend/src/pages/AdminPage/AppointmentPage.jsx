@@ -509,36 +509,32 @@ const AppointmentPage = () => {
               )}
 
               <Form.Group className="mb-3">
-                <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
-                  <i className="bi bi-card-text me-2"></i>
-                  Remarks
-                </Form.Label>
-                <Form.Control 
-                  as="textarea" 
-                  rows={3} 
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                  placeholder="Add notes about this appointment"
-                  style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
-                />
-              </Form.Group>
+  <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
+    <i className="bi bi-card-text me-2"></i>
+    Remarks
+  </Form.Label>
+  <Form.Control 
+    as="textarea" 
+    rows={3} 
+    value={remarks || "Educator has yet to provide the remarks."}
+    disabled
+    style={{ borderColor: "#ced4da", fontSize: "0.9rem", backgroundColor: "#f8f9fa" }}
+  />
+</Form.Group>
 
               {(selectedAppointment?.status === "scheduled" || selectedAppointment?.status === "completed") && (
                 <Form.Group className="mb-3">
-                  <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
-                    <i className="bi bi-check-circle me-2"></i>
-                    Verdict
-                  </Form.Label>
-                  <Form.Select 
-                    value={verdict}
-                    onChange={(e) => setVerdict(e.target.value)}
-                    style={{ borderColor: "#ced4da", fontSize: "0.9rem" }}
-                  >
-                    <option value="">Select verdict</option>
-                    <option value="joined">Joined</option>
-                    <option value="recommendation">Recommendation</option>
-                  </Form.Select>
-                </Form.Group>
+  <Form.Label style={{ color: colors.killarney, fontWeight: "500" }}>
+    <i className="bi bi-check-circle me-2"></i>
+    Verdict
+  </Form.Label>
+  <Form.Control 
+    type="text"
+    value={verdict || "No verdict set"} 
+    disabled
+    style={{ borderColor: "#ced4da", fontSize: "0.9rem", backgroundColor: "#f8f9fa" }}
+  />
+</Form.Group>
               )}
 
               <div className="d-flex gap-2 mt-4 justify-content-between">
