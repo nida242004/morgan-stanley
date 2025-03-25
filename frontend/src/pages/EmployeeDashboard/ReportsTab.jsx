@@ -14,73 +14,66 @@ import {
 import axios from 'axios';
 
 const ReportsTab = ({ students, colors, authToken, navigate }) => {
-  // Hardcoded skill data based on the provided format
-  const skillData = {
-    programs: [
-      {
-        "_id": "67de2613ec69e2e41fba10d0",
-        "name": "SAMETI"
-      }
-    ],
-    skillAreas: [
-      {
-        "_id": "67e1b441c6e864f55241a801",
-        "program_id": "67de2613ec69e2e41fba10d0",
-        "name": "Cognitive Skills",
-        "description": "Develops problem-solving, memory retention, and pattern recognition abilities."
-      },
-      {
-        "_id": "67e1b441c6e864f55241a802",
-        "program_id": "67de2613ec69e2e41fba10d0",
-        "name": "Communication Skills",
-        "description": "Enhances verbal, written, and listening skills for effective expression."
-      },
-      {
-        "_id": "67e1b441c6e864f55241a803",
-        "program_id": "67de2613ec69e2e41fba10d0",
-        "name": "Logical Reasoning",
-        "description": "Focuses on deductive reasoning, critical thinking, and analytical skills."
-      }
-    ],
-    subTasks: [
-      {
-        "_id": "67e1b4f3e4099684419bc403",
-        "skill_area_id": "67e1b441c6e864f55241a801",
-        "name": "Problem Solving",
-        "description": "Enhances the ability to analyze and find solutions efficiently."
-      },
-      {
-        "_id": "67e1b4f3e4099684419bc404",
-        "skill_area_id": "67e1b441c6e864f55241a801",
-        "name": "Critical Thinking",
-        "description": "Develops logical reasoning and decision-making skills."
-      },
-      {
-        "_id": "67e1b500e4099684419bc405",
-        "skill_area_id": "67e1b441c6e864f55241a802",
-        "name": "Verbal Communication",
-        "description": "Ability to articulate thoughts clearly and effectively in conversations."
-      },
-      {
-        "_id": "67e1b500e4099684419bc406",
-        "skill_area_id": "67e1b441c6e864f55241a802",
-        "name": "Active Listening",
-        "description": "Focuses on understanding and processing spoken information effectively."
-      },
-      {
-        "_id": "67e1b50be4099684419bc407",
-        "skill_area_id": "67e1b441c6e864f55241a803",
-        "name": "Deductive Reasoning",
-        "description": "Ability to apply general rules to specific problems to reach logical conclusions."
-      },
-      {
-        "_id": "67e1b50be4099684419bc408",
-        "skill_area_id": "67e1b441c6e864f55241a803",
-        "name": "Critical Thinking",
-        "description": "Analyzing information objectively and making reasoned judgments."
-      }
-    ]
-  };
+  // Hardcoded skill areas and subtasks (as per your original code)
+  const [skillAreas] = useState([
+    {
+      "_id": "67e1b441c6e864f55241a801",
+      "program_id": "program1", // This will match with enrolled programs
+      "name": "Cognitive Skills",
+      "description": "Develops problem-solving, memory retention, and pattern recognition abilities."
+    },
+    {
+      "_id": "67e1b441c6e864f55241a802",
+      "program_id": "program1",
+      "name": "Communication Skills",
+      "description": "Enhances verbal, written, and listening skills for effective expression."
+    },
+    {
+      "_id": "67e1b441c6e864f55241a803",
+      "program_id": "program1",
+      "name": "Logical Reasoning",
+      "description": "Focuses on deductive reasoning, critical thinking, and analytical skills."
+    }
+  ]);
+
+  const [subTasks] = useState([
+    {
+      "_id": "67e1b4f3e4099684419bc403",
+      "skill_area_id": "67e1b441c6e864f55241a801",
+      "name": "Problem Solving",
+      "description": "Enhances the ability to analyze and find solutions efficiently."
+    },
+    {
+      "_id": "67e1b4f3e4099684419bc404",
+      "skill_area_id": "67e1b441c6e864f55241a801",
+      "name": "Critical Thinking",
+      "description": "Develops logical reasoning and decision-making skills."
+    },
+    {
+      "_id": "67e1b500e4099684419bc405",
+      "skill_area_id": "67e1b441c6e864f55241a802",
+      "name": "Verbal Communication",
+      "description": "Ability to articulate thoughts clearly and effectively in conversations."
+    },
+    {
+      "_id": "67e1b500e4099684419bc406",
+      "skill_area_id": "67e1b441c6e864f55241a802",
+      "name": "Active Listening",
+      "description": "Focuses on understanding and processing spoken information effectively."
+    },
+    {
+      "_id": "67e1b50be4099684419bc407",
+      "skill_area_id": "67e1b441c6e864f55241a803",
+      "name": "Deductive Reasoning",
+      "description": "Ability to apply general rules to specific problems to reach logical conclusions."
+    },
+    {
+      "_id": "67e1b50be4099684419bc408",
+      "skill_area_id": "67e1b441c6e864f55241a803",
+      "name": "Critical Thinking",
+      "description": "Analyzing information objectively and making reasoned judgments."
+    }
+  ]);
 
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [reports, setReports] = useState([]);
@@ -98,29 +91,21 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
 
   const fetchReports = async (enrollmentId) => {
     try {
-      console.log('[DEBUG] Fetching reports for enrollment:', enrollmentId);
       setLoading(prev => ({ ...prev, reports: true }));
       
-      // Using GET request with body (unconventional but matches your API)
-      const response = await axios({
-        method: 'get',
-        url: 'https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/report',
-        data: { enrollmentId },  // Body with GET request
-        headers: { 
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+      const response = await axios.get(
+        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/report/${enrollmentId}`,
+        {
+          headers: { 
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
       
-      console.log('[DEBUG] Reports fetched successfully:', response.data);
       setReports(response.data.reports || []);
     } catch (err) {
-      console.error('[ERROR] Fetching reports failed:', {
-        error: err,
-        response: err.response?.data,
-        status: err.response?.status,
-        config: err.config
-      });
+      console.error('Fetching reports failed:', err);
       setError(`Failed to fetch reports: ${err.response?.data?.message || err.message}`);
     } finally {
       setLoading(prev => ({ ...prev, reports: false }));
@@ -134,9 +119,6 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
     }
 
     try {
-      console.log('[DEBUG] Preparing to submit report...');
-      
-      // Construct the payload exactly as required
       const payload = {
         enrollmentId: selectedEnrollment._id,
         reportDate: reportData.reportDate,
@@ -160,11 +142,9 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
           }))
       };
 
-      console.log('[DEBUG] Final payload being sent:', JSON.stringify(payload, null, 2));
-
       setLoading(prev => ({ ...prev, submit: true }));
       
-      const response = await axios.post(
+      await axios.post(
         `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/uploadReport`,
         payload,
         {
@@ -174,12 +154,8 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
           }
         }
       );
-
-      console.log('[DEBUG] Report submitted successfully:', response.data);
       
-      // Refresh reports after successful submission
       await fetchReports(selectedEnrollment._id);
-      
       setModalType(null);
       setReportData({
         reportDate: '',
@@ -188,11 +164,12 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
       });
     } catch (err) {
       console.error('Error submitting report:', err);
-      setError('Failed to submit report');
+      setError(`Failed to submit report: ${err.response?.data?.message || err.message}`);
     } finally {
       setLoading(prev => ({ ...prev, submit: false }));
     }
   };
+
 
   const handleCategoryChange = (categoryId, subTaskId, field, value) => {
     setReportData(prev => {
@@ -257,12 +234,12 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
   };
 
   const getSkillAreaName = (id) => {
-    return skillData.skillAreas.find(sa => sa._id === id)?.name || 'Unknown Skill';
-  };
+  return skillAreas.find(sa => sa._id === id)?.name || 'Unknown Skill';
+};
 
-  const getSubTaskName = (id) => {
-    return skillData.subTasks.find(st => st._id === id)?.name || 'Unknown Task';
-  };
+const getSubTaskName = (id) => {
+  return subTasks.find(st => st._id === id)?.name || 'Unknown Task';
+};
 
   return (
     <Card className="border-0 shadow-sm">
@@ -277,7 +254,6 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
           </Alert>
         )}
 
-        {/* Student Selection */}
         <Form.Group className="mb-4">
           <Form.Select 
             onChange={(e) => {
@@ -290,7 +266,7 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
             {students.map(enrollment => (
               <option key={enrollment._id} value={enrollment._id}>
                 {enrollment.student.firstName} {enrollment.student.lastName} 
-                ({enrollment.student.studentID})
+                ({enrollment.student.studentID}) - Programs: {enrollment.programs.map(p => p.name).join(', ')}
               </option>
             ))}
           </Form.Select>
@@ -412,16 +388,16 @@ const ReportsTab = ({ students, colors, authToken, navigate }) => {
 
               <h5 className="mb-3">Skill Assessments</h5>
               
-              <Accordion defaultActiveKey={skillData.skillAreas.map((_, i) => i.toString())}>
-                {skillData.skillAreas.map((skillArea, skillIdx) => (
-                  <Accordion.Item key={skillIdx} eventKey={skillIdx.toString()}>
-                    <Accordion.Header>{skillArea.name}</Accordion.Header>
-                    <Accordion.Body>
-                      <p className="text-muted small mb-3">{skillArea.description}</p>
-                      
-                      {skillData.subTasks
-                        .filter(st => st.skill_area_id === skillArea._id)
-                        .map(subTask => (
+              <Accordion defaultActiveKey={skillAreas.map((_, i) => i.toString())}>
+                  {skillAreas.map((skillArea, skillIdx) => (
+                   <Accordion.Item key={skillIdx} eventKey={skillIdx.toString()}>
+                     <Accordion.Header>{skillArea.name}</Accordion.Header>
+                      <Accordion.Body>
+                       <p className="text-muted small mb-3">{skillArea.description}</p>
+        
+                       {subTasks
+                          .filter(st => st.skill_area_id === skillArea._id)
+                          .map(subTask => (
                           <div key={subTask._id} className="mb-4 p-3 border rounded">
                             <h6>{subTask.name}</h6>
                             <p className="small text-muted">{subTask.description}</p>
