@@ -1,33 +1,32 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Navbar, Nav, Button, Container, Row, Col, Form } from "react-bootstrap";
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaFacebook, FaTwitter, FaYoutube, FaInstagram, FaLinkedin } from "react-icons/fa";
+import NavbarComponent from "../../components/Navbar/Navbar";
+
+import {
+  Navbar,
+  Nav,
+  Button,
+  Container,
+  Row,
+  Col,
+  Form,
+} from "react-bootstrap";
+import {
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaFacebook,
+  FaTwitter,
+  FaYoutube,
+  FaInstagram,
+  FaLinkedin,
+} from "react-icons/fa";
 
 const ContactUs = () => {
   return (
     <div className="contact-page">
       {/* Navbar */}
-      <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
-        <Container>
-          <Navbar.Brand href="/" className="fw-bold fs-4">
-            <span style={{ color: "#40724C" }}>Ishaanya</span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link href="/appointment" className="mx-2 fw-medium">Schedule Appointment</Nav.Link>
-              <Nav.Link href="/apply" className="mx-2 fw-medium">Apply as Educator</Nav.Link>
-              <Nav.Link href="/milestones" className="mx-2 fw-medium">Milestone</Nav.Link>
-              <Nav.Link href="/faq" className="mx-2 fw-medium">FAQ</Nav.Link>
-              <Nav.Link href="/aboutus" className="mx-2 fw-medium">AboutUs</Nav.Link>
-              <Nav.Link href="/contactus" className="mx-2 fw-medium">ContactUs</Nav.Link>
-            </Nav>
-            <Button variant="outline-dark" className="ms-3 fw-medium" href="/signin">
-              Log In
-            </Button>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      <NavbarComponent />
 
       {/* Split Layout Contact Section */}
       <Container fluid className="p-0">
@@ -60,19 +59,39 @@ const ContactUs = () => {
 
               {/* Social Media Links */}
               <div className="social-links">
-                <a href="https://www.facebook.com/ishanyaforinclusion" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.facebook.com/ishanyaforinclusion"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaFacebook />
                 </a>
-                <a href="https://x.com/i/flow/login?redirect_after_login=%2Fishanyaindia" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://x.com/i/flow/login?redirect_after_login=%2Fishanyaindia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaTwitter />
                 </a>
-                <a href="https://youtube.com/channel/UC1bQFruy88Y8DrgXt4oq3og" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://youtube.com/channel/UC1bQFruy88Y8DrgXt4oq3og"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaYoutube />
                 </a>
-                <a href="https://www.instagram.com/ishanyaindia/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.instagram.com/ishanyaindia/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaInstagram />
                 </a>
-                <a href="https://www.linkedin.com/company/ishanyaindia" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.linkedin.com/company/ishanyaindia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <FaLinkedin />
                 </a>
               </div>
@@ -83,7 +102,9 @@ const ContactUs = () => {
           <Col md={7} lg={8} className="contact-form-section">
             <div className="form-content">
               <h1 className="mb-3">React out to Us</h1>
-              <p className="mb-4">Tell us more about yourself and what you have in mind.</p>
+              <p className="mb-4">
+                Tell us more about yourself and what you have in mind.
+              </p>
 
               <Form>
                 <Form.Group className="mb-3">
@@ -101,7 +122,11 @@ const ContactUs = () => {
                   <Form.Control as="textarea" rows={4} />
                 </Form.Group>
 
-                <Button variant="success" type="submit" className="submit-btn w-100 py-3 mt-2">
+                <Button
+                  variant="success"
+                  type="submit"
+                  className="submit-btn w-100 py-3 mt-2"
+                >
                   Let's get started!
                 </Button>
               </Form>
@@ -113,11 +138,11 @@ const ContactUs = () => {
       {/* Styles */}
       <style jsx>{`
         .contact-page {
-          font-family: 'Inter', sans-serif;
+          font-family: "Inter", sans-serif;
         }
 
         .contact-info-section {
-          background-color: #F3EEEA;
+          background-color: #f3eeea;
           padding: 120px 40px 40px;
         }
 
@@ -127,7 +152,7 @@ const ContactUs = () => {
         }
 
         .contact-form-section {
-          background-color: #FFFFFF;
+          background-color: #ffffff;
           padding: 120px 40px 40px;
         }
 
@@ -139,18 +164,18 @@ const ContactUs = () => {
         h1 {
           font-weight: 700;
           font-size: 2.2rem;
-          color: #2D2D2D;
+          color: #2d2d2d;
         }
 
         h2 {
           font-weight: 600;
           font-size: 1.25rem;
-          color: #2D2D2D;
+          color: #2d2d2d;
         }
 
-        .contact-email a, 
+        .contact-email a,
         a[href^="tel:"] {
-          color: #40724C;
+          color: #40724c;
           text-decoration: none;
           font-weight: 500;
         }
@@ -162,7 +187,7 @@ const ContactUs = () => {
         }
 
         .social-links a {
-          color: #40724C;
+          color: #40724c;
           font-size: 1.5rem;
           transition: opacity 0.2s;
         }
@@ -173,17 +198,17 @@ const ContactUs = () => {
 
         .form-control {
           padding: 12px;
-          border: 1px solid #D6CCC2;
+          border: 1px solid #d6ccc2;
           border-radius: 6px;
         }
 
         .form-check-input:checked {
-          background-color: #40724C;
-          border-color: #40724C;
+          background-color: #40724c;
+          border-color: #40724c;
         }
 
         .submit-btn {
-          background-color: #40724C;
+          background-color: #40724c;
           border: none;
           font-weight: 500;
           transition: background-color 0.2s;
@@ -194,7 +219,8 @@ const ContactUs = () => {
         }
 
         @media (max-width: 768px) {
-          .contact-info-section, .contact-form-section {
+          .contact-info-section,
+          .contact-form-section {
             padding: 80px 20px 40px;
           }
         }

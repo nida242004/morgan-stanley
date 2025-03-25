@@ -9,19 +9,19 @@ const NavbarComponent = () => {
     checkAuthStatus();
 
     // Add event listener to check for auth changes
-    window.addEventListener('storage', checkAuthStatus);
-    
+    window.addEventListener("storage", checkAuthStatus);
+
     return () => {
-      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener("storage", checkAuthStatus);
     };
   }, []);
 
   // Function to check authentication status
   const checkAuthStatus = () => {
     // Replace with your actual authentication check logic
-    const userToken = localStorage.getItem('userToken');
+    const userToken = localStorage.getItem("userToken");
     setIsAuthenticated(!!userToken);
-    
+
     // For testing - uncomment this line to force authenticated state
     // setIsAuthenticated(true);
   };
@@ -36,23 +36,23 @@ const NavbarComponent = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             {/* Always visible navigation links */}
+            <Nav.Link href="/aboutUs" className="mx-2 fw-medium fade-in">
+              About Us
+            </Nav.Link>
             <Nav.Link href="/milestones" className="mx-2 fw-medium fade-in">
               Milestone
             </Nav.Link>
             <Nav.Link href="/faq" className="mx-2 fw-medium fade-in">
               FAQ
             </Nav.Link>
-            <Nav.Link href="/aboutUs" className="mx-2 fw-medium fade-in">
-              AboutUs
-            </Nav.Link>
-            <Nav.Link href="/contactus" className="mx-2 fw-medium fade-in">
-              ContactUs
-            </Nav.Link>
-            
+
             {/* Conditional navigation links - only show if NOT authenticated */}
             {!isAuthenticated && (
               <>
-                <Nav.Link href="/appointment" className="mx-2 fw-medium fade-in">
+                <Nav.Link
+                  href="/appointment"
+                  className="mx-2 fw-medium fade-in"
+                >
                   Schedule Appointment
                 </Nav.Link>
                 <Nav.Link href="/apply" className="mx-2 fw-medium fade-in">
@@ -60,17 +60,21 @@ const NavbarComponent = () => {
                 </Nav.Link>
               </>
             )}
+
+            <Nav.Link href="/contactus" className="mx-2 fw-medium fade-in">
+              Contact Us
+            </Nav.Link>
           </Nav>
-          
+
           {/* Button changes based on authentication status */}
           <Button
-  variant="outline-dark"
-  className="ms-3 fw-medium fade-in"
-  href={isAuthenticated ? "/dashboard" : "/signin"} // Redirect to dashboard if authenticated
-  style={{ border: "2px solid #00A66E", color: "#00A66E" }}
->
-  {isAuthenticated ? "Dashboard" : "Sign In"}
-</Button>
+            variant="outline-dark"
+            className="ms-3 fw-medium fade-in"
+            href={isAuthenticated ? "/dashboard" : "/signin"} // Redirect to dashboard if authenticated
+            style={{ border: "2px solid #00A66E", color: "#00A66E" }}
+          >
+            {isAuthenticated ? "Dashboard" : "Sign In"}
+          </Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>
