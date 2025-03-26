@@ -91,7 +91,7 @@ const Sidebar = ({ activeTab, setActiveTab, profile, colors }) => {
           }}
           style={{ cursor: "pointer" }}
         >
-             <FaUserGraduate className="me-2 text-info" /> My Students
+             <FaUserGraduate className="me-2 text-info" /> My Enrollments
         </Nav.Link>
         <Nav.Link
           className={`text-white ${activeTab === "appointments" ? "fw-bold" : ""}`}

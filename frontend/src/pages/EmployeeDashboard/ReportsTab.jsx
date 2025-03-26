@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   Row, 
@@ -8,244 +8,688 @@ import {
   Modal, 
   Alert, 
   Badge,
-  Accordion,
+  Spinner,
+  Tabs,
+  Tab,
   ListGroup
 } from 'react-bootstrap';
 import axios from 'axios';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const ReportsTab = ({ students, colors, authToken, navigate }) => {
-  // Hardcoded skill areas and subtasks (as per your original code)
-  const [skillAreas] = useState([
-    {
-      "_id": "67e1b441c6e864f55241a801",
-      "program_id": "program1", // This will match with enrolled programs
-      "name": "Cognitive Skills",
-      "description": "Develops problem-solving, memory retention, and pattern recognition abilities."
-    },
-    {
-      "_id": "67e1b441c6e864f55241a802",
-      "program_id": "program1",
-      "name": "Communication Skills",
-      "description": "Enhances verbal, written, and listening skills for effective expression."
-    },
-    {
-      "_id": "67e1b441c6e864f55241a803",
-      "program_id": "program1",
-      "name": "Logical Reasoning",
-      "description": "Focuses on deductive reasoning, critical thinking, and analytical skills."
-    }
-  ]);
+const CORS_ORIGIN = 'https://team-5-ishanyaindiafoundation.onrender.com/api/v1';
+const GEMINI_API_KEY = import.meta.env.VITE_GENERATIVE_AI_KEY; // Replace with actual API key
 
-  const [subTasks] = useState([
-    {
-      "_id": "67e1b4f3e4099684419bc403",
-      "skill_area_id": "67e1b441c6e864f55241a801",
-      "name": "Problem Solving",
-      "description": "Enhances the ability to analyze and find solutions efficiently."
-    },
-    {
-      "_id": "67e1b4f3e4099684419bc404",
-      "skill_area_id": "67e1b441c6e864f55241a801",
-      "name": "Critical Thinking",
-      "description": "Develops logical reasoning and decision-making skills."
-    },
-    {
-      "_id": "67e1b500e4099684419bc405",
-      "skill_area_id": "67e1b441c6e864f55241a802",
-      "name": "Verbal Communication",
-      "description": "Ability to articulate thoughts clearly and effectively in conversations."
-    },
-    {
-      "_id": "67e1b500e4099684419bc406",
-      "skill_area_id": "67e1b441c6e864f55241a802",
-      "name": "Active Listening",
-      "description": "Focuses on understanding and processing spoken information effectively."
-    },
-    {
-      "_id": "67e1b50be4099684419bc407",
-      "skill_area_id": "67e1b441c6e864f55241a803",
-      "name": "Deductive Reasoning",
-      "description": "Ability to apply general rules to specific problems to reach logical conclusions."
-    },
-    {
-      "_id": "67e1b50be4099684419bc408",
-      "skill_area_id": "67e1b441c6e864f55241a803",
-      "name": "Critical Thinking",
-      "description": "Analyzing information objectively and making reasoned judgments."
-    }
-  ]);
-
+const ReportsTab = ({ authToken, colors, navigate }) => {
+  // State for managing data
+  const [enrollments, setEnrollments] = useState([]);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
-  const [reports, setReports] = useState([]);
-  const [modalType, setModalType] = useState(null);
-  const [reportData, setReportData] = useState({
-    reportDate: '',
-    weekNumber: '',
-    categories: []
-  });
-  const [loading, setLoading] = useState({
-    reports: false,
-    submit: false
-  });
+  const [skillAreas, setSkillAreas] = useState([]);
+  const [subTasks, setSubTasks] = useState([]);
+  const [scoreCards, setScoreCards] = useState([]);
+  const [filteredScoreCards, setFilteredScoreCards] = useState([]);
+  const [aiInsights, setAiInsights] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchReports = async (enrollmentId) => {
+  // State for creating a new score card
+  const [newScoreCard, setNewScoreCard] = useState({
+    enrollment_id: '',
+    skill_area_id: '',
+    sub_task_id: '',
+    year: new Date().getFullYear(),
+    month: '',
+    week: '',
+    score: '',
+    description: ''
+  });
+
+  // State for filters
+  const [filters, setFilters] = useState({
+    skillArea: '',
+    month: '',
+    year: new Date().getFullYear(),
+    week: ''
+  });
+
+  // State for modals and loading
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState({
+    enrollments: false,
+    skillData: false,
+    scoreCards: false,
+    submitting: false,
+    generatingInsights: false
+  });
+
+  // Months for selection
+  const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Fetch enrollments on component mount
+  useEffect(() => {
+    fetchEnrollments();
+  }, []);
+
+  // Fetch enrollments
+  const fetchEnrollments = async () => {
     try {
-      setLoading(prev => ({ ...prev, reports: true }));
-      
-      const response = await axios.get(
-        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/report/${enrollmentId}`,
-        {
-          headers: { 
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-          }
+      setLoading(prev => ({ ...prev, enrollments: true }));
+      const response = await axios.get(`${CORS_ORIGIN}/employee/myEnrollments`, {
+        headers: { 
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
         }
-      );
-      
-      setReports(response.data.reports || []);
-    } catch (err) {
-      console.error('Fetching reports failed:', err);
-      setError(`Failed to fetch reports: ${err.response?.data?.message || err.message}`);
-    } finally {
-      setLoading(prev => ({ ...prev, reports: false }));
-    }
-  };
-
-  const handleSubmitReport = async () => {
-    if (!selectedEnrollment) {
-      setError('No student selected');
-      return;
-    }
-
-    try {
-      const payload = {
-        enrollmentId: selectedEnrollment._id,
-        reportDate: reportData.reportDate,
-        weekNumber: parseInt(reportData.weekNumber),
-        categories: reportData.categories
-          .filter(category => 
-            category.subTasks.some(subTask => 
-              subTask.score > 0 && subTask.description.trim() !== ''
-            )
-          )
-          .map(category => ({
-            categoryId: category.categoryId,
-            subTasks: category.subTasks
-              .filter(subTask => subTask.score > 0 && subTask.description.trim() !== '')
-              .map(subTask => ({
-                subTaskId: subTask.subTaskId,
-                score: parseInt(subTask.score),
-                description: subTask.description.trim(),
-                month: subTask.month || new Date().toLocaleString('default', { month: 'long' })
-              }))
-          }))
-      };
-
-      setLoading(prev => ({ ...prev, submit: true }));
-      
-      await axios.post(
-        `https://team-5-ishanyaindiafoundation.onrender.com/api/v1/employee/uploadReport`,
-        payload,
-        {
-          headers: { 
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      await fetchReports(selectedEnrollment._id);
-      setModalType(null);
-      setReportData({
-        reportDate: '',
-        weekNumber: '',
-        categories: []
       });
+      
+      setEnrollments(response.data.data.enrollments);
     } catch (err) {
-      console.error('Error submitting report:', err);
-      setError(`Failed to submit report: ${err.response?.data?.message || err.message}`);
+      setError(`Failed to fetch enrollments: ${err.response?.data?.message || err.message}`);
     } finally {
-      setLoading(prev => ({ ...prev, submit: false }));
+      setLoading(prev => ({ ...prev, enrollments: false }));
     }
   };
 
+  // Fetch skill areas and subtasks when an enrollment is selected
+  const fetchSkillData = async (enrollmentId) => {
+    try {
+      setLoading(prev => ({ ...prev, skillData: true }));
+      const response = await axios.get(`${CORS_ORIGIN}/employee/SkilleAreaAndSubtaks/${enrollmentId}`, {
+        headers: { 
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const { skillAreas, subTasks } = response.data.data;
+      setSkillAreas(skillAreas);
+      setSubTasks(subTasks);
+    } catch (err) {
+      setError(`Failed to fetch skill data: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, skillData: false }));
+    }
+  };
 
-  const handleCategoryChange = (categoryId, subTaskId, field, value) => {
-    setReportData(prev => {
-      const newCategories = [...prev.categories];
+  // Fetch score cards for a selected enrollment
+  const fetchScoreCards = async (enrollmentId) => {
+    try {
+      setLoading(prev => ({ ...prev, scoreCards: true }));
+      const response = await axios.get(`${CORS_ORIGIN}/employee/ScoreCards/${enrollmentId}`, {
+        headers: { 
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
-      // Find or create the category
-      let categoryIndex = newCategories.findIndex(c => c.categoryId === categoryId);
-      if (categoryIndex === -1) {
-        newCategories.push({
-          categoryId,
-          subTasks: []
-        });
-        categoryIndex = newCategories.length - 1;
+      const fetchedScoreCards = response.data.data.scoreCards;
+      setScoreCards(fetchedScoreCards);
+      setFilteredScoreCards(fetchedScoreCards);
+
+      // Generate AI insights
+      if (fetchedScoreCards.length > 0) {
+        await generateAIInsights(fetchedScoreCards);
       }
+    } catch (err) {
+      setError(`Failed to fetch score cards: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, scoreCards: false }));
+    }
+  };
+
+  // Generate AI insights using Gemini
+  const generateAIInsights = async (scoreCards) => {
+    try {
+      setLoading(prev => ({ ...prev, generatingInsights: true }));
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+      const prompt = `Analyze the following student's performance score cards and provide a comprehensive insights report:
+
+JSON Schema for Insights:
+{
+  "overallPerformance": {
+    "score": "string (e.g., 'Excellent', 'Good', 'Needs Improvement')",
+    "averageScore": "number",
+    "progressTrend": "string (e.g., 'Improving', 'Consistent', 'Declining')"
+  },
+  "skillAreaBreakdown": [
+    {
+      "skillArea": "string",
+      "averageScore": "number",
+      "strengths": "string[]",
+      "areasForImprovement": "string[]"
+    }
+  ],
+  "recommendedActions": "string[]",
+  "keyObservations": "string[]"
+}
+
+Score Cards Data:
+${JSON.stringify(scoreCards)}
+
+Generate insights focusing on learning progress, skill development, and personalized recommendations.`;
+
+      const result = await model.generateContent(prompt);
+const response = await result.response.text();
+
+// Extract JSON content safely
+const match = response.match(/```json\s*([\s\S]*?)\s*```/);
+
+if (!match) {
+  throw new Error("No valid JSON found in AI response");
+}
+
+const cleanResponse = match[1].trim(); // Extract only JSON part
+
+const insights = JSON.parse(cleanResponse);
+setAiInsights(insights);
+    } catch (error) {
+      console.error("Error generating AI insights:", error);
+      setError("Failed to generate AI insights");
+    } finally {
+      setLoading(prev => ({ ...prev, generatingInsights: false }));
+    }
+  };
+
+  // Handle enrollment selection
+  const handleEnrollmentSelect = (enrollmentId) => {
+    const selected = enrollments.find(e => e._id === enrollmentId);
+    setSelectedEnrollment(selected);
+    
+    if (selected) {
+      fetchSkillData(selected._id);
+      fetchScoreCards(selected._id);
+    }
+  };
+
+  // Submit a new score card
+  const handleSubmitScoreCard = async () => {
+    try {
+      setLoading(prev => ({ ...prev, submitting: true }));
       
-      // Find or create the subtask
-      const subTaskIndex = newCategories[categoryIndex].subTasks.findIndex(
-        st => st.subTaskId === subTaskId
-      );
-      
-      if (subTaskIndex === -1) {
-        newCategories[categoryIndex].subTasks.push({
-          subTaskId,
-          score: 0,
-          description: '',
-          month: new Date().toLocaleString('default', { month: 'long' })
-        });
-      }
-      
-      // Update the field
-      if (field === 'score') {
-        newCategories[categoryIndex].subTasks = newCategories[categoryIndex].subTasks.map(st => 
-          st.subTaskId === subTaskId ? { ...st, score: parseInt(value) } : st
-        );
-      } else {
-        newCategories[categoryIndex].subTasks = newCategories[categoryIndex].subTasks.map(st => 
-          st.subTaskId === subTaskId ? { ...st, [field]: value } : st
-        );
-      }
-      
-      return {
-        ...prev,
-        categories: newCategories
+      const submitData = {
+        ...newScoreCard,
+        enrollment_id: selectedEnrollment._id,
+        score: parseInt(newScoreCard.score),
+        week: parseInt(newScoreCard.week)
       };
-    });
+      
+      await axios.post(`${CORS_ORIGIN}/employee/scoreCard`, submitData, {
+        headers: { 
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      // Refresh score cards after submission
+      await fetchScoreCards(selectedEnrollment._id);
+      
+      // Reset form and close modal
+      setNewScoreCard({
+        enrollment_id: selectedEnrollment._id,
+        skill_area_id: '',
+        sub_task_id: '',
+        year: new Date().getFullYear(),
+        month: '',
+        week: '',
+        score: '',
+        description: ''
+      });
+      setShowModal(false);
+    } catch (err) {
+      setError(`Failed to submit score card: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setLoading(prev => ({ ...prev, submitting: false }));
+    }
   };
 
-  const getSubTaskScore = (categoryId, subTaskId) => {
-    const category = reportData.categories.find(c => c.categoryId === categoryId);
-    if (!category) return 0;
-    
-    const subTask = category.subTasks.find(st => st.subTaskId === subTaskId);
-    return subTask ? subTask.score : 0;
+  // Apply filters to score cards
+  const applyFilters = () => {
+    let filtered = [...scoreCards];
+
+    if (filters.skillArea) {
+      filtered = filtered.filter(card => card.skill_area_id._id === filters.skillArea);
+    }
+
+    if (filters.month) {
+      filtered = filtered.filter(card => card.month === filters.month);
+    }
+
+    if (filters.year) {
+      filtered = filtered.filter(card => card.year === parseInt(filters.year));
+    }
+
+    if (filters.week) {
+      filtered = filtered.filter(card => card.week === parseInt(filters.week));
+    }
+
+    setFilteredScoreCards(filtered);
   };
 
-  const getSubTaskDescription = (categoryId, subTaskId) => {
-    const category = reportData.categories.find(c => c.categoryId === categoryId);
-    if (!category) return '';
-    
-    const subTask = category.subTasks.find(st => st.subTaskId === subTaskId);
-    return subTask ? subTask.description : '';
+  // Render methods
+  const renderEnrollmentSelector = () => (
+    <Form.Group className="mb-4">
+      <Form.Select 
+        onChange={(e) => handleEnrollmentSelect(e.target.value)}
+        disabled={loading.enrollments}
+      >
+        <option>Select a Student</option>
+        {enrollments.map(enrollment => (
+          <option key={enrollment._id} value={enrollment._id}>
+            {enrollment.student.firstName} {enrollment.student.lastName} 
+            ({enrollment.student.studentID}) - {enrollment.programs.map(p => p.name).join(', ')}
+          </option>
+        ))}
+      </Form.Select>
+      {loading.enrollments && <Spinner size="sm" animation="border" className="ms-2" />}
+    </Form.Group>
+  );
+
+  const renderScoreCardModal = () => (
+    <Modal 
+      show={showModal} 
+      onHide={() => setShowModal(false)}
+      size="lg"
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Create Score Card</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Tabs defaultActiveKey="quick" className="mb-3">
+          <Tab eventKey="quick" title="Quick Entry">
+            <Row>
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Skill Area & Sub Task</Form.Label>
+                  <Row>
+                    <Col md={6}>
+                      <Form.Select
+                        value={newScoreCard.skill_area_id}
+                        onChange={(e) => {
+                          const selectedSkillArea = skillAreas.find(area => area._id === e.target.value);
+                          setNewScoreCard(prev => ({
+                            ...prev,
+                            skill_area_id: e.target.value,
+                            sub_task_id: selectedSkillArea?.subTasks?.[0]?._id || ''
+                          }));
+                        }}
+                      >
+                        <option value="">Select Skill Area</option>
+                        {skillAreas.map(area => (
+                          <option key={area._id} value={area._id}>
+                            {area.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Select
+                        value={newScoreCard.sub_task_id}
+                        onChange={(e) => setNewScoreCard(prev => ({
+                          ...prev,
+                          sub_task_id: e.target.value
+                        }))}
+                        disabled={!newScoreCard.skill_area_id}
+                      >
+                        <option value="">Select Sub Task</option>
+                        {subTasks
+                          .filter(st => st.skill_area_id === newScoreCard.skill_area_id)
+                          .map(subTask => (
+                            <option key={subTask._id} value={subTask._id}>
+                              {subTask.name}
+                            </option>
+                          ))
+                        }
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Year</Form.Label>
+                  <Form.Control 
+                    as="select"
+                    value={newScoreCard.year}
+                    onChange={(e) => setNewScoreCard(prev => ({
+                      ...prev,
+                      year: parseInt(e.target.value)
+                    }))}
+                  >
+                    {[2023, 2024, 2025].map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Month</Form.Label>
+                  <Form.Control 
+                    as="select"
+                    value={newScoreCard.month}
+                    onChange={(e) => setNewScoreCard(prev => ({
+                      ...prev,
+                      month: e.target.value
+                    }))}
+                  >
+                    <option value="">Select Month</option>
+                    {MONTHS.map(month => (
+                      <option key={month} value={month}>{month}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Week</Form.Label>
+                  <Form.Control 
+                    as="select"
+                    value={newScoreCard.week}
+                    onChange={(e) => setNewScoreCard(prev => ({
+                      ...prev,
+                      week: parseInt(e.target.value)
+                    }))}
+                  >
+                    <option value="">Select Week</option>
+                    {[1, 2, 3, 4, 5].map(week => (
+                      <option key={week} value={week}>{week}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Score</Form.Label>
+                  <Form.Control 
+                    as="select"
+                    value={newScoreCard.score}
+                    onChange={(e) => setNewScoreCard(prev => ({
+                      ...prev,
+                      score: parseInt(e.target.value)
+                    }))}
+                  >
+                    <option value="">Select Score</option>
+                    {[1, 2, 3, 4, 5].map(score => (
+                      <option key={score} value={score}>{score}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Form.Group className="mt-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={newScoreCard.description}
+                onChange={(e) => setNewScoreCard(prev => ({
+                  ...prev,
+                  description: e.target.value
+                }))}
+                placeholder="Brief performance notes"
+              />
+            </Form.Group>
+          </Tab>
+          <Tab eventKey="advanced" title="Advanced Entry">
+            {/* More detailed form can be added here if needed */}
+            <Alert variant="info">Advanced entry form coming soon</Alert>
+          </Tab>
+        </Tabs>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
+          Cancel
+        </Button>
+        <Button 
+          variant="primary" 
+          onClick={handleSubmitScoreCard}
+          disabled={
+            loading.submitting || 
+            !newScoreCard.skill_area_id || 
+            !newScoreCard.sub_task_id || 
+            !newScoreCard.month || 
+            !newScoreCard.week || 
+            !newScoreCard.score
+          }
+        >
+          {loading.submitting ? (
+            <>
+              <Spinner as="span" size="sm" animation="border" role="status" />
+              <span className="ms-2">Submitting...</span>
+            </>
+          ) : 'Submit Score Card'}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+
+  const renderScoreCards = () => (
+    <Card className="mb-4">
+      <Card.Header>
+        <Row className="align-items-center">
+          <Col md={3}>
+            <Form.Select 
+              value={filters.skillArea}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, skillArea: e.target.value }));
+                applyFilters();
+              }}
+              disabled={loading.scoreCards}
+            >
+              <option value="">All Skill Areas</option>
+              {[...new Set(scoreCards.map(card => card.skill_area_id?._id))]
+                .filter(Boolean)
+                .map(skillAreaId => {
+                  const skillArea = scoreCards.find(card => card.skill_area_id?._id === skillAreaId)?.skill_area_id;
+                  return (
+                    <option key={skillAreaId} value={skillAreaId}>
+                      {skillArea?.name}
+                    </option>
+                  );
+                })
+              }
+            </Form.Select>
+          </Col>
+          <Col md={2}>
+            <Form.Select
+              value={filters.year}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, year: parseInt(e.target.value) }));
+                applyFilters();
+              }}
+            >
+              <option value="">All Years</option>
+              {[2023, 2024, 2025].map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={2}>
+            <Form.Select
+              value={filters.month}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, month: e.target.value }));
+                applyFilters();
+              }}
+            >
+              <option value="">All Months</option>
+              {MONTHS.map(month => (
+                <option key={month} value={month}>{month}</option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={2}>
+            <Form.Select
+              value={filters.week}
+              onChange={(e) => {
+                setFilters(prev => ({ ...prev, week: parseInt(e.target.value) }));
+                applyFilters();
+              }}
+            >
+              <option value="">All Weeks</option>
+              {[1, 2, 3, 4, 5].map(week => (
+                <option key={week} value={week}>Week {week}</option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={3} className="text-end">
+            <Button 
+              variant="outline-primary" 
+              onClick={() => setShowModal(true)}
+              disabled={loading.skillData}
+            >
+              Create New Score Card
+            </Button>
+          </Col>
+        </Row>
+      </Card.Header>
+      <Card.Body>
+        {loading.scoreCards ? (
+          <div className="text-center py-4">
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-2">Loading score cards...</p>
+          </div>
+        ) : filteredScoreCards.length === 0 ? (
+          <Alert variant="info" className="text-center">
+            {scoreCards.length === 0 ? 
+              "No score cards found for this student" : 
+              "No score cards match the current filters"}
+          </Alert>
+        ) : (
+          <ListGroup variant="flush">
+            {filteredScoreCards.map(card => (
+              <ListGroup.Item key={card._id}>
+                <Row className="align-items-center">
+                  <Col md={3}>
+                    <strong>{card.skill_area_id?.name}</strong>
+                    <div className="text-muted small">{card.sub_task_id?.name}</div>
+                  </Col>
+                  <Col md={2}>
+                    <Badge 
+                      bg={
+                        card.score >= 4 ? 'success' : 
+                        card.score >= 3 ? 'warning' : 
+                        'danger'
+                      }
+                      className="fs-6"
+                    >
+                      {card.score}/5
+                    </Badge>
+                  </Col>
+                  <Col md={3}>
+                    {card.month} Week {card.week}, {card.year}
+                  </Col>
+                  <Col md={4}>
+                    {card.description && (
+                      <div className="text-truncate" title={card.description}>
+                        {card.description}
+                      </div>
+                    )}
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        )}
+      </Card.Body>
+    </Card>
+  );
+
+  const renderAIInsights = () => {
+    if (loading.generatingInsights) {
+      return (
+        <Card className="mb-4">
+          <Card.Header>AI Performance Insights</Card.Header>
+          <Card.Body className="text-center py-4">
+            <Spinner animation="border" variant="primary" />
+            <p className="mt-2">Generating insights...</p>
+          </Card.Body>
+        </Card>
+      );
+    }
+
+    if (!aiInsights || filteredScoreCards.length === 0) return null;
+
+    return (
+      <Card className="mb-4">
+        <Card.Header>AI Performance Insights</Card.Header>
+        <Card.Body>
+          <Row>
+            <Col md={6}>
+              <h5>Overall Performance</h5>
+              <div className="mb-3">
+                <strong>Score:</strong> <Badge bg="info">{aiInsights.overallPerformance?.score}</Badge>
+                <br />
+                <strong>Average Score:</strong> {aiInsights.overallPerformance?.averageScore?.toFixed(1) || 'N/A'}/5
+                <br />
+                <strong>Progress Trend:</strong> {aiInsights.overallPerformance?.progressTrend}
+              </div>
+              
+              <h5>Key Observations</h5>
+              <ul>
+                {aiInsights.keyObservations?.map((observation, i) => (
+                  <li key={i}>{observation}</li>
+                ))}
+              </ul>
+            </Col>
+            <Col md={6}>
+              <h5>Recommended Actions</h5>
+              <ListGroup variant="flush">
+                {aiInsights.recommendedActions?.map((action, index) => (
+                  <ListGroup.Item key={index}>{action}</ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Col>
+          </Row>
+          
+          <h5 className="mt-4">Skill Area Breakdown</h5>
+          <Row>
+            {aiInsights.skillAreaBreakdown?.map((area, index) => (
+              <Col md={6} key={index} className="mb-3">
+                <Card>
+                  <Card.Header>
+                    <strong>{area.skillArea}</strong> (Avg: {area.averageScore?.toFixed(1)}/5)
+                  </Card.Header>
+                  <Card.Body>
+                    <Row>
+                      <Col>
+                        <h6>Strengths</h6>
+                        <ul>
+                          {area.strengths?.map((strength, i) => (
+                            <li key={i}>{strength}</li>
+                          ))}
+                        </ul>
+                      </Col>
+                      <Col>
+                        <h6>Areas for Improvement</h6>
+                        <ul>
+                          {area.areasForImprovement?.map((area, i) => (
+                            <li key={i}>{area}</li>
+                          ))}
+                        </ul>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Card.Body>
+      </Card>
+    );
   };
-
-  const getSkillAreaName = (id) => {
-  return skillAreas.find(sa => sa._id === id)?.name || 'Unknown Skill';
-};
-
-const getSubTaskName = (id) => {
-  return subTasks.find(st => st._id === id)?.name || 'Unknown Task';
-};
 
   return (
     <Card className="border-0 shadow-sm">
       <Card.Body>
-        <h4 className="mb-4" style={{ color: colors.killarney }}>
-          Student Reports
+        <h4 className="mb-4" style={{ color: colors?.killarney || 'green' }}>
+          Student Score Cards
         </h4>
 
         {error && (
@@ -254,209 +698,16 @@ const getSubTaskName = (id) => {
           </Alert>
         )}
 
-        <Form.Group className="mb-4">
-          <Form.Select 
-            onChange={(e) => {
-              const enrollment = students.find(s => s._id === e.target.value);
-              setSelectedEnrollment(enrollment);
-              if (enrollment) fetchReports(enrollment._id);
-            }}
-          >
-            <option>Select a Student</option>
-            {students.map(enrollment => (
-              <option key={enrollment._id} value={enrollment._id}>
-                {enrollment.student.firstName} {enrollment.student.lastName} 
-                ({enrollment.student.studentID}) - Programs: {enrollment.programs.map(p => p.name).join(', ')}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+        {renderEnrollmentSelector()}
 
-        {loading.reports && (
-          <div className="text-center my-4">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
+        {selectedEnrollment && (
+          <>
+            {renderScoreCards()}
+            {renderAIInsights()}
+          </>
         )}
-
-        {selectedEnrollment && !loading.reports && (
-          <div>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5>
-                Reports for {selectedEnrollment.student.firstName}{' '}
-                {selectedEnrollment.student.lastName}
-              </h5>
-              <Button 
-                variant="outline-primary" 
-                onClick={() => setModalType('create')}
-              >
-                Create New Report
-              </Button>
-            </div>
-
-            {reports.length === 0 ? (
-              <Alert variant="info">No reports found for this student</Alert>
-            ) : (
-              <Row>
-                {reports.map(report => (
-                  <Col md={6} key={report._id} className="mb-3">
-                    <Card>
-                      <Card.Body>
-                        <div className="d-flex justify-content-between mb-3">
-                          <h6>Week {report.weekNumber}</h6>
-                          <Badge bg="info">{new Date(report.reportDate).toLocaleDateString()}</Badge>
-                        </div>
-                        
-                        <Accordion>
-                          {report.categories.map((category, catIdx) => (
-                            <Accordion.Item key={catIdx} eventKey={catIdx.toString()}>
-                              <Accordion.Header>
-                                {getSkillAreaName(category.categoryId)}
-                              </Accordion.Header>
-                              <Accordion.Body>
-                                <ListGroup variant="flush">
-                                  {category.subTasks.map((subTask, taskIdx) => (
-                                    <ListGroup.Item key={taskIdx}>
-                                      <div className="d-flex justify-content-between">
-                                        <strong>{getSubTaskName(subTask.subTaskId)}</strong>
-                                        <Badge bg="primary">Score: {subTask.score}</Badge>
-                                      </div>
-                                      <div className="mt-2">
-                                        <small className="text-muted">Month: {subTask.month}</small>
-                                        <p className="mt-1">{subTask.description}</p>
-                                      </div>
-                                    </ListGroup.Item>
-                                  ))}
-                                </ListGroup>
-                              </Accordion.Body>
-                            </Accordion.Item>
-                          ))}
-                        </Accordion>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            )}
-          </div>
-        )}
-
-        {/* Create Report Modal */}
-        <Modal 
-          show={modalType === 'create'} 
-          onHide={() => setModalType(null)}
-          size="lg"
-          scrollable
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Create New Report</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Row className="mb-4">
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Report Date</Form.Label>
-                    <Form.Control 
-                      type="date" 
-                      value={reportData.reportDate}
-                      onChange={(e) => setReportData({
-                        ...reportData, 
-                        reportDate: e.target.value
-                      })}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Week Number</Form.Label>
-                    <Form.Control 
-                      type="number" 
-                      value={reportData.weekNumber}
-                      onChange={(e) => setReportData({
-                        ...reportData, 
-                        weekNumber: e.target.value
-                      })}
-                      min="1"
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <h5 className="mb-3">Skill Assessments</h5>
-              
-              <Accordion defaultActiveKey={skillAreas.map((_, i) => i.toString())}>
-                  {skillAreas.map((skillArea, skillIdx) => (
-                   <Accordion.Item key={skillIdx} eventKey={skillIdx.toString()}>
-                     <Accordion.Header>{skillArea.name}</Accordion.Header>
-                      <Accordion.Body>
-                       <p className="text-muted small mb-3">{skillArea.description}</p>
         
-                       {subTasks
-                          .filter(st => st.skill_area_id === skillArea._id)
-                          .map(subTask => (
-                          <div key={subTask._id} className="mb-4 p-3 border rounded">
-                            <h6>{subTask.name}</h6>
-                            <p className="small text-muted">{subTask.description}</p>
-                            
-                            <Form.Group className="mb-3">
-                              <Form.Label>Score (1-5)</Form.Label>
-                              <Form.Select
-                                value={getSubTaskScore(skillArea._id, subTask._id)}
-                                onChange={(e) => handleCategoryChange(
-                                  skillArea._id, 
-                                  subTask._id, 
-                                  'score', 
-                                  e.target.value
-                                )}
-                                required
-                              >
-                                <option value="0">Select score</option>
-                                {[1, 2, 3, 4, 5].map(num => (
-                                  <option key={num} value={num}>{num}</option>
-                                ))}
-                              </Form.Select>
-                            </Form.Group>
-                            
-                            <Form.Group>
-                              <Form.Label>Comments</Form.Label>
-                              <Form.Control
-                                as="textarea"
-                                rows={3}
-                                value={getSubTaskDescription(skillArea._id, subTask._id)}
-                                onChange={(e) => handleCategoryChange(
-                                  skillArea._id, 
-                                  subTask._id, 
-                                  'description', 
-                                  e.target.value
-                                )}
-                                required
-                              />
-                            </Form.Group>
-                          </div>
-                        ))}
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setModalType(null)}>
-              Cancel
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={handleSubmitReport}
-              disabled={loading.submit || !reportData.reportDate || !reportData.weekNumber}
-            >
-              {loading.submit ? 'Submitting...' : 'Submit Report'}
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        {renderScoreCardModal()}
       </Card.Body>
     </Card>
   );

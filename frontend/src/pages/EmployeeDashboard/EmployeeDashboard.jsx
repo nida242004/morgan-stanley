@@ -523,7 +523,7 @@ const StudentsTab = ({ students, colors }) => {
   return (
     <Card className="border-0 shadow-sm">
       <Card.Body>
-        <h4 className="mb-4" style={{ color: colors.killarney }}>My Students</h4>
+        <h4 className="mb-4" style={{ color: colors.killarney }}>My Enrollments</h4>
         {/* Search */}
         <Form.Group className="mb-4">
           <Form.Control 
