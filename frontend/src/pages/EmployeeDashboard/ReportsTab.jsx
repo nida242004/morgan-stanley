@@ -16,8 +16,8 @@ import {
 import axios from 'axios';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const CORS_ORIGIN = 'https://team-5-ishanyaindiafoundation.onrender.com/api/v1';
-const GEMINI_API_KEY = import.meta.env.VITE_GENERATIVE_AI_KEY; // Replace with actual API key
+const API_BASE_URL = 'https://team-5-ishanyaindiafoundation.onrender.com/api/v1';
+const GEMINI_API_KEY = import.meta.env.VITE_GENERATIVE_AI_KEY;
 
 const ReportsTab = ({ authToken, colors, navigate }) => {
   // State for managing data
@@ -62,8 +62,18 @@ const ReportsTab = ({ authToken, colors, navigate }) => {
 
   // Months for selection
   const MONTHS = [
-    'January', 'February', 'March', 'April', 'May', 'June', 
-    'July', 'August', 'September', 'October', 'November', 'December'
+    { full: 'January', abbr: 'Jan' }, 
+    { full: 'February', abbr: 'Feb' }, 
+    { full: 'March', abbr: 'Mar' }, 
+    { full: 'April', abbr: 'Apr' }, 
+    { full: 'May', abbr: 'May' }, 
+    { full: 'June', abbr: 'Jun' }, 
+    { full: 'July', abbr: 'Jul' }, 
+    { full: 'August', abbr: 'Aug' }, 
+    { full: 'September', abbr: 'Sep' }, 
+    { full: 'October', abbr: 'Oct' }, 
+    { full: 'November', abbr: 'Nov' }, 
+    { full: 'December', abbr: 'Dec' }
   ];
 
   // Fetch enrollments on component mount
@@ -71,18 +81,31 @@ const ReportsTab = ({ authToken, colors, navigate }) => {
     fetchEnrollments();
   }, []);
 
-  // Fetch enrollments
+  const normalizeMonth = (month) => {
+    if (!month) return '';
+    if (MONTHS.some(m => m.full === month)) return month;
+    
+    const matchedMonth = MONTHS.find(m => m.abbr === month);
+    return matchedMonth ? matchedMonth.full : month;
+  };
+
   const fetchEnrollments = async () => {
     try {
       setLoading(prev => ({ ...prev, enrollments: true }));
-      const response = await axios.get(`${CORS_ORIGIN}/employee/myEnrollments`, {
+      setError(null);
+      
+      const response = await axios.get(`${API_BASE_URL}/employee/myEnrollments`, {
         headers: { 
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         }
       });
       
-      setEnrollments(response.data.data.enrollments);
+      if (response.data && response.data.data && response.data.data.enrollments) {
+        setEnrollments(response.data.data.enrollments);
+      } else {
+        throw new Error('Invalid response structure');
+      }
     } catch (err) {
       setError(`Failed to fetch enrollments: ${err.response?.data?.message || err.message}`);
     } finally {
@@ -90,20 +113,25 @@ const ReportsTab = ({ authToken, colors, navigate }) => {
     }
   };
 
-  // Fetch skill areas and subtasks when an enrollment is selected
   const fetchSkillData = async (enrollmentId) => {
     try {
       setLoading(prev => ({ ...prev, skillData: true }));
-      const response = await axios.get(`${CORS_ORIGIN}/employee/SkilleAreaAndSubtaks/${enrollmentId}`, {
+      setError(null);
+      
+      const response = await axios.get(`${API_BASE_URL}/employee/SkilleAreaAndSubtaks/${enrollmentId}`, {
         headers: { 
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         }
       });
       
-      const { skillAreas, subTasks } = response.data.data;
-      setSkillAreas(skillAreas);
-      setSubTasks(subTasks);
+      if (response.data && response.data.data) {
+        const { skillAreas, subTasks } = response.data.data;
+        setSkillAreas(skillAreas || []);
+        setSubTasks(subTasks || []);
+      } else {
+        throw new Error('Invalid response structure');
+      }
     } catch (err) {
       setError(`Failed to fetch skill data: ${err.response?.data?.message || err.message}`);
     } finally {
@@ -111,24 +139,29 @@ const ReportsTab = ({ authToken, colors, navigate }) => {
     }
   };
 
-  // Fetch score cards for a selected enrollment
   const fetchScoreCards = async (enrollmentId) => {
     try {
       setLoading(prev => ({ ...prev, scoreCards: true }));
-      const response = await axios.get(`${CORS_ORIGIN}/employee/ScoreCards/${enrollmentId}`, {
+      setError(null);
+      setAiInsights(null);
+      
+      const response = await axios.get(`${API_BASE_URL}/employee/ScoreCards/${enrollmentId}`, {
         headers: { 
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         }
       });
       
-      const fetchedScoreCards = response.data.data.scoreCards;
-      setScoreCards(fetchedScoreCards);
-      setFilteredScoreCards(fetchedScoreCards);
+      if (response.data && response.data.data && response.data.data.scoreCards) {
+        const fetchedScoreCards = response.data.data.scoreCards;
+        setScoreCards(fetchedScoreCards);
+        setFilteredScoreCards(fetchedScoreCards);
 
-      // Generate AI insights
-      if (fetchedScoreCards.length > 0) {
-        await generateAIInsights(fetchedScoreCards);
+        if (fetchedScoreCards.length > 0) {
+          await generateAIInsights(fetchedScoreCards);
+        }
+      } else {
+        throw new Error('Invalid response structure');
       }
     } catch (err) {
       setError(`Failed to fetch score cards: ${err.response?.data?.message || err.message}`);
@@ -137,10 +170,16 @@ const ReportsTab = ({ authToken, colors, navigate }) => {
     }
   };
 
-  // Generate AI insights using Gemini
   const generateAIInsights = async (scoreCards) => {
+    if (!GEMINI_API_KEY) {
+      setError('Gemini API key is missing');
+      return;
+    }
+
     try {
       setLoading(prev => ({ ...prev, generatingInsights: true }));
+      setError(null);
+      
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
@@ -171,28 +210,34 @@ ${JSON.stringify(scoreCards)}
 Generate insights focusing on learning progress, skill development, and personalized recommendations.`;
 
       const result = await model.generateContent(prompt);
-const response = await result.response.text();
+      const response = await result.response;
+      const text = response.text();
 
-// Extract JSON content safely
-const match = response.match(/```json\s*([\s\S]*?)\s*```/);
-
-if (!match) {
-  throw new Error("No valid JSON found in AI response");
-}
-
-const cleanResponse = match[1].trim(); // Extract only JSON part
-
-const insights = JSON.parse(cleanResponse);
-setAiInsights(insights);
+      // Improved JSON extraction
+      let jsonString = text;
+      try {
+        // Try to parse directly first
+        const parsed = JSON.parse(jsonString);
+        setAiInsights(parsed);
+        return;
+      } catch (e) {
+        // If direct parse fails, try to extract from markdown
+        const jsonMatch = text.match(/(\{[\s\S]*\})/);
+        if (jsonMatch && jsonMatch[1]) {
+          const parsed = JSON.parse(jsonMatch[1]);
+          setAiInsights(parsed);
+        } else {
+          throw new Error('Could not extract JSON from AI response');
+        }
+      }
     } catch (error) {
       console.error("Error generating AI insights:", error);
-      setError("Failed to generate AI insights");
+      setError("Failed to generate AI insights. Please try again later.");
     } finally {
       setLoading(prev => ({ ...prev, generatingInsights: false }));
     }
   };
 
-  // Handle enrollment selection
   const handleEnrollmentSelect = (enrollmentId) => {
     const selected = enrollments.find(e => e._id === enrollmentId);
     setSelectedEnrollment(selected);
@@ -203,29 +248,28 @@ setAiInsights(insights);
     }
   };
 
-  // Submit a new score card
   const handleSubmitScoreCard = async () => {
     try {
       setLoading(prev => ({ ...prev, submitting: true }));
+      setError(null);
       
       const submitData = {
         ...newScoreCard,
         enrollment_id: selectedEnrollment._id,
         score: parseInt(newScoreCard.score),
-        week: parseInt(newScoreCard.week)
+        week: parseInt(newScoreCard.week),
+        month: normalizeMonth(newScoreCard.month)
       };
       
-      await axios.post(`${CORS_ORIGIN}/employee/scoreCard`, submitData, {
+      await axios.post(`${API_BASE_URL}/employee/scoreCard`, submitData, {
         headers: { 
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         }
       });
       
-      // Refresh score cards after submission
       await fetchScoreCards(selectedEnrollment._id);
       
-      // Reset form and close modal
       setNewScoreCard({
         enrollment_id: selectedEnrollment._id,
         skill_area_id: '',
@@ -244,20 +288,20 @@ setAiInsights(insights);
     }
   };
 
-  // Apply filters to score cards
   const applyFilters = () => {
     let filtered = [...scoreCards];
 
     if (filters.skillArea) {
-      filtered = filtered.filter(card => card.skill_area_id._id === filters.skillArea);
-    }
-
-    if (filters.month) {
-      filtered = filtered.filter(card => card.month === filters.month);
+      filtered = filtered.filter(card => card.skill_area_id?._id === filters.skillArea);
     }
 
     if (filters.year) {
       filtered = filtered.filter(card => card.year === parseInt(filters.year));
+    }
+
+    if (filters.month) {
+      const normalizedFilterMonth = normalizeMonth(filters.month);
+      filtered = filtered.filter(card => normalizeMonth(card.month) === normalizedFilterMonth);
     }
 
     if (filters.week) {
@@ -267,18 +311,24 @@ setAiInsights(insights);
     setFilteredScoreCards(filtered);
   };
 
-  // Render methods
+  useEffect(() => {
+    if (scoreCards.length > 0) {
+      applyFilters();
+    }
+  }, [filters, scoreCards]);
+
   const renderEnrollmentSelector = () => (
     <Form.Group className="mb-4">
       <Form.Select 
         onChange={(e) => handleEnrollmentSelect(e.target.value)}
         disabled={loading.enrollments}
+        value={selectedEnrollment?._id || ''}
       >
-        <option>Select a Student</option>
+        <option value="">Select a Student</option>
         {enrollments.map(enrollment => (
           <option key={enrollment._id} value={enrollment._id}>
-            {enrollment.student.firstName} {enrollment.student.lastName} 
-            ({enrollment.student.studentID}) - {enrollment.programs.map(p => p.name).join(', ')}
+            {enrollment.student?.firstName} {enrollment.student?.lastName} 
+            ({enrollment.student?.studentID}) - {enrollment.programs?.map(p => p.name).join(', ')}
           </option>
         ))}
       </Form.Select>
@@ -314,6 +364,7 @@ setAiInsights(insights);
                             sub_task_id: selectedSkillArea?.subTasks?.[0]?._id || ''
                           }));
                         }}
+                        disabled={loading.skillData}
                       >
                         <option value="">Select Skill Area</option>
                         {skillAreas.map(area => (
@@ -330,7 +381,7 @@ setAiInsights(insights);
                           ...prev,
                           sub_task_id: e.target.value
                         }))}
-                        disabled={!newScoreCard.skill_area_id}
+                        disabled={!newScoreCard.skill_area_id || loading.skillData}
                       >
                         <option value="">Select Sub Task</option>
                         {subTasks
@@ -379,7 +430,7 @@ setAiInsights(insights);
                   >
                     <option value="">Select Month</option>
                     {MONTHS.map(month => (
-                      <option key={month} value={month}>{month}</option>
+                      <option key={month.full} value={month.full}>{month.full}</option>
                     ))}
                   </Form.Control>
                 </Form.Group>
@@ -437,7 +488,6 @@ setAiInsights(insights);
             </Form.Group>
           </Tab>
           <Tab eventKey="advanced" title="Advanced Entry">
-            {/* More detailed form can be added here if needed */}
             <Alert variant="info">Advanced entry form coming soon</Alert>
           </Tab>
         </Tabs>
@@ -476,33 +526,21 @@ setAiInsights(insights);
           <Col md={3}>
             <Form.Select 
               value={filters.skillArea}
-              onChange={(e) => {
-                setFilters(prev => ({ ...prev, skillArea: e.target.value }));
-                applyFilters();
-              }}
+              onChange={(e) => setFilters(prev => ({ ...prev, skillArea: e.target.value }))}
               disabled={loading.scoreCards}
             >
               <option value="">All Skill Areas</option>
-              {[...new Set(scoreCards.map(card => card.skill_area_id?._id))]
-                .filter(Boolean)
-                .map(skillAreaId => {
-                  const skillArea = scoreCards.find(card => card.skill_area_id?._id === skillAreaId)?.skill_area_id;
-                  return (
-                    <option key={skillAreaId} value={skillAreaId}>
-                      {skillArea?.name}
-                    </option>
-                  );
-                })
-              }
+              {skillAreas.map(skillArea => (
+                <option key={skillArea._id} value={skillArea._id}>
+                  {skillArea.name}
+                </option>
+              ))}
             </Form.Select>
           </Col>
           <Col md={2}>
             <Form.Select
               value={filters.year}
-              onChange={(e) => {
-                setFilters(prev => ({ ...prev, year: parseInt(e.target.value) }));
-                applyFilters();
-              }}
+              onChange={(e) => setFilters(prev => ({ ...prev, year: parseInt(e.target.value) }))}
             >
               <option value="">All Years</option>
               {[2023, 2024, 2025].map(year => (
@@ -513,24 +551,18 @@ setAiInsights(insights);
           <Col md={2}>
             <Form.Select
               value={filters.month}
-              onChange={(e) => {
-                setFilters(prev => ({ ...prev, month: e.target.value }));
-                applyFilters();
-              }}
+              onChange={(e) => setFilters(prev => ({ ...prev, month: e.target.value }))}
             >
               <option value="">All Months</option>
               {MONTHS.map(month => (
-                <option key={month} value={month}>{month}</option>
+                <option key={month.full} value={month.full}>{month.full}</option>
               ))}
             </Form.Select>
           </Col>
           <Col md={2}>
             <Form.Select
               value={filters.week}
-              onChange={(e) => {
-                setFilters(prev => ({ ...prev, week: parseInt(e.target.value) }));
-                applyFilters();
-              }}
+              onChange={(e) => setFilters(prev => ({ ...prev, week: parseInt(e.target.value) }))}
             >
               <option value="">All Weeks</option>
               {[1, 2, 3, 4, 5].map(week => (
@@ -542,7 +574,7 @@ setAiInsights(insights);
             <Button 
               variant="outline-primary" 
               onClick={() => setShowModal(true)}
-              disabled={loading.skillData}
+              disabled={loading.skillData || !selectedEnrollment}
             >
               Create New Score Card
             </Button>
@@ -624,54 +656,59 @@ setAiInsights(insights);
             <Col md={6}>
               <h5>Overall Performance</h5>
               <div className="mb-3">
-                <strong>Score:</strong> <Badge bg="info">{aiInsights.overallPerformance?.score}</Badge>
+                <strong>Score:</strong> <Badge bg="info">{aiInsights.overallPerformance?.score || 'N/A'}</Badge>
                 <br />
                 <strong>Average Score:</strong> {aiInsights.overallPerformance?.averageScore?.toFixed(1) || 'N/A'}/5
                 <br />
-                <strong>Progress Trend:</strong> {aiInsights.overallPerformance?.progressTrend}
+                <strong>Progress Trend:</strong> {aiInsights.overallPerformance?.progressTrend || 'N/A'}
               </div>
               
               <h5>Key Observations</h5>
               <ul>
-                {aiInsights.keyObservations?.map((observation, i) => (
+                {(aiInsights.keyObservations || []).map((observation, i) => (
                   <li key={i}>{observation}</li>
                 ))}
+                {aiInsights.keyObservations?.length === 0 && <li>No specific observations</li>}
               </ul>
             </Col>
             <Col md={6}>
               <h5>Recommended Actions</h5>
               <ListGroup variant="flush">
-                {aiInsights.recommendedActions?.map((action, index) => (
+                {(aiInsights.recommendedActions || []).map((action, index) => (
                   <ListGroup.Item key={index}>{action}</ListGroup.Item>
                 ))}
+                {aiInsights.recommendedActions?.length === 0 && 
+                  <ListGroup.Item>No specific recommendations</ListGroup.Item>}
               </ListGroup>
             </Col>
           </Row>
           
           <h5 className="mt-4">Skill Area Breakdown</h5>
           <Row>
-            {aiInsights.skillAreaBreakdown?.map((area, index) => (
+            {(aiInsights.skillAreaBreakdown || []).map((area, index) => (
               <Col md={6} key={index} className="mb-3">
                 <Card>
                   <Card.Header>
-                    <strong>{area.skillArea}</strong> (Avg: {area.averageScore?.toFixed(1)}/5)
+                    <strong>{area.skillArea || 'Unknown Skill'}</strong> (Avg: {area.averageScore?.toFixed(1) || 'N/A'}/5)
                   </Card.Header>
                   <Card.Body>
                     <Row>
                       <Col>
                         <h6>Strengths</h6>
                         <ul>
-                          {area.strengths?.map((strength, i) => (
+                          {(area.strengths || []).map((strength, i) => (
                             <li key={i}>{strength}</li>
                           ))}
+                          {area.strengths?.length === 0 && <li>No specific strengths</li>}
                         </ul>
                       </Col>
                       <Col>
                         <h6>Areas for Improvement</h6>
                         <ul>
-                          {area.areasForImprovement?.map((area, i) => (
+                          {(area.areasForImprovement || []).map((area, i) => (
                             <li key={i}>{area}</li>
                           ))}
+                          {area.areasForImprovement?.length === 0 && <li>No specific areas for improvement</li>}
                         </ul>
                       </Col>
                     </Row>
@@ -679,6 +716,8 @@ setAiInsights(insights);
                 </Card>
               </Col>
             ))}
+            {aiInsights.skillAreaBreakdown?.length === 0 && 
+              <Col md={12} className="text-center text-muted">No skill area breakdown available</Col>}
           </Row>
         </Card.Body>
       </Card>
