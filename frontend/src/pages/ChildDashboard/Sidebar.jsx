@@ -52,9 +52,11 @@ const Sidebar = ({ setSelectedSection }) => {
     if (dropdownType === 'reports') {
       setShowReports(!showReports);
       handleMainClick("reports");
+      setShowCourses(false);  // Close courses dropdown
     } else if (dropdownType === 'courses') {
       setShowCourses(!showCourses);
       handleMainClick("courses");
+      setShowReports(false);  // Close reports dropdown
     }
   };
 
@@ -114,6 +116,13 @@ const Sidebar = ({ setSelectedSection }) => {
             </div>
             
             <div className={`dropdown-content ${showReports ? "show" : ""}`}>
+              <a
+                href="#"
+                className={`dropdown-item ${activeSub === "reports" ? "active-sub" : ""}`}
+                onClick={() => handleSubClick("reports")}
+              >
+                <FaFileAlt className="me-2" /> Comprehensive Report
+              </a>
               <a
                 href="#"
                 className={`dropdown-item ${activeSub === "quarterly" ? "active-sub" : ""}`}

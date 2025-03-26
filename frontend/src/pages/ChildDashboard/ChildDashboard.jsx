@@ -4,11 +4,11 @@ import Sidebar from "./Sidebar.jsx";
 import MagicMoments from "../../components/MagicMoments/MagicMoments.jsx";
 import WeeklyProgress from "../../components/WeeklyProgress/WeeklyProgress.jsx";
 import ProgramCard from "../../components/ProgramCard/ProgramCard.jsx";
-import NavbarBrand from "../../components/Navbar/Navbar.jsx";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import StudentProfile from "./StudentProfile.jsx";
+import ReportsSection from "./ReportsSection.jsx";  // Import the new Reports component
 
 const ChildDashboard = () => {
   useEffect(() => {
@@ -24,36 +24,7 @@ const ChildDashboard = () => {
         },
       }
     );
-    console.log(profileRes.data.data.student); // this is the data of the student
-
-    // Sample data
-    //   address: "45 Patel Street, Mumbai, India"
-    // allergies: "Dust"
-    // bloodGroup: "A+"
-    // comorbidity: (2) ['67de2a1f55b1e2d5fc5e2ab5', '67de2a0c55b1e2d5fc5e2a8b']
-    // dob: "2002-08-15T00:00:00.000Z"
-    // email: "
-    //
-    // "
-    // enrollmentDate: "2025-03-22T00:00:00.000Z"
-    // fatherName: "Amit Singh"
-    // firstName:"Ritika"
-    // gender:"Female"
-    // lastName:"Singh"
-    // motherName:"Sunita Singh"
-    // parentEmail:"parents@ishanyafoundation.org"
-    // phoneNumber:"9876501234"
-    // photo:"https://example.com/photos/ritika.jpg"
-    // primaryDiagnosis:"67de2a1d55b1e2d5fc5e2ab2"
-    // resetPasswordAttempts:0
-    // secondaryPhoneNumber:"9123450678"
-    // status:"Active"
-    // strengths:"Arts, Literature"
-    // studentID:"2025002"
-    // transport:true
-    // uuid: "550e8400-e29b-41d4-a716-446655440001"
-    // weaknesses: "Sports"
-    // _id:"67decb6f2f22223fc23ca6b1"
+    console.log(profileRes.data.data.student); 
   };
   const { childName } = useParams();
 
@@ -87,13 +58,9 @@ const ChildDashboard = () => {
 
   return (
     <Container fluid className="vh-100 p-0">
-      {/* Navbar */}
-
       <div className="dashboard-wrapper">
-        {/* Sidebar - using the existing component */}
         <Sidebar setSelectedSection={setSelectedSection} />
 
-        {/* Main Content */}
         <div className="main-content">
           <h2 className="dashboard-title">
             {selectedSection === "dashboard" && "Student Dashboard"}
@@ -133,32 +100,41 @@ const ChildDashboard = () => {
           {selectedSection === "profile" && (
             <div className="section"><StudentProfile/></div>
           )}
+          
           {selectedSection === "reports" && (
-            <div className="section">Reports overview</div>
+            <div className="section">
+              <ReportsSection />
+            </div>
           )}
+
           {selectedSection === "quarterly" && (
             <div className="section">
               <WeeklyProgress />
             </div>
           )}
+          
           {selectedSection === "annual" && (
             <div className="section">
               <WeeklyProgress />
             </div>
           )}
+          
           {selectedSection === "courses" && (
             <div className="section">Courses overview</div>
           )}
+          
           {selectedSection === "primary" && (
             <div className="section">
               <ProgramCard title="Program 1" activities={program1Data} />
             </div>
           )}
+          
           {selectedSection === "secondary" && (
             <div className="section">
               <ProgramCard title="Program 2" activities={program2Data} />
             </div>
           )}
+          
           {selectedSection === "moment" && (
             <div className="section">
               <MagicMoments />

@@ -23,8 +23,9 @@ import * as FileSystem from "expo-file-system";
 import { Audio } from "expo-av";
 import * as Speech from "expo-speech";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+import ReportsTab from './ReportsTab' // Adjust the path as needed
 const GEMINI_API_KEY = "AIzaSyBsCeTkekViD7qFma8TfWZSvfwrL0sUpmE";
+import MomentsOfDay from "./MomentsOfDay";
 
 export default function StudentScreen() {
   const router = useRouter();
@@ -341,6 +342,8 @@ export default function StudentScreen() {
     }
   };
 
+  const renderMomentsTab = () => <MomentsOfDay />;
+
   // Profile Tab Content
  const renderProfileTab = () => (
    <ScrollView contentContainerStyle={styles.profileContent}>
@@ -551,18 +554,7 @@ export default function StudentScreen() {
  );
 
   // Reports Tab Content
-  const renderReportsTab = () => (
-    <ScrollView contentContainerStyle={styles.reportsContent}>
-      <View style={styles.emptyStateContainer}>
-        <Ionicons name="document-text-outline" size={60} color="#ccc" />
-        <Text style={styles.emptyStateTitle}>No Reports Available</Text>
-        <Text style={styles.emptyStateText}>
-          Your child's progress reports and assessments will appear here once
-          available.
-        </Text>
-      </View>
-    </ScrollView>
-  );
+  const renderReportsTab = () => <ReportsTab profileData={profileData} />;
 
   // AI Help Tab Content
   const renderAIHelpTab = () => (
@@ -688,6 +680,7 @@ export default function StudentScreen() {
         {activeTab === "profile" && renderProfileTab()}
         {activeTab === "reports" && renderReportsTab()}
         {activeTab === "ai" && renderAIHelpTab()}
+        {activeTab === "moments" && renderMomentsTab()}
       </View>
 
       {/* Bottom Navigation */}
@@ -711,6 +704,27 @@ export default function StudentScreen() {
             ]}
           >
             Profile
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.navButton,
+            activeTab === "moments" && styles.activeNavButton,
+          ]}
+          onPress={() => setActiveTab("moments")}
+        >
+          <Ionicons
+            name={activeTab === "moments" ? "film" : "film-outline"}
+            size={24}
+            color={activeTab === "moments" ? "#1ba94c" : "#39424e"}
+          />
+          <Text
+            style={[
+              styles.navButtonText,
+              activeTab === "moments" && styles.activeNavButtonText,
+            ]}
+          >
+            Moments
           </Text>
         </TouchableOpacity>
 

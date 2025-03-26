@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "myApp",
-    "slug": "myApp",
+    "name": "ishanya+",
+    "slug": "ishanya-plus",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.teamapi.ishanyaplus",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -36,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9581d02e-defa-4294-9248-c8160a253d69"
+      }
+    },
+    "owner": "sapandeep318"
   }
 }
