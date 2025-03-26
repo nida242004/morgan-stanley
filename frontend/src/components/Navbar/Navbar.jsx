@@ -29,9 +29,12 @@ const NavbarComponent = () => {
   return (
     <Navbar bg="white" expand="lg" className="shadow-sm p-3 fixed-top">
       <Container>
+        
         <Navbar.Brand href="/" className="fw-bold fs-4 fade-in">
-          <span style={{ color: "#00A66E" }}>Ishaanya</span>
+  <span style={{ color: "#00A66E" }}>Ishaanya</span>
+  <span style={{ color: "#00A66E", fontWeight: 900 }}>+</span>
         </Navbar.Brand>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
