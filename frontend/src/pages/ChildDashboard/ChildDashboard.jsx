@@ -13,6 +13,7 @@ import ReportsSection from "./ReportsSection.jsx";  // Import the new Reports co
 const ChildDashboard = () => {
   useEffect(() => {
     fetchDetails();
+    fetchMoments();
   }, []);
 
   const fetchDetails = async () => {
@@ -55,7 +56,30 @@ const ChildDashboard = () => {
     goldengrass: "#DAB42C", // Golden yellow
     mulberry: "#C86B85", // Pinkish/purple accent
   };
-
+const fetchMoments = async () => {
+    try {
+      const response = await axios.get(
+        'https://team-5-ishanyaindiafoundation.onrender.com/api/v1/momentofday',
+        {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        }
+      );
+      
+      if (response.data && response.data.data && response.data.data.momentOfDay) {
+        setMoments(response.data.data.momentOfDay);
+      }
+    } catch (error) {
+      console.error('Error fetching moments:', error);
+      
+      // Handle unauthorized errors
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('authToken');
+        navigate('/signin');
+      }
+    }
+  }
   return (
     <Container fluid className="vh-100 p-0">
       <div className="dashboard-wrapper">

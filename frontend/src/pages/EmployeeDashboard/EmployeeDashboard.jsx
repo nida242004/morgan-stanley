@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar'; 
 import ReportsTab from './ReportsTab';
+import MomentsTab from './MomentsTab';
 
 // Custom color scheme
 const colors = {
@@ -312,6 +313,14 @@ const EmployeeDashboard = () => {
                 navigate={navigate}
               />
             </Tab.Pane>
+            <Tab.Pane active={activeTab === 'moments'}>
+  <MomentsTab 
+    students={students} 
+    colors={colors} 
+    authToken={authToken}
+    navigate={navigate}
+  />
+</Tab.Pane>
           </Tab.Content>
         </Container>
       </div>

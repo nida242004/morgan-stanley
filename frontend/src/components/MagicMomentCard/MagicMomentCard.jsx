@@ -99,189 +99,104 @@ const MagicMomentCard = ({ story }) => {
 
       {/* Styles */}
       <style jsx>{`
-        .magic-moment-card {
-          width: 220px;
-          flex-shrink: 0;
-          border-radius: 12px;
-          overflow: hidden;
-          background: white;
-          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-          cursor: pointer;
-          transition: all 0.25s ease;
-          display: flex;
-          flex-direction: column;
-          border: 1px solid rgba(0,0,0,0.05);
-          position: relative;
-        }
+        .magic-moments-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
 
-        .magic-moment-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-        }
+.moments-scroll-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch; /* Ensure equal height */
+  overflow-x: auto;
+  gap: 16px; /* Space between cards */
+  padding: 10px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
 
-        .thumbnail {
-          position: relative;
-          width: 100%;
-          height: 140px;
-          overflow: hidden;
-        }
+.magic-moment-card {
+  width: 220px; /* Fixed width for all cards */
+  min-width: 220px; /* Prevent shrinking */
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+}
 
-        .video-preview {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0;
-          transition: opacity 0.5s ease;
-        }
+.thumbnail {
+  position: relative;
+  width: 100%;
+  height: 140px; /* Fixed height for all thumbnails */
+  overflow: hidden;
+}
 
-        .video-preview.loaded {
-          opacity: 1;
-        }
+.video-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-        .loading-placeholder {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: ${colors.killarney}20;
-        }
+.card-info {
+  flex-grow: 1; /* Ensure consistent card height */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-        .overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-        }
+.title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-        .magic-moment-card:hover .overlay {
-          background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%);
-        }
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .moments-scroll-container {
+    gap: 12px;
+  }
 
-        .play-button {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: ${colors.goldengrass};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-          transform: scale(0.9);
-          transition: transform 0.2s ease;
-        }
+  .magic-moment-card {
+    width: 180px;
+    min-width: 180px;
+  }
 
-        .magic-moment-card:hover .play-button {
-          transform: scale(1);
-        }
+  .thumbnail {
+    height: 120px;
+  }
+}
 
-        .play-icon {
-          color: white;
-          font-size: 16px;
-          margin-left: 2px;
-        }
+@media (max-width: 480px) {
+  .moments-scroll-container {
+    gap: 10px;
+  }
 
-        .card-info {
-          padding: 1rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
+  .magic-moment-card {
+    width: 150px;
+    min-width: 150px;
+  }
 
-        .title {
-          margin: 0;
-          font-weight: 600;
-          color: ${colors.killarney};
-          font-size: 0.95rem;
-          line-height: 1.2;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
+  .thumbnail {
+    height: 100px;
+  }
 
-        .date {
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
-          color: #777;
-          font-size: 0.75rem;
-        }
-
-        .icon {
-          color: ${colors.goldengrass};
-          font-size: 0.7rem;
-        }
-
-        .video-modal {
-          border-radius: 12px;
-          overflow: hidden;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-          .magic-moment-card {
-            width: 180px;
-          }
-          
-          .thumbnail {
-            height: 120px;
-          }
-          
-          .play-button {
-            width: 40px;
-            height: 40px;
-          }
-          
-          .card-info {
-            padding: 0.8rem;
-          }
-          
-          .title {
-            font-size: 0.85rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .magic-moment-card {
-            width: 150px;
-          }
-          
-          .thumbnail {
-            height: 100px;
-          }
-          
-          .play-button {
-            width: 36px;
-            height: 36px;
-          }
-          
-          .play-icon {
-            font-size: 14px;
-          }
-          
-          .card-info {
-            padding: 0.6rem;
-          }
-          
-          .title {
-            font-size: 0.8rem;
-          }
-          
-          .date {
-            font-size: 0.7rem;
-          }
-        }
+  .title {
+    font-size: 0.85rem;
+  }
+}
       `}</style>
     </>
   );
