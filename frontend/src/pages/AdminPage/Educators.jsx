@@ -596,6 +596,18 @@ const EducatorsPage = () => {
                     >
                       <i className="bi bi-pencil me-1"></i> Edit Educator
                     </Button>
+                    <Button 
+                      style={{ 
+                        backgroundColor: colors.killarney,
+                        borderColor: colors.killarney,
+                        borderRadius: "8px",
+                        transition: "all 0.3s ease",
+                        boxShadow: "0 2px 8px rgba(49, 108, 77, 0.3)",
+                        marginLeft: "1rem"
+                      }}
+                    >
+                      <i className="bi bi-file-earmark-arrow-up me-1"></i> Upload Document
+                    </Button>
                   </motion.div>
                 </Modal.Footer>
               </motion.div>
