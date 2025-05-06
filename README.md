@@ -1,4 +1,5 @@
 # Ishanya Plus
+Acces directly at: https://ishanyaplus.netlify.app/ 
 
 Ishanya Plus is an intuitive, automated, and connected ecosystem that simplifies onboarding, tracking, and engagement for students, employees, educators, and parents.
 
